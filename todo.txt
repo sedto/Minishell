@@ -1,0 +1,47 @@
+La commande clean n'est pas bonne 
+=== Test du nettoyage de chaînes ===
+
+Test 1: Espaces multiples
+Original:   hello    world  
+Cleaned : hello world
+exit
+
+Test 2: Guillemets simples
+Original: 'hello  world'
+Cleaned : 'hello  world '
+exit
+
+Test 3: Guillemets doubles
+Original: "hello  world"
+Cleaned : "hello  world "
+exit
+
+Test 4: Mélange guillemets et espaces
+Original: hello   'test   avec   espaces'   world
+Cleaned : hello 'test   avec   espaces ' world
+exit
+
+Test 5: Guillemets collés (echo"hello"world)
+Original: echo"hello"world
+Cleaned : echo "hello " world
+exit
+
+Test 6: Guillemets simples collés (ls'test'file)
+Original: ls'test'file
+Cleaned : ls 'test ' file
+exit
+
+Test 7: Chaîne déjà espacée
+Original: echo "already spaced"
+Cleaned : echo "already spaced "
+exit
+
+Test 8: Redirection collée (cat<file.txt)
+Original: cat<file.txt
+Cleaned : cat<file.txt
+exit
+
+Test 9: Espaces multiples dans guillemets
+Original: echo    "multiple   spaces"
+Cleaned : echo "multiple   spaces "
+exit
