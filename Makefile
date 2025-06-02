@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/05/26 22:37:36 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/03 01:37:03 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,9 @@ INCDIR		= parsing/includes
 LIBFT_DIR	= libft
 
 # Source files
-SRCS		= $(SRCDIR)/utils/clean_input.c $(SRCDIR)/utils/main.c
+SRCS		= $(SRCDIR)/utils/clean_input.c $(SRCDIR)/utils/main.c \
+		  $(SRCDIR)/lexer/create_tokens.c $(SRCDIR)/lexer/tokenize.c \
+		  $(SRCDIR)/lexer/tokenize_utils.c $(SRCDIR)/lexer/tokenize_operators.c
 
 # Object files
 OBJS		= $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

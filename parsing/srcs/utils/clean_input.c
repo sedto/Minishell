@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:23:37 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/05/28 11:02:13 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/01 20:28:18 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// Ajoute un espace si nécessaire autour des guillemets
 static void	add_space_if_needed(char *cleaned, int *j, char next_char,
                 int closing)
 {
@@ -23,6 +24,7 @@ static void	add_space_if_needed(char *cleaned, int *j, char next_char,
         cleaned[(*j)++] = ' ';
 }
 
+// Gère les guillemets simples et doubles dans la chaîne
 static int	handle_quotes(char *str, int *i, char *cleaned, int *j,
             int *in_squote, int *in_dquote)
 {
@@ -49,6 +51,7 @@ static int	handle_quotes(char *str, int *i, char *cleaned, int *j,
     return (0);
 }
 
+// Gère les espaces et tabulations dans la chaîne
 static void	handle_spaces(char *str, int *i, char *cleaned, int *j,
             int in_squote, int in_dquote)
 {
@@ -62,6 +65,7 @@ static void	handle_spaces(char *str, int *i, char *cleaned, int *j,
         cleaned[(*j)++] = str[(*i)++];
 }
 
+// Initialise toutes les variables à zéro
 static void	init_variables(int *i, int *j, int *in_squote, int *in_dquote)
 {
     *i = 0;
@@ -70,6 +74,7 @@ static void	init_variables(int *i, int *j, int *in_squote, int *in_dquote)
     *in_dquote = 0;
 }
 
+// Nettoie et formate une chaîne d'entrée en gérant les espaces et guillemets
 char	*clean_input(char *str)
 {
     int		i;

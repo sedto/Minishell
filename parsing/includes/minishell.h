@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/05/26 22:37:45 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/03 01:37:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,28 @@
 # include "libft.h"
 
 /* ************************************************************************** */
+/*                                CONSTANTS                                   */
+/* ************************************************************************** */
+
+typedef enum e_token_type
+{
+	TOKEN_WORD = 0,
+	TOKEN_PIPE = 1,
+	TOKEN_REDIR_IN = 2,
+	TOKEN_REDIR_OUT = 3,
+	TOKEN_APPEND = 4,
+	TOKEN_HEREDOC = 5,
+	TOKEN_EOF = 6
+}	t_token_type;
+
+/* ************************************************************************** */
 /*                                STRUCTURES                                  */
 /* ************************************************************************** */
 
 typedef struct s_token
 {
 	char			*value;
-	int				type;
+	t_token_type	type;
 	struct s_token	*next;
 }					t_token;
 
@@ -64,27 +79,32 @@ typedef struct s_minishell
 }					t_minishell;
 
 /* ************************************************************************** */
-/*                                CONSTANTS                                   */
-/* ************************************************************************** */
-
-# define TOKEN_WORD		1
-# define TOKEN_PIPE		2
-# define TOKEN_REDIR_IN	3
-# define TOKEN_REDIR_OUT 4
-# define TOKEN_APPEND	5
-# define TOKEN_HEREDOC	6
-
-/* ************************************************************************** */
 /*                             PARSING FUNCTIONS                             */
 /* ************************************************************************** */
 
 // clean_input.c
 char		*clean_input(char *str);
 
-// Autres fonctions de parsing à ajouter plus tard
-// t_token		*tokenize(char *input);
-// t_cmd		*parse_commands(t_token *tokens);
-// int			validate_syntax(t_token *tokens);
+// create_tokens.c
+t_token		*create_token(t_token_type type, char *value);
+void		add_token_to_list(t_token **tokens, t_token *new_token);
+void		free_tokens(t_token *tokens);
+
+// tokenize.c
+t_token		*tokenize(char *input);
+void		handle_word(char *input, int *i, t_token **tokens);
+
+// tokenize_operators.c
+void		handle_operator(char *input, int *i, t_token **tokens);
+t_token		*handle_input_redir(char *input, int *i);
+t_token		*handle_output_redir(char *input, int *i);
+
+// tokenize_utils.c
+int			is_quote(char c);
+int			is_operator_char(char c);
+void		skip_spaces(char *input, int *i);
+void		add_eof_token(t_token **tokens);
+void		handle_quoted_word(char *input, int *i, t_token **tokens);
 
 /* ************************************************************************** */
 /*                            BUILTIN FUNCTIONS                              */
