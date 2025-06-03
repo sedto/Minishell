@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 01:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 01:37:02 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/03 02:05:55 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	add_eof_token(t_token **tokens)
 }
 
 // Gère les mots entre guillemets
-void	handle_quoted_word(char *input, int *i, t_token **tokens)
+int	handle_quoted_word(char *input, int *i, t_token **tokens)
 {
 	char	quote_type;
 	int		start;
@@ -58,9 +58,11 @@ void	handle_quoted_word(char *input, int *i, t_token **tokens)
 		(*i)++;
 	content = ft_substr(input, start, *i - start);
 	if (!content)
-		return ;
+		return (0);
 	new_token = create_token(TOKEN_WORD, content);
 	free(content);
-	if (new_token)
-		add_token_to_list(tokens, new_token);
+	if (!new_token)
+		return (0);
+	add_token_to_list(tokens, new_token);
+	return (1);
 }

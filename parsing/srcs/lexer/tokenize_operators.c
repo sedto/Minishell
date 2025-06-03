@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 01:35:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 01:37:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/03 02:05:55 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ t_token	*handle_output_redir(char *input, int *i)
 	return (new_token);
 }
 
-void	handle_operator(char *input, int *i, t_token **tokens)
+int	handle_operator(char *input, int *i, t_token **tokens)
 {
 	t_token	*new_token;
 
@@ -75,5 +75,8 @@ void	handle_operator(char *input, int *i, t_token **tokens)
 		new_token = handle_input_redir(input, i);
 	else if (input[*i] == '>')
 		new_token = handle_output_redir(input, i);
+	if (!new_token)
+		return (0);
 	add_token_to_list(tokens, new_token);
+	return (1);
 }

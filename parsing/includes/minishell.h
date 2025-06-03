@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 01:37:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/03 02:05:54 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ void		free_tokens(t_token *tokens);
 
 // tokenize.c
 t_token		*tokenize(char *input);
-void		handle_word(char *input, int *i, t_token **tokens);
+int			handle_word(char *input, int *i, t_token **tokens);
 
 // tokenize_operators.c
-void		handle_operator(char *input, int *i, t_token **tokens);
+int			handle_operator(char *input, int *i, t_token **tokens);
 t_token		*handle_input_redir(char *input, int *i);
 t_token		*handle_output_redir(char *input, int *i);
 
@@ -104,7 +104,7 @@ int			is_quote(char c);
 int			is_operator_char(char c);
 void		skip_spaces(char *input, int *i);
 void		add_eof_token(t_token **tokens);
-void		handle_quoted_word(char *input, int *i, t_token **tokens);
+int			handle_quoted_word(char *input, int *i, t_token **tokens);
 
 /* ************************************************************************** */
 /*                            BUILTIN FUNCTIONS                              */
