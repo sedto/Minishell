@@ -6,24 +6,32 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:50:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/11 16:52:24 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:27:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Ajoute un espace si nécessaire autour des guillemets
+static int	should_add_space_before(char *cleaned, int j)
+{
+	return (j > 0 && cleaned[j - 1] != ' ' && cleaned[j - 1] != '\t');
+}
+
+static int	should_add_space_after(char next_char)
+{
+	return (next_char && next_char != ' ' && next_char != '\t'
+		&& next_char != '\0' && next_char != '|' && next_char != '<'
+		&& next_char != '>' && next_char != '"' && next_char != '\'');
+}
+
 void	add_space_if_needed(char *cleaned, int *j, char next_char, int closing)
 {
-	if (closing && next_char && next_char != ' ' && next_char != '\t'
-		&& next_char != '\0')
+	if (closing && should_add_space_after(next_char))
 		cleaned[(*j)++] = ' ';
-	else if (!closing && *j > 0 && cleaned[*j - 1] != ' '
-		&& cleaned[*j - 1] != '\t')
+	else if (!closing && should_add_space_before(cleaned, *j))
 		cleaned[(*j)++] = ' ';
 }
 
-// Gère les guillemets simples dans la chaîne
 int	handle_single_quote(t_clean_data *data)
 {
 	if (!(*data->in_dquote))
@@ -41,7 +49,6 @@ int	handle_single_quote(t_clean_data *data)
 	return (0);
 }
 
-// Gère les guillemets doubles dans la chaîne
 int	handle_double_quote(t_clean_data *data)
 {
 	if (!(*data->in_squote))
