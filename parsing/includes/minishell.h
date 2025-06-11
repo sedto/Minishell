@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 02:05:54 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:51:16 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,42 @@ typedef struct s_minishell
 	int				in_heredoc;
 }					t_minishell;
 
+// Structure pour passer les données lors de l'expansion des variables
+// Utilisée pour éviter de passer trop de paramètres entre les fonctions
+typedef struct s_expand_data
+{
+	char	**envp;
+	int		exit_code;
+	char	*result;
+	int		result_size;
+	int		pos;
+	int		*i;
+	int		*j;
+}	t_expand_data;
+
+// Structure pour le nettoyage des entrées (clean_input)
+typedef struct s_clean_data
+{
+	char	*str;
+	char	*cleaned;
+	int		*i;
+	int		*j;
+	int		*in_squote;
+	int		*in_dquote;
+}	t_clean_data;
+
 /* ************************************************************************** */
 /*                             PARSING FUNCTIONS                             */
 /* ************************************************************************** */
 
 // clean_input.c
 char		*clean_input(char *str);
+
+// clean_input_utils.c
+void		add_space_if_needed(char *cleaned, int *j, char next_char,
+				int closing);
+int			handle_single_quote(t_clean_data *data);
+int			handle_double_quote(t_clean_data *data);
 
 // create_tokens.c
 t_token		*create_token(t_token_type type, char *value);
@@ -105,6 +135,22 @@ int			is_operator_char(char c);
 void		skip_spaces(char *input, int *i);
 void		add_eof_token(t_token **tokens);
 int			handle_quoted_word(char *input, int *i, t_token **tokens);
+
+// expand_variables.c
+char		*find_var_in_env(char *var_name, char **envp);
+char		*handle_special_var(char *var_name, int exit_code);
+char		*expand_single_var(char *var_name, char **envp, int exit_code);
+int			should_expand_token(char *value);
+t_token		*expand_all_tokens(t_token *tokens, char **envp, int exit_code);
+
+// expand_strings.c
+char		*expand_string(char *input, char **envp, int exit_code);
+int			count_variables_in_string(char *str);
+
+// expand_utils.c
+int			extract_var_name(char *input, int start, char **var_name);
+void		copy_var_value_to_result(char *result, int *j, char *var_value);
+char		*allocate_result_buffer(char *input);
 
 /* ************************************************************************** */
 /*                            BUILTIN FUNCTIONS                              */

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 01:32:25 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:05:12 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,32 +36,38 @@ static char	*token_type_to_string(t_token_type type)
 }
 
 // Affiche tous les tokens d'une liste
-static void	print_tokens(t_token *tokens)
+static void print_tokens(t_token *tokens)
 {
-	t_token	*current;
-
-	current = tokens;
-	printf("Tokens: ");
-	while (current)
-	{
-		printf("[%s:\"%s\"]", token_type_to_string(current->type), 
-			current->value);
-		if (current->next)
-			printf(" ");
-		current = current->next;
-	}
-	printf("\n");
+    t_token *current = tokens;
+    
+    while (current) {
+        printf("[%s:", token_type_to_string(current->type));
+        
+        // DEBUG : affiche char par char
+        printf("'");
+        for (int i = 0; current->value[i]; i++) {
+            printf("%c", current->value[i]);
+        }
+        printf("'");
+        
+        printf("]");
+        if (current->next) printf(" ");
+        current = current->next;
+    }
+    printf("\n");
 }
 
-// Traite une ligne d'input et teste le lexer
-static int	process_input(char *input)
+// Fonction pour valider si l'expansion est correcte
+// Traite une ligne d'input et teste le lexer avec expansion
+static int	process_input(char *input, char **envp, int exit_code)
 {
 	char	*cleaned_input;
 	t_token	*tokens;
 
-	printf("\n=== Test du lexer ===\n");
+	printf("\n=== Test du lexer avec expansion ===\n");
 	printf("Input: \"%s\"\n", input);
 	
+	// Phase 1: Nettoyage (✅ existe déjà)
 	cleaned_input = clean_input(input);
 	if (!cleaned_input)
 	{
@@ -70,6 +76,7 @@ static int	process_input(char *input)
 	}
 	printf("Cleaned: \"%s\"\n", cleaned_input);
 	
+	// Phase 2: Tokenisation (✅ existe déjà)
 	tokens = tokenize(cleaned_input);
 	if (!tokens)
 	{
@@ -78,50 +85,76 @@ static int	process_input(char *input)
 		return (1);
 	}
 	
+	printf("🔍 Tokens AVANT expansion:\n");
 	print_tokens(tokens);
 	
+	// Phase 3: Expansion des variables (🆕 NOUVEAU!)
+	tokens = expand_all_tokens(tokens, envp, exit_code);
+	
+	printf("✨ Tokens APRÈS expansion:\n");
+	print_tokens(tokens);
+	
+	// Validation de l'expansion (🆕 NOUVEAU!)
 	free_tokens(tokens);
 	free(cleaned_input);
 	return (0);
 }
 
-// Fonction pour tester des cas prédéfinis
-static void	run_predefined_tests(void)
+// Fonction pour tester des cas prédéfinis avec expansion
+static void	run_predefined_tests(char **envp, int exit_code)
 {
-	printf("\n🧪 === TESTS PRÉDÉFINIS DU LEXER ===\n");
+	printf("\n🧪 === TESTS EXPANSION VARIABLES ===\n");
 	
-	printf("\n--- Test 1: Commande simple ---");
-	process_input("echo hello");
+	printf("\n--- Test 1: Variable simple ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'%s'] [EOF:'']\n", getenv("USER"));
+	process_input("echo $USER", envp, exit_code);
 	
-	printf("\n--- Test 2: Avec quotes ---");
-	process_input("echo \"hello world\"");
+	printf("\n--- Test 2: Variable dans double quotes ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'\"Hello %s\"'] [EOF:'']\n", getenv("USER"));
+	process_input("echo \"Hello $USER\"", envp, exit_code);
 	
-	printf("\n--- Test 3: Pipe ---");
-	process_input("ls | grep test");
+	printf("\n--- Test 3: Variable dans single quotes (PAS d'expansion) ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'$USER'] [EOF:'']\n");
+	process_input("echo '$USER'", envp, exit_code);
 	
-	printf("\n--- Test 4: Redirections ---");
-	process_input("cat < input >> output");
+	printf("\n--- Test 4: Variable spéciale $? ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'42'] [EOF:'']\n");
+	process_input("echo $?", envp, 42);
 	
-	printf("\n--- Test 5: Heredoc ---");
-	process_input("cat << EOF");
+	printf("\n--- Test 5: Variables multiples ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'%s'] [WORD:'%s'] [EOF:'']\n", 
+		getenv("USER"), getenv("HOME"));
+	process_input("echo $USER $HOME", envp, exit_code);
 	
-	printf("\n--- Test 6: Quotes simples ---");
-	process_input("echo 'single quotes'");
+	printf("\n--- Test 6: Variables concaténées ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'%s%s'] [EOF:'']\n", 
+		getenv("USER"), getenv("HOME"));
+	process_input("echo $USER$HOME", envp, exit_code);
 	
-	printf("\n--- Test 7: Complexe ---");
-	process_input("ls -la | grep \".txt\" > output");
+	printf("\n--- Test 7: Variable inexistante ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:''] [EOF:'']\n");
+	process_input("echo $INEXISTANTE", envp, exit_code);
+	
+	printf("\n--- Test 8: $ seul (pas une variable) ---");
+	printf("\nAttendu: [WORD:'echo'] [WORD:'$'] [EOF:'']\n");
+	process_input("echo $", envp, exit_code);
 	
 	printf("\n=== FIN DES TESTS ===\n");
 }
 
-// Boucle principale du shell
-int	main(void)
+// Boucle principale du shell avec expansion
+int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
+	int		exit_code;
 
-	printf("🚀 Minishell - Test du Lexer\n");
-	printf("Tapez 'test' pour les tests prédéfinis, ou une commande pour la tester\n");
-	printf("Tapez 'exit' ou Ctrl+D pour quitter\n");
+	(void)argc;
+	(void)argv;
+	exit_code = 0;
+	printf("🚀 Minishell - Test du Lexer avec Variables\n");
+	printf("Variables disponibles: USER, HOME, PWD, ?\n");
+	printf("Tapez 'test' pour les tests prédéfinis\n");
+	printf("Tapez 'exit' ou Ctrl+D pour quitter\n\n");
 
 	while (1)
 	{
@@ -141,11 +174,12 @@ int	main(void)
 		}
 		else if (ft_strncmp(input, "test", 4) == 0)
 		{
-			run_predefined_tests();
+			run_predefined_tests(envp, exit_code);
 		}
 		else if (*input)
 		{
-			process_input(input);
+			process_input(input, envp, exit_code);
+			exit_code = 0;
 		}
 		
 		free(input);
