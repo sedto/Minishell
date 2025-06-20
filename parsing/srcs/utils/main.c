@@ -6,16 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:08:24 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:07 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Variable globale pour les signaux (obligatoire selon le sujet)
+/* Variable globale pour les signaux (obligatoire selon le sujet) */
 volatile sig_atomic_t	g_signal = 0;
 
-// Parse et nettoie les tokens
+/* Parse et nettoie les tokens d'une entrée utilisateur */
 static t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
 {
 	char	*cleaned_input;
@@ -45,7 +45,7 @@ static t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
 	return (commands);
 }
 
-// Traite une ligne d'entrée utilisateur complète
+/* Traite une ligne d'entrée utilisateur complète */
 static int	process_input(char *input, char **envp, int exit_code)
 {
 	t_cmd	*commands;
@@ -57,7 +57,7 @@ static int	process_input(char *input, char **envp, int exit_code)
 	return (0);
 }
 
-// Gère une ligne d'entrée utilisateur
+/* Gère une ligne d'entrée utilisateur et détermine si le shell doit continuer */
 static int	handle_input_line(char *input, char **envp, int *exit_code)
 {
 	if (ft_strncmp(input, "exit", 4) == 0)
@@ -67,7 +67,7 @@ static int	handle_input_line(char *input, char **envp, int *exit_code)
 	return (0);
 }
 
-// Boucle principale du minishell
+/* Boucle principale du minishell */
 int	main(int argc, char **argv, char **envp)
 {
 	char	*input;

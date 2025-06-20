@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:56:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/11 16:08:18 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:09 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Cherche une variable dans l'environnement et retourne sa valeur */
 char	*find_var_in_env(char *var_name, char **envp)
 {
 	int	i;
@@ -31,6 +32,7 @@ char	*find_var_in_env(char *var_name, char **envp)
 	return (NULL);
 }
 
+/* Gère les variables spéciales ($?, $$, $0) */
 char	*handle_special_var(char *var_name, int exit_code)
 {
 	if (ft_strncmp(var_name, "?", 2) == 0)
@@ -42,6 +44,7 @@ char	*handle_special_var(char *var_name, int exit_code)
 	return (NULL);
 }
 
+/* Expanse une variable en cherchant d'abord les spéciales puis l'environnement */
 char	*expand_single_var(char *var_name, char **envp, int exit_code)
 {
 	char	*special_value;
@@ -56,6 +59,7 @@ char	*expand_single_var(char *var_name, char **envp, int exit_code)
 	return (ft_strdup(""));
 }
 
+/* Détermine si un token doit être expansé (pas si entouré de single quotes) */
 int	should_expand_token(char *value)
 {
 	if (value && value[0] == '\'' && value[ft_strlen(value) - 1] == '\'')
@@ -63,6 +67,7 @@ int	should_expand_token(char *value)
 	return (1);
 }
 
+/* Expanse toutes les variables dans tous les tokens de la liste */
 t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)
 {
 	t_token	*current;

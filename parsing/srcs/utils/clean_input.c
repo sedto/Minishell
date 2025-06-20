@@ -6,13 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:23:37 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 02:48:10 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:05 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Traite un caractère dans la chaîne d'entrée
+/* Traite un caractère dans la chaîne d'entrée */
 static void	process_char(char *str, char *cleaned, int *i, int *j)
 {
 	static int	in_single_quote = 0;
@@ -39,7 +39,7 @@ static void	process_char(char *str, char *cleaned, int *i, int *j)
 		cleaned[(*j)++] = str[(*i)++];
 }
 
-// Version simplifiée qui préserve mieux les quotes
+/* Nettoie l'entrée en normalisant les espaces tout en préservant les quotes */
 char	*clean_input(char *str)
 {
 	char	*cleaned;

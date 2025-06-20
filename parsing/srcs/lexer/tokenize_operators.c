@@ -6,13 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 01:35:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 02:05:55 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:08 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Gère les opérateurs doubles (<<, >>)
+/* Gère les opérateurs doubles (<<, >>) */
 static t_token	*handle_double_operator(char *input, int *i)
 {
 	t_token	*new_token;
@@ -31,7 +31,7 @@ static t_token	*handle_double_operator(char *input, int *i)
 	return (new_token);
 }
 
-// Gère les opérateurs de redirection d'entrée (<, <<)
+/* Gère les opérateurs de redirection d'entrée (<, <<) */
 t_token	*handle_input_redir(char *input, int *i)
 {
 	t_token	*new_token;
@@ -46,7 +46,7 @@ t_token	*handle_input_redir(char *input, int *i)
 	return (new_token);
 }
 
-// Gère les opérateurs de redirection de sortie (>, >>)
+/* Gère les opérateurs de redirection de sortie (>, >>) */
 t_token	*handle_output_redir(char *input, int *i)
 {
 	t_token	*new_token;
@@ -61,6 +61,7 @@ t_token	*handle_output_redir(char *input, int *i)
 	return (new_token);
 }
 
+/* Détermine et traite le bon type d'opérateur */
 int	handle_operator(char *input, int *i, t_token **tokens)
 {
 	t_token	*new_token;

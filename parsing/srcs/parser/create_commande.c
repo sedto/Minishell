@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 02:18:08 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:30:14 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Crée une nouvelle structure de commande initialisée à zéro */
 t_cmd	*new_command(void)
 {
 	t_cmd	*cmd;
@@ -28,6 +29,7 @@ t_cmd	*new_command(void)
 	return (cmd);
 }
 
+/* Ajoute un argument au tableau d'arguments d'une commande */
 void	add_argument(t_cmd *cmd, char *arg)
 {
 	char	**new_args;
@@ -52,6 +54,7 @@ void	add_argument(t_cmd *cmd, char *arg)
 	cmd->args = new_args;
 }
 
+/* Compte le nombre d'arguments dans un tableau */
 int	count_args(char **args)
 {
 	int	count;
@@ -64,6 +67,7 @@ int	count_args(char **args)
 	return (count);
 }
 
+/* Ajoute une commande à la fin de la liste chaînée de commandes */
 void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
 {
 	t_cmd	*current;
@@ -81,6 +85,7 @@ void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
 	current->next = new_cmd;
 }
 
+/* Libère toute la mémoire allouée pour la liste de commandes */
 void	free_commands(t_cmd *commands)
 {
 	t_cmd	*current;

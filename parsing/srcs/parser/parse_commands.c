@@ -6,17 +6,19 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 02:18:11 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:08 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Ajoute un mot/argument à la commande courante */
 static void	handle_word_token(t_cmd *current_cmd, t_token *token)
 {
 	add_argument(current_cmd, token->value);
 }
 
+/* Gère un token pipe : termine la commande courante et en crée une nouvelle */
 static void	handle_pipe_token(t_cmd **commands, t_cmd **current_cmd)
 {
 	if (*current_cmd)
@@ -26,6 +28,7 @@ static void	handle_pipe_token(t_cmd **commands, t_cmd **current_cmd)
 	}
 }
 
+/* Valide la syntaxe initiale (pas de pipe au début, tokens présents) */
 static int	validate_initial_syntax(t_token *tokens)
 {
 	if (!tokens)
@@ -41,6 +44,7 @@ static int	validate_initial_syntax(t_token *tokens)
 	return (1);
 }
 
+/* Valide la syntaxe des redirections (fichier après >, <, >>, <<) */
 static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
 				t_cmd *current_cmd)
 {
@@ -68,6 +72,7 @@ static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
 	return (1);
 }
 
+/* Convertit une liste de tokens en liste de commandes structurées */
 t_cmd	*parse_tokens_to_commands(t_token *tokens)
 {
 	t_cmd	*commands;

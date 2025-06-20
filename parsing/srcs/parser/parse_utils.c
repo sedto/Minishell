@@ -6,13 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:04 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 02:18:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:09 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Gère les redirections de sortie (>)
+/* Gère les redirections de sortie (>) */
 void	handle_redirect_out(t_cmd *current_cmd, t_token **token)
 {
 	*token = (*token)->next;
@@ -25,7 +25,7 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token)
 	}
 }
 
-// Gère les redirections en append (>>)
+/* Gère les redirections en append (>>) */
 void	handle_redirect_append(t_cmd *current_cmd, t_token **token)
 {
 	*token = (*token)->next;
@@ -38,7 +38,7 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token)
 	}
 }
 
-// Gère les redirections d'entrée (<)
+/* Gère les redirections d'entrée (<) */
 void	handle_redirect_in(t_cmd *current_cmd, t_token **token)
 {
 	*token = (*token)->next;
@@ -51,7 +51,7 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token)
 	}
 }
 
-// Gère les heredoc (<<)
+/* Gère les heredoc (<<) */
 void	handle_heredoc(t_cmd *current_cmd, t_token **token)
 {
 	*token = (*token)->next;
@@ -64,7 +64,7 @@ void	handle_heredoc(t_cmd *current_cmd, t_token **token)
 	}
 }
 
-// Traite les tokens de redirection (>, >>, <, <<)
+/* Traite les tokens de redirection (>, >>, <, <<) */
 void	process_redirection_token(t_cmd *current_cmd, t_token **tokens)
 {
 	if ((*tokens)->type == TOKEN_REDIR_OUT)

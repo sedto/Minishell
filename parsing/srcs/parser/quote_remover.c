@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:56:55 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 02:18:08 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:30:14 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Vérifie si une chaîne a des quotes externes (début et fin identiques) */
 static int	has_outer_quotes(char *str, char quote_char)
 {
 	int	len;
@@ -24,6 +25,7 @@ static int	has_outer_quotes(char *str, char quote_char)
 	return (str[0] == quote_char && str[len - 1] == quote_char);
 }
 
+/* Supprime les quotes externes d'une chaîne si elles existent */
 static char	*remove_outer_quotes(char *str)
 {
 	char	*result;
@@ -40,6 +42,7 @@ static char	*remove_outer_quotes(char *str)
 	return (ft_strdup(str));
 }
 
+/* Traite tous les arguments d'une commande pour supprimer les quotes */
 static void	process_args_quotes(char **args)
 {
 	char	*new_arg;
@@ -60,6 +63,7 @@ static void	process_args_quotes(char **args)
 	}
 }
 
+/* Traite un nom de fichier pour supprimer les quotes externes */
 static void	process_file_quotes(char **filename)
 {
 	char	*new_filename;
@@ -74,6 +78,7 @@ static void	process_file_quotes(char **filename)
 	}
 }
 
+/* Supprime les quotes de toutes les commandes dans la liste chaînée */
 void	remove_quotes_from_commands(t_cmd *commands)
 {
 	t_cmd	*current;

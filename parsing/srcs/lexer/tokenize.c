@@ -6,13 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 00:09:49 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 02:08:26 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:06 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Gère les mots simples (commandes, arguments, fichiers)
+/* Gère les mots simples (commandes, arguments, fichiers) */
 int	handle_word(char *input, int *i, t_token **tokens)
 {
 	int		start;
@@ -35,7 +35,7 @@ int	handle_word(char *input, int *i, t_token **tokens)
 	return (1);
 }
 
-// Traite un caractère selon son type (quote, opérateur, ou mot)
+/* Traite un caractère selon son type (quote, opérateur, ou mot) */
 static int	process_character(char *input, int *i, t_token **tokens)
 {
 	if (is_quote(input[*i]))
@@ -46,6 +46,7 @@ static int	process_character(char *input, int *i, t_token **tokens)
 		return (handle_word(input, i, tokens));
 }
 
+/* Fonction principale de tokenisation : divise l'entrée en tokens */
 t_token	*tokenize(char *input)
 {
 	t_token	*tokens;

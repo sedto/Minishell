@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 23:45:06 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/03 02:21:14 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:06 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Crée un nouveau token avec son type et sa valeur */
 t_token	*create_token(t_token_type type, char *value)
 {
 	t_token	*token;
@@ -30,7 +31,7 @@ t_token	*create_token(t_token_type type, char *value)
 	return (token);
 }
 
-// Ajoute un token à la fin de la liste chaînée
+/* Ajoute un token à la fin de la liste chaînée */
 void	add_token_to_list(t_token **tokens, t_token *new_token)
 {
 	t_token	*current;
@@ -48,7 +49,7 @@ void	add_token_to_list(t_token **tokens, t_token *new_token)
 	current->next = new_token;
 }
 
-// Libère tous les tokens d'une liste
+/* Libère tous les tokens d'une liste */
 void	free_tokens(t_token *tokens)
 {
 	t_token	*current;

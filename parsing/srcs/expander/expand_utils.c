@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:59:13 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/11 16:16:33 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Extrait les variables spéciales ($?, $$) */
 static int	extract_special_var(char *str, int start, char **var_name)
 {
 	if (str[start] == '?')
@@ -27,6 +28,7 @@ static int	extract_special_var(char *str, int start, char **var_name)
 	return (0);
 }
 
+/* Extrait les variables normales (lettres, chiffres, underscore) */
 static int	extract_normal_var(char *str, int start, char **var_name)
 {
 	int	i;
@@ -42,6 +44,7 @@ static int	extract_normal_var(char *str, int start, char **var_name)
 	return (var_len);
 }
 
+/* Extrait le nom d'une variable en gérant spéciales et normales */
 int	extract_var_name(char *str, int start, char **var_name)
 {
 	int	special_len;
@@ -57,6 +60,7 @@ int	extract_var_name(char *str, int start, char **var_name)
 	return (0);
 }
 
+/* Alloue un buffer pour le résultat avec une taille estimée */
 char	*allocate_result_buffer(char *input)
 {
 	char	*result;
@@ -75,6 +79,7 @@ char	*allocate_result_buffer(char *input)
 	return (result);
 }
 
+/* Copie la valeur d'une variable dans le buffer résultat */
 void	copy_var_value_to_result(char *result, int *j, char *var_value)
 {
 	int	i;

@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/11 16:01:42 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:38:03 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+/* Traite une variable $VAR et la remplace par sa valeur */
 static int	process_variable(char *input, t_expand_data *data)
 {
 	char	*var_name;
@@ -36,16 +37,19 @@ static int	process_variable(char *input, t_expand_data *data)
 	return (0);
 }
 
+/* Détermine si un caractère '$' doit déclencher l'expansion de variable */
 static int	should_process_variable(char *input, int i)
 {
 	return (input[i] == '$' && input[i + 1] && input[i + 1] != ' ');
 }
 
+/* Copie un caractère normal (non-variable) vers le résultat */
 static void	process_normal_char(char *input, t_expand_data *data)
 {
 	data->result[(*data->j)++] = input[(*data->i)++];
 }
 
+/* Fonction principale d'expansion : remplace toutes les variables dans une chaîne */
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
@@ -72,6 +76,7 @@ char	*expand_string(char *input, char **envp, int exit_code)
 	return (data.result);
 }
 
+/* Compte le nombre de variables ($) dans une chaîne */
 int	count_variables_in_string(char *str)
 {
 	int	count;
