@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:03:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:05:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <unistd.h>
+# include <stdint.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
@@ -98,8 +99,8 @@ typedef struct s_clean_data
 	char	*cleaned;
 	int		*i;
 	int		*j;
-	int		*in_squote;
-	int		*in_dquote;
+	int		*in_single_quote;
+	int		*in_double_quote;
 }	t_clean_data;
 
 /* ************************************************************************** */
@@ -145,7 +146,25 @@ t_token		*expand_all_tokens(t_token *tokens, char **envp, int exit_code);
 
 // expand_strings.c
 char		*expand_string(char *input, char **envp, int exit_code);
+
+// expand_process.c
+int			handle_valid_variable(char *var_name, t_expand_data *data,
+				int var_len);
+void		handle_invalid_variable(t_expand_data *data, char *var_name,
+				int var_len);
+int			process_variable(char *input, t_expand_data *data);
+void		handle_variable_processing(char *input, t_expand_data *data);
 int			count_variables_in_string(char *str);
+
+// expand_quotes.c
+void		init_expand_data(t_expand_data *data, char *input, char **envp,
+				int exit_code);
+void		handle_single_quote_char(char *input, t_expand_data *data,
+				int *in_single_quote, int in_double_quote);
+void		handle_double_quote_char(char *input, t_expand_data *data,
+				int *in_double_quote, int in_single_quote);
+int			should_process_variable(char *input, int i);
+void		process_normal_char(char *input, t_expand_data *data);
 
 // expand_utils.c
 int			extract_var_name(char *input, int start, char **var_name);
@@ -161,6 +180,20 @@ void		free_commands(t_cmd *commands);
 
 // parse_commands.c
 t_cmd		*parse_tokens_to_commands(t_token *tokens);
+int			is_empty_command(t_cmd *cmd);
+
+// parse_handlers.c
+void		handle_word_token(t_cmd *current_cmd, t_token *token);
+void		handle_pipe_token(t_cmd **commands, t_cmd **current_cmd);
+int			validate_initial_syntax(t_token *tokens);
+
+// parse_validation.c
+int			validate_pipe_token(t_token *tokens, t_cmd *commands,
+				t_cmd *current_cmd);
+int			validate_redirection_token(t_token *tokens, t_cmd *commands,
+				t_cmd *current_cmd);
+int			validate_double_pipe(t_token *tokens, t_cmd *commands,
+				t_cmd *current_cmd);
 
 // parse_utils.c
 void		handle_redirect_out(t_cmd *current_cmd, t_token **token);
@@ -208,7 +241,7 @@ void		remove_quotes_from_commands(t_cmd *commands);
 /*                             SIGNAL HANDLING                               */
 /* ************************************************************************** */
 
-// À implémenter plus tard
+// À implémenter par l'exécuteur
 // void		setup_signals(void);
 // void		handle_sigint(int sig);
 // void		handle_sigquit(int sig);

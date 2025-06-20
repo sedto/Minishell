@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/20 03:04:08 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/20 12:35:31 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,9 +32,13 @@ SRCS		= $(SRCDIR)/utils/clean_input.c \
 		  $(SRCDIR)/lexer/tokenize_operators.c \
 		  $(SRCDIR)/expander/expand_variables.c \
 		  $(SRCDIR)/expander/expand_strings.c \
+		  $(SRCDIR)/expander/expand_process.c \
+		  $(SRCDIR)/expander/expand_quotes.c \
 		  $(SRCDIR)/expander/expand_utils.c \
 		  $(SRCDIR)/parser/create_commande.c \
 		  $(SRCDIR)/parser/parse_commands.c \
+		  $(SRCDIR)/parser/parse_handlers.c \
+		  $(SRCDIR)/parser/parse_validation.c \
 		  $(SRCDIR)/parser/parse_utils.c \
 		  $(SRCDIR)/parser/quote_remover.c
 
@@ -103,9 +107,14 @@ test-units: $(LIBFT)
 	@echo "$(GREEN)Running unit tests...$(RESET)"
 	@./test_units
 
-# All tests
-test-all: $(NAME)
-	@echo "$(GREEN)Running all tests...$(RESET)"
-	@chmod +x test_all.sh && ./test_all.sh
+# Quick test (requires compiled minishell)
+test-quick:
+	@echo "$(GREEN)Running quick tests...$(RESET)"
+	@chmod +x test_express.sh && ./test_express.sh
 
-.PHONY: all clean fclean re test test-units test-all
+# Complete test suite (requires compiled minishell)
+test-complete:
+	@echo "$(GREEN)Running complete tests...$(RESET)"
+	@chmod +x test_simple_adapted.sh && ./test_simple_adapted.sh
+
+.PHONY: all clean fclean re test test-units test-quick test-complete

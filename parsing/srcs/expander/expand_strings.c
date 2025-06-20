@@ -6,89 +6,70 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:03 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:17:44 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Traite une variable $VAR et la remplace par sa valeur */
-static int	process_variable(char *input, t_expand_data *data)
+/* Traite un caractère selon son type (quote, variable, normal) */
+static void	process_character(char *input, t_expand_data *data,
+				int *in_single_quote, int *in_double_quote)
 {
-	char	*var_name;
-	char	*var_value;
-	int		var_len;
-
-	(*data->i)++;
-	var_len = extract_var_name(input, *data->i, &var_name);
-	if (var_len > 0)
-	{
-		var_value = expand_single_var(var_name, data->envp, data->exit_code);
-		copy_var_value_to_result(data->result, data->j, var_value);
-		*data->i += var_len;
-		free(var_value);
-		free(var_name);
-		return (1);
-	}
-	data->result[(*data->j)++] = '$';
-	if (var_len == 0 && input[*data->i])
-		data->result[(*data->j)++] = input[(*data->i)++];
-	free(var_name);
-	return (0);
+	if (input[*data->i] == '\'' && !(*in_double_quote))
+		handle_single_quote_char(input, data, in_single_quote,
+			*in_double_quote);
+	else if (input[*data->i] == '"' && !(*in_single_quote))
+		handle_double_quote_char(input, data, in_double_quote,
+			*in_single_quote);
+	else if (should_process_variable(input, *data->i) && !(*in_single_quote))
+		handle_variable_processing(input, data);
+	else
+		process_normal_char(input, data);
 }
 
-/* Détermine si un caractère '$' doit déclencher l'expansion de variable */
-static int	should_process_variable(char *input, int i)
+/* Initialise les variables pour l'expansion */
+static void	init_expansion_vars(int *i, int *j, int *in_single_quote,
+				int *in_double_quote)
 {
-	return (input[i] == '$' && input[i + 1] && input[i + 1] != ' ');
+	*i = 0;
+	*j = 0;
+	*in_single_quote = 0;
+	*in_double_quote = 0;
 }
 
-/* Copie un caractère normal (non-variable) vers le résultat */
-static void	process_normal_char(char *input, t_expand_data *data)
-{
-	data->result[(*data->j)++] = input[(*data->i)++];
-}
-
-/* Fonction principale d'expansion : remplace toutes les variables dans une chaîne */
+/* Fonction principale d'expansion avec tracking correct des quotes */
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
 	int				i;
 	int				j;
+	int				in_single_quote;
+	int				in_double_quote;
+	int				prev_i;
 
-	data.result = allocate_result_buffer(input);
+	init_expand_data(&data, input, envp, exit_code);
 	if (!data.result)
 		return (NULL);
-	i = 0;
-	j = 0;
-	data.envp = envp;
-	data.exit_code = exit_code;
+	init_expansion_vars(&i, &j, &in_single_quote, &in_double_quote);
 	data.i = &i;
 	data.j = &j;
-	while (input[i])
+	while (input[*data.i])
 	{
-		if (should_process_variable(input, i))
-			process_variable(input, &data);
-		else
-			process_normal_char(input, &data);
+		if (!data.result)
+		{
+			return (NULL);
+		}
+		prev_i = *data.i;
+		process_character(input, &data, &in_single_quote, &in_double_quote);
+		if (*data.i == prev_i)
+		{
+			(*data.i)++;
+		}
 	}
-	data.result[j] = '\0';
+	if (!data.result)
+		return (NULL);
+	data.result[*data.j] = '\0';
 	return (data.result);
 }
 
-/* Compte le nombre de variables ($) dans une chaîne */
-int	count_variables_in_string(char *str)
-{
-	int	count;
-	int	i;
-
-	count = 0;
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$' && str[i + 1] && str[i + 1] != ' ')
-			count++;
-		i++;
-	}
-	return (count);
-}

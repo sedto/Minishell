@@ -6,14 +6,14 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:07 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 16:41:33 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Variable globale pour les signaux (obligatoire selon le sujet) */
-volatile sig_atomic_t	g_signal = 0;
+/* Variable globale pour les signaux (à implémenter par l'exécuteur) */
+// volatile sig_atomic_t	g_signal = 0;
 
 /* Parse et nettoie les tokens d'une entrée utilisateur */
 static t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
@@ -57,10 +57,10 @@ static int	process_input(char *input, char **envp, int exit_code)
 	return (0);
 }
 
-/* Gère une ligne d'entrée utilisateur et détermine si le shell doit continuer */
+/* Gère une ligne d'entrée utilisateur et détermine la continuation */
 static int	handle_input_line(char *input, char **envp, int *exit_code)
 {
-	if (ft_strncmp(input, "exit", 4) == 0)
+	if (ft_strncmp(input, "exit", 4) == 0 && (input[4] == '\0' || input[4] == ' ' || input[4] == '\t'))
 		return (1);
 	else if (*input)
 		*exit_code = process_input(input, envp, *exit_code);
@@ -73,9 +73,16 @@ int	main(int argc, char **argv, char **envp)
 	char	*input;
 	int		exit_code;
 
-	(void)argc;
-	(void)argv;
 	exit_code = 0;
+	
+	/* Gestion de l'option -c "command" */
+	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
+	{
+		exit_code = process_input(argv[2], envp, exit_code);
+		return (exit_code);
+	}
+	
+	/* Mode interactif normal */
 	while (1)
 	{
 		input = readline("minishell$ ");
