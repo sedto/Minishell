@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 06:45:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:05:46 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:19 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	validate_consecutive_redirections(t_token *tokens, t_cmd *commands)
 {
 	char	*error_token;
 
-	(void)tokens; /* Paramètre utilisé pour l'accès next->next seulement */
+	(void)tokens;
 	if (tokens->next->next->type == TOKEN_REDIR_OUT)
 		error_token = "'>'";
 	else if (tokens->next->next->type == TOKEN_REDIR_IN)
@@ -58,7 +58,7 @@ int	validate_redirection_token(t_token *tokens, t_cmd *commands,
 {
 	char	*error_token;
 
-	(void)current_cmd; /* Utilisé dans l'interface mais pas ici */
+	(void)current_cmd;
 	if (!tokens->next || tokens->next->type == TOKEN_EOF)
 	{
 		if (tokens->type == TOKEN_REDIR_OUT)
@@ -86,7 +86,7 @@ int	validate_redirection_token(t_token *tokens, t_cmd *commands,
 int	validate_double_pipe(t_token *tokens, t_cmd *commands,
 			t_cmd *current_cmd)
 {
-	(void)current_cmd; /* Utilisé dans l'interface mais pas ici */
+	(void)current_cmd;
 	if (tokens->type == TOKEN_PIPE && tokens->next
 		&& tokens->next->type == TOKEN_PIPE)
 		return (syntax_error_cleanup(commands, "'|'"));

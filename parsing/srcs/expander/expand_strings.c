@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:17:44 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:25 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,38 +38,38 @@ static void	init_expansion_vars(int *i, int *j, int *in_single_quote,
 	*in_double_quote = 0;
 }
 
+/* Traite la boucle principale d'expansion */
+static void	process_expansion_loop(char *input, t_expand_data *data,
+				int *in_single_quote, int *in_double_quote)
+{
+	int	prev_i;
+
+	while (input[*data->i])
+	{
+		if (!data->result)
+			return ;
+		prev_i = *data->i;
+		process_character(input, data, in_single_quote, in_double_quote);
+		if (*data->i == prev_i)
+			(*data->i)++;
+	}
+}
+
 /* Fonction principale d'expansion avec tracking correct des quotes */
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
-	int				i;
-	int				j;
-	int				in_single_quote;
-	int				in_double_quote;
-	int				prev_i;
+	int				vars[4];
 
 	init_expand_data(&data, input, envp, exit_code);
 	if (!data.result)
 		return (NULL);
-	init_expansion_vars(&i, &j, &in_single_quote, &in_double_quote);
-	data.i = &i;
-	data.j = &j;
-	while (input[*data.i])
-	{
-		if (!data.result)
-		{
-			return (NULL);
-		}
-		prev_i = *data.i;
-		process_character(input, &data, &in_single_quote, &in_double_quote);
-		if (*data.i == prev_i)
-		{
-			(*data.i)++;
-		}
-	}
+	init_expansion_vars(&vars[0], &vars[1], &vars[2], &vars[3]);
+	data.i = &vars[0];
+	data.j = &vars[1];
+	process_expansion_loop(input, &data, &vars[2], &vars[3]);
 	if (!data.result)
 		return (NULL);
 	data.result[*data.j] = '\0';
 	return (data.result);
 }
-

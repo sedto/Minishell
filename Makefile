@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/20 12:35:31 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/20 21:29:20 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ LIBFT_DIR	= libft
 SRCS		= $(SRCDIR)/utils/clean_input.c \
 		  $(SRCDIR)/utils/clean_input_utils.c \
 		  $(SRCDIR)/utils/main.c \
+		  $(SRCDIR)/utils/main_utils.c \
 		  $(SRCDIR)/lexer/create_tokens.c \
 		  $(SRCDIR)/lexer/tokenize.c \
 		  $(SRCDIR)/lexer/tokenize_utils.c \
@@ -35,6 +36,7 @@ SRCS		= $(SRCDIR)/utils/clean_input.c \
 		  $(SRCDIR)/expander/expand_process.c \
 		  $(SRCDIR)/expander/expand_quotes.c \
 		  $(SRCDIR)/expander/expand_utils.c \
+		  $(SRCDIR)/expander/expand_buffer.c \
 		  $(SRCDIR)/parser/create_commande.c \
 		  $(SRCDIR)/parser/parse_commands.c \
 		  $(SRCDIR)/parser/parse_handlers.c \

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:15:22 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:24 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,40 +30,34 @@ t_cmd	*new_command(void)
 }
 
 /* Ajoute un argument au tableau d'arguments d'une commande */
-void add_argument(t_cmd *cmd, char *arg)
+void	add_argument(t_cmd *cmd, char *arg)
 {
-    char **new_args;
-    int   count;
-    int   i;
+	char	**new_args;
+	int		count;
+	int		i;
 
-    if (!cmd || !arg)
-        return;
-    count = count_args(cmd->args);
-    new_args = malloc((count + 2) * sizeof(char *));
-    if (!new_args)
-        return;
-    
-    // Copier les anciens arguments
-    i = 0;
-    while (i < count)
-    {
-        new_args[i] = cmd->args[i];
-        i++;
-    }
-    
-    // Ajouter le nouvel argument
-    new_args[count] = ft_strdup(arg);
-    if (!new_args[count])  // Vérifier ft_strdup
-    {
-        free(new_args);
-        return;
-    }
-    new_args[count + 1] = NULL;
-    
-    free(cmd->args);  // Libérer l'ancien tableau
-    cmd->args = new_args;
+	if (!cmd || !arg)
+		return ;
+	count = count_args(cmd->args);
+	new_args = malloc((count + 2) * sizeof(char *));
+	if (!new_args)
+		return ;
+	i = 0;
+	while (i < count)
+	{
+		new_args[i] = cmd->args[i];
+		i++;
+	}
+	new_args[count] = ft_strdup(arg);
+	if (!new_args[count])
+	{
+		free(new_args);
+		return ;
+	}
+	new_args[count + 1] = NULL;
+	free(cmd->args);
+	cmd->args = new_args;
 }
-
 
 /* Compte le nombre d'arguments dans un tableau */
 int	count_args(char **args)

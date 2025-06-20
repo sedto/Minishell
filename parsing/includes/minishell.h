@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:05:45 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:19 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,12 @@ typedef struct s_clean_data
 
 // clean_input.c
 char		*clean_input(char *str);
+
+// main_utils.c
+int			is_exit_command(char *input);
+t_cmd		*parse_tokens(char *input, char **envp, int exit_code);
+int			process_input(char *input, char **envp, int exit_code);
+int			handle_input_line(char *input, char **envp, int *exit_code);
 
 // clean_input_utils.c
 void		add_space_if_needed(char *cleaned, int *j, char next_char,

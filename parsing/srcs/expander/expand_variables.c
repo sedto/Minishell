@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:56:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:14:07 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:32:33 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,31 +93,30 @@ int	should_expand_token(char *value)
 	return (1);
 }
 
-t_token *expand_all_tokens(t_token *tokens, char **envp, int exit_code)
+/* Expanse toutes les variables dans une liste de tokens */
+t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)
 {
-    t_token *current;
-    char    *expanded_value;
-    char    *old_value;  // Garder une référence temporaire
+	t_token	*current;
+	char	*expanded_value;
+	char	*old_value;
 
-    current = tokens;
-    while (current)
-    {
-        if (current->type == TOKEN_WORD && current->value)
-        {
-            if (should_expand_token(current->value))
-            {
-                old_value = current->value;  // Sauvegarder l'ancien
-                expanded_value = expand_string(current->value, envp, exit_code);
-                if (expanded_value)
-                {
-                    current->value = expanded_value;
-                    free(old_value);  // Libérer APRÈS réassignation
-                }
-                // Si échec : garder l'ancienne valeur
-            }
-        }
-        current = current->next;
-    }
-    return (tokens);
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TOKEN_WORD && current->value)
+		{
+			if (should_expand_token(current->value))
+			{
+				old_value = current->value;
+				expanded_value = expand_string(current->value, envp, exit_code);
+				if (expanded_value)
+				{
+					current->value = expanded_value;
+					free(old_value);
+				}
+			}
+		}
+		current = current->next;
+	}
+	return (tokens);
 }
-

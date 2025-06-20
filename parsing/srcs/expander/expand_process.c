@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 12:30:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 17:05:43 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:20 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ int	handle_valid_variable(char *var_name, t_expand_data *data, int var_len)
 	if (!var_value)
 	{
 		free(var_name);
-		/* En cas d'échec d'allocation, on met juste le $ */
 		data->result[(*data->j)++] = '$';
 		return (0);
 	}
@@ -33,16 +32,12 @@ int	handle_valid_variable(char *var_name, t_expand_data *data, int var_len)
 }
 
 /* Traite le cas où aucune variable valide n'est trouvée */
-void	handle_invalid_variable(t_expand_data *data, char *var_name, int var_len)
+void	handle_invalid_variable(t_expand_data *data, char *var_name,
+			int var_len)
 {
 	data->result[(*data->j)++] = '$';
-	/* Note: dans process_variable, on a déjà fait (*data->i)++ pour passer le $
-	   Donc *data->i pointe sur le caractère APRÈS le $ */
 	if (var_len > 0)
-	{
-		/* Variable invalide de longueur var_len, on avance de cette longueur */
 		*data->i += var_len;
-	}
 	if (var_name)
 		free(var_name);
 }
