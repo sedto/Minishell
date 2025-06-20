@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/11 16:51:17 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/20 03:04:08 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,11 +23,20 @@ INCDIR		= parsing/includes
 LIBFT_DIR	= libft
 
 # Source files
-SRCS		= $(SRCDIR)/utils/clean_input.c $(SRCDIR)/utils/clean_input_utils.c $(SRCDIR)/utils/main.c \
-		  $(SRCDIR)/lexer/create_tokens.c $(SRCDIR)/lexer/tokenize.c \
-		  $(SRCDIR)/lexer/tokenize_utils.c $(SRCDIR)/lexer/tokenize_operators.c \
-		  $(SRCDIR)/expander/expand_variables.c $(SRCDIR)/expander/expand_strings.c \
-		  $(SRCDIR)/expander/expand_utils.c
+SRCS		= $(SRCDIR)/utils/clean_input.c \
+		  $(SRCDIR)/utils/clean_input_utils.c \
+		  $(SRCDIR)/utils/main.c \
+		  $(SRCDIR)/lexer/create_tokens.c \
+		  $(SRCDIR)/lexer/tokenize.c \
+		  $(SRCDIR)/lexer/tokenize_utils.c \
+		  $(SRCDIR)/lexer/tokenize_operators.c \
+		  $(SRCDIR)/expander/expand_variables.c \
+		  $(SRCDIR)/expander/expand_strings.c \
+		  $(SRCDIR)/expander/expand_utils.c \
+		  $(SRCDIR)/parser/create_commande.c \
+		  $(SRCDIR)/parser/parse_commands.c \
+		  $(SRCDIR)/parser/parse_utils.c \
+		  $(SRCDIR)/parser/quote_remover.c
 
 # Object files
 OBJS		= $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
@@ -85,18 +94,18 @@ test: $(NAME)
 	@echo "$(GREEN)Running $(NAME)...$(RESET)"
 	@./$(NAME)
 
-# Run automated tests
-test-auto: $(NAME)
-	@echo "$(GREEN)Running automated tests...$(RESET)"
-	@./test.sh
+# Unit tests
+test-units: $(LIBFT)
+	@echo "$(YELLOW)Building unit tests...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) test_units.c \
+		$(filter-out $(OBJDIR)/utils/main.o, $(OBJS)) \
+		$(LIBS) -o test_units
+	@echo "$(GREEN)Running unit tests...$(RESET)"
+	@./test_units
 
-# Debug rule
-debug: CFLAGS += -fsanitize=address
-debug: $(NAME)
+# All tests
+test-all: $(NAME)
+	@echo "$(GREEN)Running all tests...$(RESET)"
+	@chmod +x test_all.sh && ./test_all.sh
 
-# Install readline if needed (Ubuntu/Debian)
-install-readline:
-	@echo "$(YELLOW)Installing readline library...$(RESET)"
-	sudo apt-get update && sudo apt-get install libreadline-dev
-
-.PHONY: all clean fclean re test test-auto debug install-readline
+.PHONY: all clean fclean re test test-units test-all

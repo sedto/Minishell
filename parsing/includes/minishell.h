@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/11 16:51:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 03:03:16 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,26 @@ int			count_variables_in_string(char *str);
 int			extract_var_name(char *input, int start, char **var_name);
 void		copy_var_value_to_result(char *result, int *j, char *var_value);
 char		*allocate_result_buffer(char *input);
+
+// create_commande.c
+t_cmd		*new_command(void);
+void		add_argument(t_cmd *cmd, char *arg);
+int			count_args(char **args);
+void		add_command_to_list(t_cmd **commands, t_cmd *new_cmd);
+void		free_commands(t_cmd *commands);
+
+// parse_commands.c
+t_cmd		*parse_tokens_to_commands(t_token *tokens);
+
+// parse_utils.c
+void		handle_redirect_out(t_cmd *current_cmd, t_token **token);
+void		handle_redirect_append(t_cmd *current_cmd, t_token **token);
+void		handle_redirect_in(t_cmd *current_cmd, t_token **token);
+void		handle_heredoc(t_cmd *current_cmd, t_token **token);
+void		process_redirection_token(t_cmd *current_cmd, t_token **tokens);
+
+// quote_remover.c
+void		remove_quotes_from_commands(t_cmd *commands);
 
 /* ************************************************************************** */
 /*                            BUILTIN FUNCTIONS                              */
