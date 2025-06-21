@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/20 21:29:20 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/21 01:08:52 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,11 @@ SRCS		= $(SRCDIR)/utils/clean_input.c \
 		  $(SRCDIR)/parser/parse_handlers.c \
 		  $(SRCDIR)/parser/parse_validation.c \
 		  $(SRCDIR)/parser/parse_utils.c \
-		  $(SRCDIR)/parser/quote_remover.c
+		  $(SRCDIR)/parser/quote_remover.c \
+		  signals.c \
+		  env_utils.c \
+		  builtins.c \
+		  utils.c
 
 # Object files
 OBJS		= $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)

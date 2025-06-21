@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:19 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/21 01:55:12 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <string.h>
-# include "libft.h"
+# include "../../libft/libft.h"
 
 /* ************************************************************************** */
 /*                                CONSTANTS                                   */
@@ -212,44 +212,73 @@ void		process_redirection_token(t_cmd *current_cmd, t_token **tokens);
 void		remove_quotes_from_commands(t_cmd *commands);
 
 /* ************************************************************************** */
-/*                            BUILTIN FUNCTIONS                              */
+/*                             BUILTIN FUNCTIONS                              */
 /* ************************************************************************** */
 
-// À implémenter plus tard
-// int			builtin_echo(char **args);
-// int			builtin_cd(char **args, t_env *env);
-// int			builtin_pwd(void);
-// int			builtin_export(char **args, t_env **env);
-// int			builtin_unset(char **args, t_env **env);
-// int			builtin_env(t_env *env);
-// int			builtin_exit(char **args);
+// builtins.c
+int			builtin_echo(char **args);
+int			builtin_pwd(void);
+int			builtin_env(t_env *env);
+int			builtin_export(char **args, t_env **env);
+int			builtin_unset(char **args, t_env **env);
+int			builtin_exit(char **args);
+int			is_builtin(char *cmd);
+int			execute_builtin(char **args, t_env **env);
 
 /* ************************************************************************** */
-/*                           EXECUTION FUNCTIONS                             */
+/*                          ENVIRONMENT FUNCTIONS                            */
 /* ************************************************************************** */
 
-// À implémenter plus tard
-// int			execute_command(t_cmd *cmd, t_env *env);
-// int			execute_pipeline(t_cmd *cmds, t_env *env);
-
-/* ************************************************************************** */
-/*                             UTILS FUNCTIONS                               */
-/* ************************************************************************** */
-
-// À implémenter plus tard
-// t_env		*init_env(char **envp);
-// void		free_env(t_env *env);
-// void		free_tokens(t_token *tokens);
-// void		free_commands(t_cmd *commands);
-// char		*get_env_value(t_env *env, char *key);
+// env_utils.c
+t_env		*create_env_node(char *key, char *value);
+t_env		*init_env(char **envp);
+char		*get_env_value(t_env *env, char *key);
+void		set_env_value(t_env **env, char *key, char *value);
+void		unset_env_value(t_env **env, char *key);
+void		free_env(t_env *env);
 
 /* ************************************************************************** */
 /*                             SIGNAL HANDLING                               */
 /* ************************************************************************** */
 
+// signals.c
+void		setup_signals(void);
+void		reset_signals(void);
+void		handle_sigint(int sig);
+void		handle_sigquit(int sig);
+
+/* ************************************************************************** */
+/*                           UTILITY FUNCTIONS                               */
+/* ************************************************************************** */
+
+// utils.c
+char		**env_to_array(t_env *env);
+void		free_array(char **array);
+char		*find_executable(char *cmd, t_env *env);
+int			count_commands(t_cmd *commands);
+void		command_not_found(char *cmd);
+
+/* ************************************************************************** */
+/*                           EXECUTION FUNCTIONS                             */
+/* ************************************************************************** */
+
 // À implémenter par l'exécuteur
-// void		setup_signals(void);
-// void		handle_sigint(int sig);
-// void		handle_sigquit(int sig);
+// int			execute_command(t_cmd *cmd, t_env *env);
+// int			execute_pipeline(t_cmd *cmds, t_env *env);
+// int			builtin_cd(char **args, t_env **env);
+
+/* ************************************************************************** */
+/*                             UTILS FUNCTIONS                               */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                             SIGNAL HANDLING                               */
+/* ************************************************************************** */
+
+// signals.c
+void		setup_signals(void);
+void		reset_signals(void);
+void		handle_sigint(int sig);
+void		handle_sigquit(int sig);
 
 #endif
