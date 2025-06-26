@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 12:30:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:20 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/21 02:42:12 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@ int	handle_valid_variable(char *var_name, t_expand_data *data, int var_len)
 	if (!var_value)
 	{
 		free(var_name);
-		data->result[(*data->j)++] = '$';
+		if (*data->j < data->result_size - 1)
+			data->result[(*data->j)++] = '$';
 		return (0);
 	}
-	copy_var_value_to_result(data->result, data->j, var_value);
+	copy_var_value_to_result(data->result, data->j, var_value,
+		data->result_size);
 	*data->i += var_len;
 	free(var_value);
 	free(var_name);
@@ -35,7 +37,8 @@ int	handle_valid_variable(char *var_name, t_expand_data *data, int var_len)
 void	handle_invalid_variable(t_expand_data *data, char *var_name,
 			int var_len)
 {
-	data->result[(*data->j)++] = '$';
+	if (*data->j < data->result_size - 1)
+		data->result[(*data->j)++] = '$';
 	if (var_len > 0)
 		*data->i += var_len;
 	if (var_name)

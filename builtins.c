@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 01:55:12 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:15:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,12 @@ int	builtin_env(t_env *env)
 int	builtin_export(char **args, t_env **env)
 {
 	char	*equal_pos;
+	char	*key;
+	char	*value;
 	int		i;
 
 	if (!args[1])
 	{
-		/* Afficher toutes les variables exportées */
 		t_env *current = *env;
 		while (current)
 		{
@@ -87,22 +88,33 @@ int	builtin_export(char **args, t_env **env)
 		}
 		return (0);
 	}
+	
 	i = 1;
 	while (args[i])
 	{
 		equal_pos = ft_strchr(args[i], '=');
 		if (equal_pos)
 		{
-			*equal_pos = '\0';
-			set_env_value(env, args[i], equal_pos + 1);
-			*equal_pos = '=';
+			/* Extraire key et value sans modifier args[i] */
+			key = ft_substr(args[i], 0, equal_pos - args[i]);
+			value = ft_strdup(equal_pos + 1);
+			if (key && value)
+			{
+				set_env_value(env, key, value);
+				free(key);
+				free(value);
+			}
+			else
+			{
+				free(key);
+				free(value);
+			}
 		}
 		else
 		{
-			/* Variable sans valeur - juste l'exporter si elle existe */
-			char *value = get_env_value(*env, args[i]);
-			if (value)
-				set_env_value(env, args[i], value);
+			char *existing = get_env_value(*env, args[i]);
+			if (existing)
+				set_env_value(env, args[i], existing);
 			else
 				set_env_value(env, args[i], "");
 		}

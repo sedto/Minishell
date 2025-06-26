@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:24 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:55 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,29 +33,36 @@ t_cmd	*new_command(void)
 void	add_argument(t_cmd *cmd, char *arg)
 {
 	char	**new_args;
+	char	*arg_copy;
 	int		count;
 	int		i;
 
 	if (!cmd || !arg)
 		return ;
 	count = count_args(cmd->args);
+	
+	/* Dupliquer l'argument d'abord */
+	arg_copy = ft_strdup(arg);
+	if (!arg_copy)
+		return ;
+		
 	new_args = malloc((count + 2) * sizeof(char *));
 	if (!new_args)
+	{
+		free(arg_copy);
 		return ;
+	}
+	
 	i = 0;
 	while (i < count)
 	{
 		new_args[i] = cmd->args[i];
 		i++;
 	}
-	new_args[count] = ft_strdup(arg);
-	if (!new_args[count])
-	{
-		free(new_args);
-		return ;
-	}
+	new_args[count] = arg_copy;
 	new_args[count + 1] = NULL;
-	free(cmd->args);
+	
+	free(cmd->args);  /* Free seulement le tableau, pas les strings */
 	cmd->args = new_args;
 }
 
@@ -114,5 +121,81 @@ void	free_commands(t_cmd *commands)
 			free(current->output_file);
 		free(current);
 		current = next;
+	}
+}
+
+/* Gère les redirections de sortie (>) */
+void	handle_redirect_out(t_cmd *current_cmd, t_token **token)
+{
+	char	*new_file;
+
+	*token = (*token)->next;
+	if (*token && (*token)->type == TOKEN_WORD)
+	{
+		new_file = ft_strdup((*token)->value);
+		if (new_file)
+		{
+			if (current_cmd->output_file)
+				free(current_cmd->output_file);  /* Libérer l'ancien fichier */
+			current_cmd->output_file = new_file;  /* Dernière redirection l'emporte */
+			current_cmd->append = 0;
+		}
+	}
+}
+
+/* Gère les redirections en append (>>) */
+void	handle_redirect_append(t_cmd *current_cmd, t_token **token)
+{
+	char	*new_file;
+
+	*token = (*token)->next;
+	if (*token && (*token)->type == TOKEN_WORD)
+	{
+		new_file = ft_strdup((*token)->value);
+		if (new_file)
+		{
+			if (current_cmd->output_file)
+				free(current_cmd->output_file);  /* Libérer l'ancien fichier */
+			current_cmd->output_file = new_file;  /* Dernière redirection l'emporte */
+			current_cmd->append = 1;
+		}
+	}
+}
+
+/* Gère les redirections d'entrée (<) */
+void	handle_redirect_in(t_cmd *current_cmd, t_token **token)
+{
+	char	*new_file;
+
+	*token = (*token)->next;
+	if (*token && (*token)->type == TOKEN_WORD)
+	{
+		new_file = ft_strdup((*token)->value);
+		if (new_file)
+		{
+			if (current_cmd->input_file)
+				free(current_cmd->input_file);  /* Libérer l'ancien fichier */
+			current_cmd->input_file = new_file;  /* Dernière redirection l'emporte */
+			current_cmd->heredoc = 0;
+		}
+	}
+}
+
+/* Gère les heredoc (<<) */
+void	handle_heredoc(t_cmd *current_cmd, t_token **token)
+{
+	char	*new_file;
+
+	*token = (*token)->next;
+	if (*token && (*token)->type == TOKEN_WORD)
+	{
+		new_file = ft_strdup((*token)->value);
+		if (new_file)
+		{
+			if (current_cmd->input_file)
+				free(current_cmd->input_file);  /* Libérer l'ancien fichier */
+			current_cmd->input_file = new_file;  /* Dernière redirection l'emporte */
+			current_cmd->heredoc = 1;
+		}
 	}
 }

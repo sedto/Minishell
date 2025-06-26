@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:23 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/21 02:42:13 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,18 +52,19 @@ char	*allocate_result_buffer(char *input)
 }
 
 /* Copie la valeur d'une variable dans le buffer résultat avec protection */
-void	copy_var_value_to_result(char *result, int *j, char *var_value)
+void	copy_var_value_to_result(char *result, int *j, char *var_value,
+			int max_size)
 {
 	int	i;
 	int	value_len;
-	int	max_buffer;
 
-	if (!var_value || !result || !j)
+	if (!var_value || !result || !j || max_size <= 0)
+		return ;
+	if (*j >= max_size - 1)
 		return ;
 	value_len = ft_strlen(var_value);
-	max_buffer = 1048576;
 	i = 0;
-	while (var_value[i] && i < value_len && (*j + i) < max_buffer - 1)
+	while (var_value[i] && i < value_len && (*j + i) < max_size - 1)
 	{
 		result[*j + i] = var_value[i];
 		i++;

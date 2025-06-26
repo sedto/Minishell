@@ -6,17 +6,18 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 06:45:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:19 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:54 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Libère les ressources et affiche l'erreur de syntaxe */
+/* Affiche l'erreur de syntaxe SANS libérer les ressources */
 static int	syntax_error_cleanup(t_cmd *commands, char *error_msg)
 {
+	(void)commands;
 	printf("minishell: syntax error near unexpected token %s\n", error_msg);
-	free_commands(commands);
+	g_syntax_error = 1;  /* Marquer erreur de syntaxe */
 	return (0);
 }
 
@@ -31,25 +32,6 @@ int	validate_pipe_token(t_token *tokens, t_cmd *commands,
 	if (is_empty_command(current_cmd))
 		return (syntax_error_cleanup(commands, "'|'"));
 	return (1);
-}
-
-/* Valide les redirections consécutives */
-static int	validate_consecutive_redirections(t_token *tokens, t_cmd *commands)
-{
-	char	*error_token;
-
-	(void)tokens;
-	if (tokens->next->next->type == TOKEN_REDIR_OUT)
-		error_token = "'>'";
-	else if (tokens->next->next->type == TOKEN_REDIR_IN)
-		error_token = "'<'";
-	else if (tokens->next->next->type == TOKEN_APPEND)
-		error_token = "'>>'";
-	else if (tokens->next->next->type == TOKEN_HEREDOC)
-		error_token = "'<<'";
-	else
-		error_token = "'newline'";
-	return (syntax_error_cleanup(commands, error_token));
 }
 
 /* Valide un token de redirection */
@@ -75,10 +57,10 @@ int	validate_redirection_token(t_token *tokens, t_cmd *commands,
 	}
 	if (tokens->next->type != TOKEN_WORD)
 		return (syntax_error_cleanup(commands, "'newline'"));
-	if (tokens->next && tokens->next->next
-		&& tokens->next->next->type >= TOKEN_REDIR_IN
-		&& tokens->next->next->type <= TOKEN_HEREDOC)
-		return (validate_consecutive_redirections(tokens, commands));
+	
+	/* PERMETTRE les redirections multiples - ne plus valider comme erreur */
+	/* Bash autorise "cmd > file1 > file2", la dernière redirection l'emporte */
+	
 	return (1);
 }
 

@@ -1,0 +1,569 @@
+[0;36m================================================================================================[0m
+[0;36m🧪 SUITE DE TESTS COMPLÈTE MINISHELL[0m
+[0;36m================================================================================================[0m
+[0;36mDébut des tests: mar 24 jun 2025 01:24:51 CEST[0m
+
+[0;36m🔧 Vérification de la compilation...[0m
+[0;32m✅ Minishell prêt pour les tests[0m
+
+
+[0;34m📋 === NIVEAU 1: TESTS SIMPLES ===[0m
+
+[1;33m🧪 Test 1: SIMPLE_ECHO[0m
+   📝 Description: Echo simple
+   💻 Commande: echo hello
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 2: SIMPLE_PWD[0m
+   📝 Description: Affichage du répertoire courant
+   💻 Commande: pwd
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 3: SIMPLE_ENV[0m
+   📝 Description: Affichage des variables d'environnement
+   💻 Commande: env | head -3
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 4: SIMPLE_EXIT[0m
+   📝 Description: Sortie du shell
+   💻 Commande: exit
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 5: SIMPLE_EXPORT[0m
+   📝 Description: Export d'une variable
+   💻 Commande: export TEST_VAR=value
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 6: ECHO_NO_NEWLINE[0m
+   📝 Description: Echo sans retour à la ligne
+   💻 Commande: echo -n hello
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 7: ECHO_MULTIPLE_ARGS[0m
+   📝 Description: Echo avec plusieurs arguments
+   💻 Commande: echo hello world test
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 8: ECHO_EMPTY[0m
+   📝 Description: Echo sans arguments
+   💻 Commande: echo
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 9: VAR_USER[0m
+   📝 Description: Affichage de la variable USER
+   💻 Commande: echo $USER
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 10: VAR_HOME[0m
+   📝 Description: Affichage de la variable HOME
+   💻 Commande: echo $HOME
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 11: VAR_PWD[0m
+   📝 Description: Affichage de la variable PWD
+   💻 Commande: echo $PWD
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 12: VAR_EXIT_CODE[0m
+   📝 Description: Affichage du code de sortie
+   💻 Commande: echo $?
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 13: SINGLE_QUOTES[0m
+   📝 Description: Quotes simples basiques
+   💻 Commande: echo 'hello world'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 14: DOUBLE_QUOTES[0m
+   📝 Description: Quotes doubles basiques
+   💻 Commande: echo "hello world"
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 15: SINGLE_QUOTES_VAR[0m
+   📝 Description: Variables dans quotes simples
+   💻 Commande: echo '$USER ne sera pas expansé'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 16: DOUBLE_QUOTES_VAR[0m
+   📝 Description: Variables dans quotes doubles
+   💻 Commande: echo "Utilisateur: $USER"
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 17: REDIR_OUT[0m
+   📝 Description: Redirection de sortie simple
+   💻 Commande: echo hello > test_file.txt
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 18: REDIR_IN[0m
+   📝 Description: Redirection d'entrée simple
+   💻 Commande: cat < /dev/null
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 19: PIPE_SIMPLE[0m
+   📝 Description: Pipe simple
+   💻 Commande: echo hello | cat
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 20: PIPE_ECHO_WC[0m
+   📝 Description: Pipe avec comptage de mots
+   💻 Commande: echo hello world | wc -w
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 21: EMPTY_COMMAND[0m
+   📝 Description: Commande vide
+   💻 Commande: 
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 22: SPACES_ONLY[0m
+   📝 Description: Espaces seulement
+   💻 Commande:    
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 23: MULTIPLE_SPACES[0m
+   📝 Description: Espaces multiples
+   💻 Commande: echo    hello    world
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 24: CD_HOME[0m
+   📝 Description: CD vers HOME
+   💻 Commande: cd
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 25: UNSET_VAR[0m
+   📝 Description: Unset d'une variable inexistante
+   💻 Commande: unset NONEXISTENT_VAR
+   ✅ [0;32mPASSED[0m
+
+
+[0;34m📋 === NIVEAU 2: TESTS INTERMÉDIAIRES ===[0m
+
+[1;33m🧪 Test 26: VAR_CONCAT[0m
+   📝 Description: Concaténation de variables
+   💻 Commande: echo $USER$HOME
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 27: VAR_IN_QUOTES[0m
+   📝 Description: Variables multiples dans quotes
+   💻 Commande: echo "User: $USER, Home: $HOME"
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 28: VAR_UNKNOWN[0m
+   📝 Description: Variable inexistante
+   💻 Commande: echo $UNKNOWN_VAR_12345
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 29: VAR_MIXED_QUOTES[0m
+   📝 Description: Quotes mixtes avec variables
+   💻 Commande: echo 'Single: '$USER' Double: "$HOME"'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 30: PIPE_TRIPLE[0m
+   📝 Description: Pipeline triple
+   💻 Commande: echo hello world | cat | cat | wc -w
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 31: PIPE_COMPLEX[0m
+   📝 Description: Pipeline avec grep
+   💻 Commande: ls -la | grep test | wc -l
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 32: PIPE_WITH_VAR[0m
+   📝 Description: Pipeline avec variable
+   💻 Commande: echo $USER | cat | cat
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 33: REDIR_APPEND[0m
+   📝 Description: Redirection en append
+   💻 Commande: echo hello >> test_append.txt
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 34: REDIR_MULTIPLE[0m
+   📝 Description: Redirections multiples
+   💻 Commande: echo test > file1.txt > file2.txt
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 0, obtenu: 1
+
+[1;33m🧪 Test 35: REDIR_WITH_VAR[0m
+   📝 Description: Redirection avec variable
+   💻 Commande: echo $USER > user_file.txt
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 36: HEREDOC_SIMPLE[0m
+   📝 Description: Heredoc simple
+   💻 Commande: cat << EOF
+hello
+world
+EOF
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 37: PIPE_REDIR[0m
+   📝 Description: Pipe avec redirection
+   💻 Commande: echo hello | cat > output.txt
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 38: REDIR_PIPE[0m
+   📝 Description: Redirection puis pipe
+   💻 Commande: echo hello > temp.txt; cat temp.txt | wc -l
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 39: NESTED_QUOTES[0m
+   📝 Description: Quotes imbriquées
+   💻 Commande: echo "'hello world'"
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 40: ESCAPED_QUOTES[0m
+   📝 Description: Quotes échappées
+   💻 Commande: echo "He said: \"Hello\""
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 41: EMPTY_QUOTES[0m
+   📝 Description: Quotes vides
+   💻 Commande: echo '' "" ''
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 42: EXPORT_COMPLEX[0m
+   📝 Description: Export de variables complexes
+   💻 Commande: export VAR1=value1 VAR2="value with spaces"
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 43: EXPORT_THEN_USE[0m
+   📝 Description: Export puis utilisation
+   💻 Commande: export TEST_VAR=success; echo $TEST_VAR
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 44: UNSET_THEN_USE[0m
+   📝 Description: Unset puis utilisation
+   💻 Commande: unset HOME; echo $HOME
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 45: CD_PARENT[0m
+   📝 Description: CD vers répertoire parent
+   💻 Commande: cd ..
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 46: CD_ROOT[0m
+   📝 Description: CD vers racine
+   💻 Commande: cd /
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 47: CD_WITH_VAR[0m
+   📝 Description: CD avec variable
+   💻 Commande: cd $HOME
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 48: PATH_ABSOLUTE[0m
+   📝 Description: Commande avec chemin absolu
+   💻 Commande: /bin/echo hello
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 49: PATH_RELATIVE[0m
+   📝 Description: Exécution avec chemin relatif
+   💻 Commande: ./minishell -c 'echo nested'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 50: COMMAND_NOT_FOUND[0m
+   📝 Description: Commande inexistante
+   💻 Commande: nonexistent_command_12345
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 127, obtenu: 0
+
+[1;33m🧪 Test 51: FILE_NOT_FOUND[0m
+   📝 Description: Fichier inexistant
+   💻 Commande: cat nonexistent_file_12345.txt
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 1, obtenu: 0
+
+[1;33m🧪 Test 52: ARGS_WITH_SPACES[0m
+   📝 Description: Arguments avec espaces
+   💻 Commande: echo "arg with spaces" 'another arg'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 53: TOUCH_SPACES[0m
+   📝 Description: Création de fichier avec espaces
+   💻 Commande: touch "file with spaces.txt"
+   ✅ [0;32mPASSED[0m
+
+
+[0;34m📋 === NIVEAU 3: TESTS AVANCÉS ===[0m
+
+[1;33m🧪 Test 54: QUOTES_EDGE_1[0m
+   📝 Description: Alternance quotes complexe
+   💻 Commande: echo 'don'"'"'t'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 55: QUOTES_EDGE_2[0m
+   📝 Description: Variables dans quotes alternées
+   💻 Commande: echo "'$USER'" '"$HOME"'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 56: QUOTES_UNCLOSED[0m
+   📝 Description: Quote non fermée
+   💻 Commande: echo 'unclosed quote
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 2, obtenu: 0
+
+[1;33m🧪 Test 57: QUOTES_COMPLEX_VAR[0m
+   📝 Description: Variables complexes avec quotes
+   💻 Commande: echo '$USER'"$HOME"'$PWD'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 58: PIPE_MASSIVE[0m
+   📝 Description: Pipeline massif
+   💻 Commande: echo hello | cat | cat | cat | cat | cat | wc -l
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 59: PIPE_WITH_BUILTINS[0m
+   📝 Description: Pipeline avec builtins
+   💻 Commande: export TEST=value | echo $TEST
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 60: PIPE_MIXED[0m
+   📝 Description: Pipeline avec commandes mixtes
+   💻 Commande: echo hello | cat | pwd | head -1
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 61: REDIR_CHAIN[0m
+   📝 Description: Chaîne de redirections
+   💻 Commande: echo hello > file1; cat file1 > file2; cat file2
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 62: REDIR_HEREDOC_VAR[0m
+   📝 Description: Heredoc avec variables
+   💻 Commande: cat << EOF
+$USER
+$HOME
+EOF
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 63: REDIR_APPEND_MULTIPLE[0m
+   📝 Description: Append multiple
+   💻 Commande: echo line1 >> multi.txt; echo line2 >> multi.txt
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 64: VAR_EDGE_DOLLAR[0m
+   📝 Description: Dollar seul
+   💻 Commande: echo $
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 65: VAR_EDGE_EMPTY_NAME[0m
+   📝 Description: Variable avec nom vide
+   💻 Commande: echo $''
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 66: VAR_EDGE_NUMBERS[0m
+   📝 Description: Variables numériques
+   💻 Commande: echo $0 $1 $2 $9
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 67: VAR_EDGE_SPECIAL[0m
+   📝 Description: Variables spéciales
+   💻 Commande: echo $$ $? $0
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 68: LONG_COMMAND[0m
+   📝 Description: Commande très longue
+   💻 Commande: echo $(printf 'a%.0s' {1..100})
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 69: COMPLEX_EXPORT[0m
+   📝 Description: Export multiple puis utilisation
+   💻 Commande: export VAR1=val1 VAR2=val2 VAR3=val3; echo $VAR1$VAR2$VAR3
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 70: STRESS_ARGS[0m
+   📝 Description: Arguments nombreux
+   💻 Commande: echo arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16 arg17 arg18 arg19 arg20 arg21 arg22 arg23 arg24 arg25 arg26 arg27 arg28 arg29 arg30 arg31 arg32 arg33 arg34 arg35 arg36 arg37 arg38 arg39 arg40 arg41 arg42 arg43 arg44 arg45 arg46 arg47 arg48 arg49 arg50 
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 71: STRESS_PIPES[0m
+   📝 Description: Pipeline extrême
+   💻 Commande: echo hello | cat | cat | cat | cat | cat | cat | cat | cat | cat | cat
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 72: SYNTAX_PIPE_START[0m
+   📝 Description: Pipe en début (erreur syntaxe)
+   💻 Commande: | echo hello
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 2, obtenu: 1
+
+[1;33m🧪 Test 73: SYNTAX_PIPE_END[0m
+   📝 Description: Pipe en fin (erreur syntaxe)
+   💻 Commande: echo hello |
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 2, obtenu: 1
+
+[1;33m🧪 Test 74: SYNTAX_REDIR_EMPTY[0m
+   📝 Description: Redirection sans fichier
+   💻 Commande: echo hello >
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 2, obtenu: 1
+
+[1;33m🧪 Test 75: SYNTAX_DOUBLE_PIPE[0m
+   📝 Description: Double pipe (non supporté)
+   💻 Commande: echo hello || echo world
+   ❌ [0;31mFAILED[0m
+   📤 Code de sortie attendu: 2, obtenu: 1
+
+[1;33m🧪 Test 76: SPECIAL_CHARS[0m
+   📝 Description: Caractères spéciaux
+   💻 Commande: echo 'Special: @#$%^&*()[]{}'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 77: UNICODE_CHARS[0m
+   📝 Description: Caractères unicode
+   💻 Commande: echo 'Héllo Wörld ñiño'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 78: MEMORY_LARGE_VAR[0m
+   📝 Description: Variable très large
+   💻 Commande: export LARGE_VAR=$(printf 'x%.0s' {1..1000}); echo ${#LARGE_VAR}
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 79: MEMORY_DEEP_QUOTES[0m
+   📝 Description: Quotes très imbriquées
+   💻 Commande: echo "'"'"'"'"'"'"'"'"'"'"'"'
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 80: BACKGROUND_SIM[0m
+   📝 Description: Simulation processus background
+   💻 Commande: echo start; sleep 0.1; echo end
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 81: LIMIT_LONG_PATH[0m
+   📝 Description: Chemin très long
+   💻 Commande: echo /very/long/path/that/does/not/exist/but/should/not/crash/the/shell/even/if/very/long
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 82: LIMIT_MANY_VARS[0m
+   📝 Description: Variables nombreuses
+   💻 Commande: echo $VAR1$VAR2$VAR3$VAR4$VAR5$VAR6$VAR7$VAR8$VAR9$VAR10
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 83: RECOVERY_AFTER_ERROR[0m
+   📝 Description: Récupération après erreur
+   💻 Commande: nonexistent; echo recovery
+   ✅ [0;32mPASSED[0m
+
+[1;33m🧪 Test 84: RECOVERY_SYNTAX_ERROR[0m
+   📝 Description: Récupération après erreur syntaxe
+   💻 Commande: echo hello |; echo recovery
+   ✅ [0;32mPASSED[0m
+
+[0;36m================================================================================================[0m
+[0;36m📊 RAPPORT DE TESTS COMPLET[0m
+[0;36m================================================================================================[0m
+[0;36m📈 STATISTIQUES GÉNÉRALES[0m
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🧪 Total des tests       : [1;33m84[0m
+   ✅ Tests réussis         : [0;32m76[0m
+   ❌ Tests échoués         : [0;31m8[0m
+   📊 Taux de réussite      : [0;36m90%[0m
+
+[0;32m✅ TESTS RÉUSSIS (76)[0m
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ✅ SIMPLE_ECHO: echo hello
+   ✅ SIMPLE_PWD: pwd
+   ✅ SIMPLE_ENV: env | head -3
+   ✅ SIMPLE_EXIT: exit
+   ✅ SIMPLE_EXPORT: export TEST_VAR=value
+   ✅ ECHO_NO_NEWLINE: echo -n hello
+   ✅ ECHO_MULTIPLE_ARGS: echo hello world test
+   ✅ ECHO_EMPTY: echo
+   ✅ VAR_USER: echo $USER
+   ✅ VAR_HOME: echo $HOME
+   ✅ VAR_PWD: echo $PWD
+   ✅ VAR_EXIT_CODE: echo $?
+   ✅ SINGLE_QUOTES: echo 'hello world'
+   ✅ DOUBLE_QUOTES: echo "hello world"
+   ✅ SINGLE_QUOTES_VAR: echo '$USER ne sera pas expansé'
+   ✅ DOUBLE_QUOTES_VAR: echo "Utilisateur: $USER"
+   ✅ REDIR_OUT: echo hello > test_file.txt
+   ✅ REDIR_IN: cat < /dev/null
+   ✅ PIPE_SIMPLE: echo hello | cat
+   ✅ PIPE_ECHO_WC: echo hello world | wc -w
+   ✅ EMPTY_COMMAND: 
+   ✅ SPACES_ONLY:    
+   ✅ MULTIPLE_SPACES: echo    hello    world
+   ✅ CD_HOME: cd
+   ✅ UNSET_VAR: unset NONEXISTENT_VAR
+   ✅ VAR_CONCAT: echo $USER$HOME
+   ✅ VAR_IN_QUOTES: echo "User: $USER, Home: $HOME"
+   ✅ VAR_UNKNOWN: echo $UNKNOWN_VAR_12345
+   ✅ VAR_MIXED_QUOTES: echo 'Single: '$USER' Double: "$HOME"'
+   ✅ PIPE_TRIPLE: echo hello world | cat | cat | wc -w
+   ✅ PIPE_COMPLEX: ls -la | grep test | wc -l
+   ✅ PIPE_WITH_VAR: echo $USER | cat | cat
+   ✅ REDIR_APPEND: echo hello >> test_append.txt
+   ✅ REDIR_WITH_VAR: echo $USER > user_file.txt
+   ✅ HEREDOC_SIMPLE: cat << EOF
+hello
+world
+EOF
+   ✅ PIPE_REDIR: echo hello | cat > output.txt
+   ✅ REDIR_PIPE: echo hello > temp.txt; cat temp.txt | wc -l
+   ✅ NESTED_QUOTES: echo "'hello world'"
+   ✅ ESCAPED_QUOTES: echo "He said: \"Hello\""
+   ✅ EMPTY_QUOTES: echo '' "" ''
+   ✅ EXPORT_COMPLEX: export VAR1=value1 VAR2="value with spaces"
+   ✅ EXPORT_THEN_USE: export TEST_VAR=success; echo $TEST_VAR
+   ✅ UNSET_THEN_USE: unset HOME; echo $HOME
+   ✅ CD_PARENT: cd ..
+   ✅ CD_ROOT: cd /
+   ✅ CD_WITH_VAR: cd $HOME
+   ✅ PATH_ABSOLUTE: /bin/echo hello
+   ✅ PATH_RELATIVE: ./minishell -c 'echo nested'
+   ✅ ARGS_WITH_SPACES: echo "arg with spaces" 'another arg'
+   ✅ TOUCH_SPACES: touch "file with spaces.txt"
+   ✅ QUOTES_EDGE_1: echo 'don'"'"'t'
+   ✅ QUOTES_EDGE_2: echo "'$USER'" '"$HOME"'
+   ✅ QUOTES_COMPLEX_VAR: echo '$USER'"$HOME"'$PWD'
+   ✅ PIPE_MASSIVE: echo hello | cat | cat | cat | cat | cat | wc -l
+   ✅ PIPE_WITH_BUILTINS: export TEST=value | echo $TEST
+   ✅ PIPE_MIXED: echo hello | cat | pwd | head -1
+   ✅ REDIR_CHAIN: echo hello > file1; cat file1 > file2; cat file2
+   ✅ REDIR_HEREDOC_VAR: cat << EOF
+$USER
+$HOME
+EOF
+   ✅ REDIR_APPEND_MULTIPLE: echo line1 >> multi.txt; echo line2 >> multi.txt
+   ✅ VAR_EDGE_DOLLAR: echo $
+   ✅ VAR_EDGE_EMPTY_NAME: echo $''
+   ✅ VAR_EDGE_NUMBERS: echo $0 $1 $2 $9
+   ✅ VAR_EDGE_SPECIAL: echo $$ $? $0
+   ✅ LONG_COMMAND: echo $(printf 'a%.0s' {1..100})
+   ✅ COMPLEX_EXPORT: export VAR1=val1 VAR2=val2 VAR3=val3; echo $VAR1$VAR2$VAR3
+   ✅ STRESS_ARGS: echo arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 arg10 arg11 arg12 arg13 arg14 arg15 arg16 arg17 arg18 arg19 arg20 arg21 arg22 arg23 arg24 arg25 arg26 arg27 arg28 arg29 arg30 arg31 arg32 arg33 arg34 arg35 arg36 arg37 arg38 arg39 arg40 arg41 arg42 arg43 arg44 arg45 arg46 arg47 arg48 arg49 arg50 
+   ✅ STRESS_PIPES: echo hello | cat | cat | cat | cat | cat | cat | cat | cat | cat | cat
+   ✅ SPECIAL_CHARS: echo 'Special: @#$%^&*()[]{}'
+   ✅ UNICODE_CHARS: echo 'Héllo Wörld ñiño'
+   ✅ MEMORY_LARGE_VAR: export LARGE_VAR=$(printf 'x%.0s' {1..1000}); echo ${#LARGE_VAR}
+   ✅ MEMORY_DEEP_QUOTES: echo "'"'"'"'"'"'"'"'"'"'"'"'
+   ✅ BACKGROUND_SIM: echo start; sleep 0.1; echo end
+   ✅ LIMIT_LONG_PATH: echo /very/long/path/that/does/not/exist/but/should/not/crash/the/shell/even/if/very/long
+   ✅ LIMIT_MANY_VARS: echo $VAR1$VAR2$VAR3$VAR4$VAR5$VAR6$VAR7$VAR8$VAR9$VAR10
+   ✅ RECOVERY_AFTER_ERROR: nonexistent; echo recovery
+   ✅ RECOVERY_SYNTAX_ERROR: echo hello |; echo recovery
+
+[0;31m❌ TESTS ÉCHOUÉS (8)[0m
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ❌ REDIR_MULTIPLE: echo test > file1.txt > file2.txt (exit: 1)
+   ❌ COMMAND_NOT_FOUND: nonexistent_command_12345 (exit: 0)
+   ❌ FILE_NOT_FOUND: cat nonexistent_file_12345.txt (exit: 0)
+   ❌ QUOTES_UNCLOSED: echo 'unclosed quote (exit: 0)
+   ❌ SYNTAX_PIPE_START: | echo hello (exit: 1)
+   ❌ SYNTAX_PIPE_END: echo hello | (exit: 1)
+   ❌ SYNTAX_REDIR_EMPTY: echo hello > (exit: 1)
+   ❌ SYNTAX_DOUBLE_PIPE: echo hello || echo world (exit: 1)
+
+[0;36m🎯 ÉVALUATION GLOBALE[0m
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🥇 [1;33mTRÈS BON[0m - Minishell robuste avec quelques améliorations possibles
+
+[0;35m📝 RECOMMANDATIONS[0m
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   🔧 Concentrez-vous sur les tests échoués en priorité
+   🧪 Réexécutez les tests après chaque correction
+   📚 Consultez la documentation pour les cas edge
+
+[0;36m📄 Rapport sauvegardé dans: test_report.txt[0m
+[0;36mFin des tests: mar 24 jun 2025 01:24:51 CEST[0m

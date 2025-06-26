@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 01:55:12 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:53 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,12 @@
 # include <errno.h>
 # include <string.h>
 # include "../../libft/libft.h"
+
+/* ************************************************************************** */
+/*                                 GLOBALS                                    */
+/* ************************************************************************** */
+
+extern int	g_syntax_error;  /* Flag pour erreurs de syntaxe */
 
 /* ************************************************************************** */
 /*                                CONSTANTS                                   */
@@ -174,7 +180,8 @@ void		process_normal_char(char *input, t_expand_data *data);
 
 // expand_utils.c
 int			extract_var_name(char *input, int start, char **var_name);
-void		copy_var_value_to_result(char *result, int *j, char *var_value);
+void		copy_var_value_to_result(char *result, int *j, char *var_value,
+				int max_size);
 char		*allocate_result_buffer(char *input);
 
 // create_commande.c
@@ -246,6 +253,7 @@ void		setup_signals(void);
 void		reset_signals(void);
 void		handle_sigint(int sig);
 void		handle_sigquit(int sig);
+void		process_signals(void);
 
 /* ************************************************************************** */
 /*                           UTILITY FUNCTIONS                               */

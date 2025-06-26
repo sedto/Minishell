@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 01:08:43 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/21 03:24:25 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_env	*init_env(char **envp)
 	t_env	*env;
 	t_env	*current;
 	char	*equal_pos;
+	char	*key;
 	int		i;
 
 	env = NULL;
@@ -49,13 +50,16 @@ t_env	*init_env(char **envp)
 		equal_pos = ft_strchr(envp[i], '=');
 		if (equal_pos)
 		{
-			*equal_pos = '\0';
-			current = create_env_node(envp[i], equal_pos + 1);
-			*equal_pos = '=';
-			if (current)
+			key = ft_substr(envp[i], 0, equal_pos - envp[i]);
+			if (key)
 			{
-				current->next = env;
-				env = current;
+				current = create_env_node(key, equal_pos + 1);
+				free(key);
+				if (current)
+				{
+					current->next = env;
+					env = current;
+				}
 			}
 		}
 		i++;

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 01:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:07 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:54 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,15 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens)
 	(*i)++;
 	while (input[*i] && input[*i] != quote_type)
 		(*i)++;
+	
+	/* Vérifier si la quote de fermeture a été trouvée */
+	if (!input[*i])
+	{
+		printf("minishell: unexpected EOF while looking for matching `%c'\n", quote_type);
+		g_syntax_error = 1;  /* Marquer erreur de syntaxe */
+		return (0);
+	}
+	
 	if (input[*i] == quote_type)
 		(*i)++;
 	content = ft_substr(input, start, *i - start);

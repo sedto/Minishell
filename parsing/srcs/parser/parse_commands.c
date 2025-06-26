@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:24 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/21 03:24:28 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,23 @@ int	is_empty_command(t_cmd *cmd)
 	if (cmd->input_file || cmd->output_file)
 		return (0);
 	return (1);
+}
+
+/* Vérifie si une commande est dans la liste chainée */
+static int	is_command_in_list(t_cmd *commands, t_cmd *target)
+{
+	t_cmd	*current;
+
+	if (!commands || !target)
+		return (0);
+	current = commands;
+	while (current)
+	{
+		if (current == target)
+			return (1);
+		current = current->next;
+	}
+	return (0);
 }
 
 /* Valide la syntaxe des tokens */
@@ -75,7 +92,8 @@ t_cmd	*parse_tokens_to_commands(t_token *tokens)
 		if (!validate_token_syntax(tokens, commands, current_cmd))
 		{
 			free_commands(commands);
-			free_commands(current_cmd);
+			if (current_cmd && !is_command_in_list(commands, current_cmd))
+				free_commands(current_cmd);
 			return (NULL);
 		}
 		if (!process_token(&tokens, &commands, &current_cmd))

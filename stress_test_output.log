@@ -1,0 +1,7 @@
+[0;36m🔥 DÉBUT DES TESTS DE STRESS - mar 24 jun 2025 01:24:51 CEST[0m
+
+[0;34m📋 === TESTS DE STRESS MÉMOIRE ===[0m
+
+[1;33m🔥 Stress Test 1: HUGE_VARIABLE[0m
+   📝 Description: Variable de 10k caractères
+./test_stress_extreme.sh: line 35:    💻 Commande: ${command:0:100}${#command -gt 100 && echo '...'}: bad substitution

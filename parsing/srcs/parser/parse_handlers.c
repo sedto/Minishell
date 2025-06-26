@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 12:45:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 12:16:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:53 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,13 @@ int	validate_initial_syntax(t_token *tokens)
 	if (!tokens)
 	{
 		printf("minishell: syntax error\n");
+		g_syntax_error = 1;  /* Marquer erreur de syntaxe */
 		return (0);
 	}
 	if (tokens->type == TOKEN_PIPE)
 	{
 		printf("minishell: syntax error near unexpected token '|'\n");
+		g_syntax_error = 1;  /* Marquer erreur de syntaxe */
 		return (0);
 	}
 	return (1);

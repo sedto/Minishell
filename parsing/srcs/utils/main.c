@@ -6,13 +6,14 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:18 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:55 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
+int						g_syntax_error = 0;  /* Flag pour erreurs de syntaxe */
 
 /* Boucle principale du mode interactif */
 static int	run_interactive_mode(char **envp)
@@ -21,20 +22,43 @@ static int	run_interactive_mode(char **envp)
 	int		exit_code;
 
 	exit_code = 0;
+	setup_signals();
+	
 	while (1)
 	{
+		/* Reset g_signal et rl_done avant readline */
+		g_signal = 0;
+		rl_done = 0;
+		
 		input = readline("minishell$ ");
+		
+		/* Si readline retourne NULL */
 		if (!input)
 		{
+			/* Si c'est à cause de Ctrl+C */
+			if (g_signal == SIGINT)
+			{
+				continue;     /* Retour à la boucle = nouveau prompt */
+			}
+			/* Sinon c'est EOF (Ctrl+D) */
 			printf("exit\n");
-			break ;
+			break;
 		}
+		
+		/* Si ligne vide après Ctrl+C */
+		if (g_signal == SIGINT)
+		{
+			free(input);
+			continue;
+		}
+		
 		if (*input)
 			add_history(input);
+			
 		if (handle_input_line(input, envp, &exit_code))
 		{
 			free(input);
-			break ;
+			break;
 		}
 		free(input);
 	}

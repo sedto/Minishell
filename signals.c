@@ -6,10 +6,19 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 01:08:53 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:10:15 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/* signals.c - VERSION CORRIGÉE */
+
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
+
+#include <unistd.h>
+#include <signal.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 #include "../libft/libft.h"
 #include "parsing/includes/minishell.h"
 
@@ -20,25 +29,38 @@ void	handle_sigint(int sig)
 {
 	(void)sig;
 	g_signal = SIGINT;
-	printf("\n");
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	write(STDOUT_FILENO, "\n", 1);
+	/* Force readline à terminer et retourner NULL */
+	rl_done = 1;
 }
 
-/* Gestionnaire pour SIGQUIT (Ctrl+\) - ne fait rien en mode interactif */
+/* Gestionnaire pour SIGQUIT (Ctrl+\) */
 void	handle_sigquit(int sig)
 {
 	(void)sig;
-	g_signal = SIGQUIT;
 	/* En mode interactif, on ignore Ctrl+\ */
 }
 
 /* Configure les gestionnaires de signaux */
 void	setup_signals(void)
 {
-	signal(SIGINT, handle_sigint);   /* Ctrl+C */
-	signal(SIGQUIT, handle_sigquit); /* Ctrl+\ */
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+
+	/* IMPORTANT: Désactiver la gestion des signaux par readline */
+	rl_catch_signals = 0;
+	
+	/* Configurer SIGINT */
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = 0;  /* Pas de SA_RESTART pour interrompre read() */
+	sa_int.sa_handler = handle_sigint;
+	sigaction(SIGINT, &sa_int, NULL);
+	
+	/* Configurer SIGQUIT (ignorer en mode interactif) */
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sa_quit.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
 /* Restaure les signaux par défaut (pour les processus enfants) */
@@ -46,4 +68,10 @@ void	reset_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
+}
+
+/* Plus besoin de process_signals() */
+void	process_signals(void)
+{
+	g_signal = 0;  /* Reset le signal */
 }

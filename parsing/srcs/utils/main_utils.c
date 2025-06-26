@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 16:41:33 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 21:29:24 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/24 01:41:57 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
 	t_token	*tokens;
 	t_cmd	*commands;
 
+	g_syntax_error = 0;  /* Reset du flag erreur syntaxe */
 	cleaned_input = clean_input(input);
 	if (!cleaned_input)
 		return (NULL);
@@ -56,7 +57,11 @@ int	process_input(char *input, char **envp, int exit_code)
 
 	commands = parse_tokens(input, envp, exit_code);
 	if (!commands)
-		return (1);
+	{
+		if (g_syntax_error)
+			return (2);  /* Code 2 pour erreurs de syntaxe */
+		return (1);      /* Code 1 pour autres erreurs */
+	}
 	free_commands(commands);
 	return (0);
 }
