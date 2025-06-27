@@ -6,14 +6,14 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 01:23:03 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 01:46:17 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
-int						g_syntax_error = 0;  /* Flag pour erreurs de syntaxe */
+int						g_syntax_error = 0;
 
 /* Boucle principale du mode interactif */
 static int	run_interactive_mode(char **envp)
@@ -26,26 +26,17 @@ static int	run_interactive_mode(char **envp)
 	
 	while (1)
 	{
-		/* Reset g_signal et rl_done avant readline */
 		g_signal = 0;
-		rl_done = 0;
-		
 		input = readline("minishell$ ");
 		
-		/* Si readline retourne NULL */
+		/* Ctrl+D (EOF) */
 		if (!input)
 		{
-			/* Si c'est à cause de Ctrl+C */
-			if (g_signal == SIGINT)
-			{
-				continue;     /* Retour à la boucle = nouveau prompt */
-			}
-			/* Sinon c'est EOF (Ctrl+D) */
 			printf("exit\n");
 			break;
 		}
 		
-		/* Si ligne vide après Ctrl+C */
+		/* Ctrl+C - affichage déjà géré par handle_sigint */
 		if (g_signal == SIGINT)
 		{
 			free(input);

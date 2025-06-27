@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 01:14:45 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 01:46:18 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@
 /*                                 GLOBALS                                    */
 /* ************************************************************************** */
 
-extern int	g_syntax_error;  /* Flag pour erreurs de syntaxe */
+extern volatile sig_atomic_t	g_signal;      /* Signal reçu */
+extern int						g_syntax_error;  /* Flag pour erreurs de syntaxe */
 
 /* ************************************************************************** */
 /*                                CONSTANTS                                   */
