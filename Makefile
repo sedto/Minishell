@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/21 01:08:52 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/28 00:11:37 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,39 +17,54 @@
 NAME		= minishell
 
 # Directories
-SRCDIR		= parsing/srcs
-OBJDIR		= parsing/objs
+SRCDIR		= src
+PARSING_SRCDIR	= parsing/srcs
+EXEC_SRCDIR	= execution/srcs
+OBJDIR		= objs
+PARSING_OBJDIR	= parsing/objs
+EXEC_OBJDIR	= execution/objs
 INCDIR		= parsing/includes
 LIBFT_DIR	= libft
 
-# Source files
-SRCS		= $(SRCDIR)/utils/clean_input.c \
-		  $(SRCDIR)/utils/clean_input_utils.c \
-		  $(SRCDIR)/utils/main.c \
-		  $(SRCDIR)/utils/main_utils.c \
-		  $(SRCDIR)/lexer/create_tokens.c \
-		  $(SRCDIR)/lexer/tokenize.c \
-		  $(SRCDIR)/lexer/tokenize_utils.c \
-		  $(SRCDIR)/lexer/tokenize_operators.c \
-		  $(SRCDIR)/expander/expand_variables.c \
-		  $(SRCDIR)/expander/expand_strings.c \
-		  $(SRCDIR)/expander/expand_process.c \
-		  $(SRCDIR)/expander/expand_quotes.c \
-		  $(SRCDIR)/expander/expand_utils.c \
-		  $(SRCDIR)/expander/expand_buffer.c \
-		  $(SRCDIR)/parser/create_commande.c \
-		  $(SRCDIR)/parser/parse_commands.c \
-		  $(SRCDIR)/parser/parse_handlers.c \
-		  $(SRCDIR)/parser/parse_validation.c \
-		  $(SRCDIR)/parser/parse_utils.c \
-		  $(SRCDIR)/parser/quote_remover.c \
-		  signals.c \
-		  env_utils.c \
-		  builtins.c \
-		  utils.c
+# Source files - Main
+MAIN_SRCS	= $(SRCDIR)/main.c \
+		  $(SRCDIR)/main_utils.c
+
+# Source files - Parsing
+PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
+		  $(PARSING_SRCDIR)/utils/clean_input_utils.c \
+		  $(PARSING_SRCDIR)/lexer/create_tokens.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize_utils.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize_operators.c \
+		  $(PARSING_SRCDIR)/expander/expand_variables.c \
+		  $(PARSING_SRCDIR)/expander/expand_strings.c \
+		  $(PARSING_SRCDIR)/expander/expand_process.c \
+		  $(PARSING_SRCDIR)/expander/expand_quotes.c \
+		  $(PARSING_SRCDIR)/expander/expand_utils.c \
+		  $(PARSING_SRCDIR)/expander/expand_buffer.c \
+		  $(PARSING_SRCDIR)/parser/create_commande.c \
+		  $(PARSING_SRCDIR)/parser/parse_commands.c \
+		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
+		  $(PARSING_SRCDIR)/parser/parse_validation.c \
+		  $(PARSING_SRCDIR)/parser/parse_utils.c \
+		  $(PARSING_SRCDIR)/parser/quote_remover.c
+
+# Source files - Execution
+EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
+		  $(EXEC_SRCDIR)/env/env_utils.c \
+		  $(EXEC_SRCDIR)/builtins/builtins.c \
+		  $(EXEC_SRCDIR)/utils/utils.c
+		  # $(EXEC_SRCDIR)/executor/executor.c  # Décommentez pour compiler avec executor
+
+# All source files
+SRCS		= $(MAIN_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)
 
 # Object files
-OBJS		= $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+MAIN_OBJS	= $(MAIN_SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+PARSING_OBJS	= $(PARSING_SRCS:$(PARSING_SRCDIR)/%.c=$(PARSING_OBJDIR)/%.o)
+EXEC_OBJS	= $(EXEC_SRCS:$(EXEC_SRCDIR)/%.c=$(EXEC_OBJDIR)/%.o)
+OBJS		= $(MAIN_OBJS) $(PARSING_OBJS) $(EXEC_OBJS)
 
 # Compiler and flags
 CC			= gcc
@@ -82,6 +97,16 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo "$(YELLOW)Compiling $<...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(PARSING_OBJDIR)/%.o: $(PARSING_SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(EXEC_OBJDIR)/%.o: $(EXEC_SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 $(LIBFT):
 	@echo "$(YELLOW)Building libft...$(RESET)"
 	@$(MAKE) -C $(LIBFT_DIR)
@@ -89,7 +114,7 @@ $(LIBFT):
 
 clean:
 	@echo "$(RED)Cleaning object files...$(RESET)"
-	@rm -rf $(OBJDIR)
+	@rm -rf $(OBJDIR) $(PARSING_OBJDIR) $(EXEC_OBJDIR)
 	@$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
@@ -108,7 +133,7 @@ test: $(NAME)
 test-units: $(LIBFT)
 	@echo "$(YELLOW)Building unit tests...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) test_units.c \
-		$(filter-out $(OBJDIR)/utils/main.o, $(OBJS)) \
+		$(filter-out $(OBJDIR)/main.o, $(OBJS)) \
 		$(LIBS) -o test_units
 	@echo "$(GREEN)Running unit tests...$(RESET)"
 	@./test_units

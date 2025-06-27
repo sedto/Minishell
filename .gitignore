@@ -11,6 +11,7 @@ minishell
 
 # Dossiers de compilation
 parsing/objs/
+execution/objs/
 libft/*.o
 libft/libft.a
 
