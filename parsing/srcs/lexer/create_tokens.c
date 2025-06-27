@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Crée un nouveau token avec son type et sa valeur */
 t_token	*create_token(t_token_type type, char *value)

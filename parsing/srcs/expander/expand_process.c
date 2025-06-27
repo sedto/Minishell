@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Traite une variable valide trouvée */
 int	handle_valid_variable(char *var_name, t_expand_data *data, int var_len)

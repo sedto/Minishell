@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Cherche une variable dans l'environnement et retourne sa valeur */
 char	*find_var_in_env(char *var_name, char **envp)

@@ -6,11 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 16:41:33 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 00:02:31 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 01:23:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parsing/includes/minishell.h"
+#include "../includes/minishell.h"
 
 /* Vérifie si l'input est une commande exit */
 int	is_exit_command(char *input)

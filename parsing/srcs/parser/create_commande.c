@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Crée une nouvelle structure de commande initialisée à zéro */
 t_cmd	*new_command(void)

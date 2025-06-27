@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Initialise la structure de données pour l'expansion */
 void	init_expand_data(t_expand_data *data, char *input, char **envp,

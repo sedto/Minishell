@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Calcule la taille d'expansion pour l'allocation */
 static size_t	calculate_expansion_size(size_t input_len, int var_count)

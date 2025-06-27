@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Vérifie si un espace doit être ajouté avant le caractère actuel */
 static int	should_add_space_before(char *cleaned, int j)

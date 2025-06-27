@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Extrait les variables spéciales ($?, $$) */
 static int	extract_special_var(char *str, int start, char **var_name)

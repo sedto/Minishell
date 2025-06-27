@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Gère les mots simples (commandes, arguments, fichiers) */
 int	handle_word(char *input, int *i, t_token **tokens)

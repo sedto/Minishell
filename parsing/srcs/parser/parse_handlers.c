@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Ajoute un mot/argument à la commande courante */
 void	handle_word_token(t_cmd *current_cmd, t_token *token)

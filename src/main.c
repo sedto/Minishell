@@ -6,11 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 22:24:01 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 00:02:28 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 01:23:03 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../parsing/includes/minishell.h"
+#include "../includes/minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
 int						g_syntax_error = 0;  /* Flag pour erreurs de syntaxe */

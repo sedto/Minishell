@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Initialise les variables pour la suppression des quotes */
 static void	init_quote_removal(int *i, int *j, int *in_single, int *in_double)

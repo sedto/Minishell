@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Gère les opérateurs doubles (<<, >>) */
 static t_token	*handle_double_operator(char *input, int *i)

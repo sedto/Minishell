@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Traite un caractère selon son type (quote, variable, normal) */
 static void	process_character(char *input, t_expand_data *data,

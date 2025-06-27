@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Gère les quotes simples et doubles */
 static int	handle_quotes(t_clean_data *data)

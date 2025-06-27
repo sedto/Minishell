@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Affiche l'erreur de syntaxe SANS libérer les ressources */
 static int	syntax_error_cleanup(t_cmd *commands, char *error_msg)

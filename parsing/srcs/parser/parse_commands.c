@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Vérifie si une commande est vide (pas d'args ni de redirections) */
 int	is_empty_command(t_cmd *cmd)

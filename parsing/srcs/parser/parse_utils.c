@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Traite les tokens de redirection (>, >>, <, <<) */
 void	process_redirection_token(t_cmd *current_cmd, t_token **tokens)
