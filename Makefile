@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/28 00:11:37 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/06/28 11:08:49 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -120,6 +120,7 @@ clean:
 fclean: clean
 	@echo "$(RED)Cleaning $(NAME)...$(RESET)"
 	@rm -f $(NAME)
+	@find . -name '*.o' -delete
 	@$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all

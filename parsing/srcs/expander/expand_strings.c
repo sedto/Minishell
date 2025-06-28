@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/24 01:15:47 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:09:51 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,11 @@ static void	process_expansion_loop(char *input, t_expand_data *data,
 	}
 }
 
-/* Fonction principale d'expansion avec tracking correct des quotes */
+// Fonction principale d'expansion avec tracking correct des quotes
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
-	int				vars[4];
+	int		vars[4];
 
 	if (!input)
 		return (NULL);

@@ -15,10 +15,11 @@ void handle_redirections(t_cmd *cmd)
         close(fd);
     }
 
+    // Correction de la redirection de sortie : utiliser STDOUT_FILENO (1) au lieu de 0
     if (cmd->output_file) // fichier en sortie ?
     {
         if (cmd->append)
-            fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);// 
+            fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else
             fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         
@@ -27,7 +28,7 @@ void handle_redirections(t_cmd *cmd)
             perror("Erreur open output");
             exit(1);
         }
-        dup2(fd, 0); // envois dans ce fichier tout ce que tu veux afficher dans le terminal
+        dup2(fd, 1); // redirige la sortie standard vers le fichier (STDOUT_FILENO)
         close(fd);
     }
 }

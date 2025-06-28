@@ -6,9 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 01:46:18 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:19:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
+# include <termios.h>
+#ifndef ECHOCTL
+# define ECHOCTL 0001000
+#endif
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -17,9 +24,10 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdint.h>
+# include <signal.h>
+# include <termios.h>
 # include <readline/readline.h>
 # include <readline/history.h>
-# include <signal.h>
 # include <sys/wait.h>
 # include <sys/stat.h>
 # include <fcntl.h>
@@ -27,12 +35,19 @@
 # include <string.h>
 # include "../../libft/libft.h"
 
+// Déclaration du contexte AVANT tout prototype ou typedef qui l'utilise
+
+typedef struct s_shell_ctx
+{
+	int syntax_error;
+	// Tu peux ajouter d'autres flags ici plus tard
+} t_shell_ctx;
+
 /* ************************************************************************** */
 /*                                 GLOBALS                                    */
 /* ************************************************************************** */
 
 extern volatile sig_atomic_t	g_signal;      /* Signal reçu */
-extern int						g_syntax_error;  /* Flag pour erreurs de syntaxe */
 
 /* ************************************************************************** */
 /*                                CONSTANTS                                   */
@@ -119,9 +134,9 @@ char		*clean_input(char *str);
 
 // main_utils.c
 int			is_exit_command(char *input);
-t_cmd		*parse_tokens(char *input, char **envp, int exit_code);
-int			process_input(char *input, char **envp, int exit_code);
-int			handle_input_line(char *input, char **envp, int *exit_code);
+t_cmd		*parse_tokens(char *input, char **envp, int exit_code, t_shell_ctx *ctx);
+int			process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx);
+int			handle_input_line(char *input, char **envp, int *exit_code, t_shell_ctx *ctx);
 
 // clean_input_utils.c
 void		add_space_if_needed(char *cleaned, int *j, char next_char,
@@ -135,8 +150,8 @@ void		add_token_to_list(t_token **tokens, t_token *new_token);
 void		free_tokens(t_token *tokens);
 
 // tokenize.c
-t_token		*tokenize(char *input);
-int			handle_word(char *input, int *i, t_token **tokens);
+t_token		*tokenize(char *input, t_shell_ctx *ctx);
+int			handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx);
 
 // tokenize_operators.c
 int			handle_operator(char *input, int *i, t_token **tokens);
@@ -148,7 +163,7 @@ int			is_quote(char c);
 int			is_operator_char(char c);
 void		skip_spaces(char *input, int *i);
 void		add_eof_token(t_token **tokens);
-int			handle_quoted_word(char *input, int *i, t_token **tokens);
+int			handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx);
 
 // expand_variables.c
 char		*find_var_in_env(char *var_name, char **envp);
@@ -193,28 +208,28 @@ void		add_command_to_list(t_cmd **commands, t_cmd *new_cmd);
 void		free_commands(t_cmd *commands);
 
 // parse_commands.c
-t_cmd		*parse_tokens_to_commands(t_token *tokens);
+t_cmd		*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx);
 int			is_empty_command(t_cmd *cmd);
 
 // parse_handlers.c
-void		handle_word_token(t_cmd *current_cmd, t_token *token);
-void		handle_pipe_token(t_cmd **commands, t_cmd **current_cmd);
-int			validate_initial_syntax(t_token *tokens);
+void		handle_word_token(t_cmd *current_cmd, t_token *token, t_shell_ctx *ctx);
+void		handle_pipe_token(t_cmd **commands, t_cmd **current_cmd, t_shell_ctx *ctx);
+int			validate_initial_syntax(t_token *tokens, t_shell_ctx *ctx);
 
 // parse_validation.c
 int			validate_pipe_token(t_token *tokens, t_cmd *commands,
-				t_cmd *current_cmd);
+				t_cmd *current_cmd, t_shell_ctx *ctx);
 int			validate_redirection_token(t_token *tokens, t_cmd *commands,
-				t_cmd *current_cmd);
+				t_cmd *current_cmd, t_shell_ctx *ctx);
 int			validate_double_pipe(t_token *tokens, t_cmd *commands,
-				t_cmd *current_cmd);
+				t_cmd *current_cmd, t_shell_ctx *ctx);
 
 // parse_utils.c
-void		handle_redirect_out(t_cmd *current_cmd, t_token **token);
-void		handle_redirect_append(t_cmd *current_cmd, t_token **token);
-void		handle_redirect_in(t_cmd *current_cmd, t_token **token);
-void		handle_heredoc(t_cmd *current_cmd, t_token **token);
-void		process_redirection_token(t_cmd *current_cmd, t_token **tokens);
+void		handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx);
+void		handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx);
+void		handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx);
+void		handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx);
+void		process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx *ctx);
 
 // quote_remover.c
 void		remove_quotes_from_commands(t_cmd *commands);

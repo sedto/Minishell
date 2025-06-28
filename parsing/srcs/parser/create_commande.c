@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/24 01:41:55 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:19:01 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,9 @@ void	free_commands(t_cmd *commands)
 }
 
 /* Gère les redirections de sortie (>) */
-void	handle_redirect_out(t_cmd *current_cmd, t_token **token)
+void	handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
+	(void)ctx;
 	char	*new_file;
 
 	*token = (*token)->next;
@@ -144,8 +145,9 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token)
 }
 
 /* Gère les redirections en append (>>) */
-void	handle_redirect_append(t_cmd *current_cmd, t_token **token)
+void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
+	(void)ctx;
 	char	*new_file;
 
 	*token = (*token)->next;
@@ -163,8 +165,9 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token)
 }
 
 /* Gère les redirections d'entrée (<) */
-void	handle_redirect_in(t_cmd *current_cmd, t_token **token)
+void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
+	(void)ctx;
 	char	*new_file;
 
 	*token = (*token)->next;
@@ -182,8 +185,9 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token)
 }
 
 /* Gère les heredoc (<<) */
-void	handle_heredoc(t_cmd *current_cmd, t_token **token)
+void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
+	(void)ctx;
 	char	*new_file;
 
 	*token = (*token)->next;

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 01:46:18 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 11:03:58 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,12 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-/* Gestionnaire pour SIGQUIT (Ctrl+\) - ne fait rien en mode interactif */
+/* Gestionnaire pour SIGQUIT (Ctrl+\) - ne fait rien (comportement bash) */
 void	handle_sigquit(int sig)
 {
 	(void)sig;
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 /* Configure les gestionnaires de signaux pour le mode interactif */

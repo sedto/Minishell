@@ -6,15 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 00:09:49 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:06 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:19:00 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
 /* Gère les mots simples (commandes, arguments, fichiers) */
-int	handle_word(char *input, int *i, t_token **tokens)
+int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
+	(void)ctx;
 	int		start;
 	char	*word;
 	t_token	*new_token;
@@ -36,18 +37,20 @@ int	handle_word(char *input, int *i, t_token **tokens)
 }
 
 /* Traite un caractère selon son type (quote, opérateur, ou mot) */
-static int	process_character(char *input, int *i, t_token **tokens)
+static int	process_character(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
 	if (is_quote(input[*i]))
-		return (handle_quoted_word(input, i, tokens));
+		return (handle_quoted_word(input, i, tokens, ctx));
 	else if (is_operator_char(input[*i]))
 		return (handle_operator(input, i, tokens));
 	else
-		return (handle_word(input, i, tokens));
+		return (handle_word(input, i, tokens, ctx));
 }
 
 /* Fonction principale de tokenisation : divise l'entrée en tokens */
-t_token	*tokenize(char *input)
+/* Ajout du contexte pour la gestion des erreurs de quote */
+
+t_token	*tokenize(char *input, t_shell_ctx *ctx)
 {
 	t_token	*tokens;
 	int		i;
@@ -59,11 +62,8 @@ t_token	*tokenize(char *input)
 		skip_spaces(input, &i);
 		if (!input[i])
 			break ;
-		if (!process_character(input, &i, &tokens))
-		{
-			free_tokens(tokens);
-			return (NULL);
-		}
+		if (!process_character(input, &i, &tokens, ctx))
+			break ;
 	}
 	add_eof_token(&tokens);
 	return (tokens);

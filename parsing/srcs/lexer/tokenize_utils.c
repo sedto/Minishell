@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 01:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/24 01:41:54 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:09:49 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	add_eof_token(t_token **tokens)
 }
 
 /* Gère les mots entre guillemets */
-int	handle_quoted_word(char *input, int *i, t_token **tokens)
+int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
 	char	quote_type;
 	int		start;
@@ -54,18 +54,14 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens)
 	(*i)++;
 	while (input[*i] && input[*i] != quote_type)
 		(*i)++;
-	
-	/* Vérifier si la quote de fermeture a été trouvée */
+	// Vérifier si la quote de fermeture a été trouvée
 	if (!input[*i])
 	{
-		printf("minishell: unexpected EOF while looking for matching `%c'\n", quote_type);
-		g_syntax_error = 1;  /* Marquer erreur de syntaxe */
+		ctx->syntax_error = 1;
+		printf("minishell: syntax error: unclosed quote\n");
 		return (0);
 	}
-	
-	if (input[*i] == quote_type)
-		(*i)++;
-	content = ft_substr(input, start, *i - start);
+	content = ft_substr(input, start + 1, *i - start - 1);
 	if (!content)
 		return (0);
 	new_token = create_token(TOKEN_WORD, content);
@@ -73,5 +69,10 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens)
 	if (!new_token)
 		return (0);
 	add_token_to_list(tokens, new_token);
+	(*i)++;
 	return (1);
 }
+
+// Remplacement effectif :
+// Dans chaque fonction qui utilisait g_syntax_error, ajouter t_shell_ctx *ctx en paramètre
+// Et remplacer g_syntax_error = 1; par ctx->syntax_error = 1;

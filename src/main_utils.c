@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 16:41:33 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 01:23:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:19:02 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,24 @@ int	is_exit_command(char *input)
 }
 
 /* Parse une ligne d'input complète en commandes exécutables */
-t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
+t_cmd	*parse_tokens(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 {
 	char	*cleaned_input;
 	t_token	*tokens;
 	t_cmd	*commands;
 
-	g_syntax_error = 0;  /* Reset du flag erreur syntaxe */
+	ctx->syntax_error = 0;  /* Reset du flag erreur syntaxe */
 	cleaned_input = clean_input(input);
 	if (!cleaned_input)
 		return (NULL);
-	tokens = tokenize(cleaned_input);
+	tokens = tokenize(cleaned_input, ctx);
 	if (!tokens)
 	{
 		free(cleaned_input);
 		return (NULL);
 	}
 	tokens = expand_all_tokens(tokens, envp, exit_code);
-	commands = parse_tokens_to_commands(tokens);
+	commands = parse_tokens_to_commands(tokens, ctx);
 	if (!commands)
 	{
 		free_tokens(tokens);
@@ -51,27 +51,32 @@ t_cmd	*parse_tokens(char *input, char **envp, int exit_code)
 }
 
 /* Traite une ligne d'input et retourne le code de sortie */
-int	process_input(char *input, char **envp, int exit_code)
+int	process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 {
 	t_cmd	*commands;
 
-	commands = parse_tokens(input, envp, exit_code);
+	commands = parse_tokens(input, envp, exit_code, ctx);
 	if (!commands)
 	{
-		if (g_syntax_error)
+		if (ctx->syntax_error)
 			return (2);  /* Code 2 pour erreurs de syntaxe */
 		return (1);      /* Code 1 pour autres erreurs */
 	}
+	// --- EXÉCUTION DES COMMANDES ---
+	// Remplacer ce printf par l'appel à votre exécuteur réel
+	if (commands && commands->args && commands->args[0])
+		printf("[DEBUG] Commande à exécuter : %s\n", commands->args[0]);
+	// execute_commands(commands, envp, ...); // À activer quand prêt
 	free_commands(commands);
 	return (0);
 }
 
 /* Gère une ligne d'input et détermine si on doit quitter */
-int	handle_input_line(char *input, char **envp, int *exit_code)
+int	handle_input_line(char *input, char **envp, int *exit_code, t_shell_ctx *ctx)
 {
 	if (is_exit_command(input))
 		return (1);
 	else if (*input)
-		*exit_code = process_input(input, envp, *exit_code);
+		*exit_code = process_input(input, envp, *exit_code, ctx);
 	return (0);
 }

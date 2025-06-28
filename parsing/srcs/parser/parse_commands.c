@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 03:24:28 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:09:51 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,45 +43,42 @@ static int	is_command_in_list(t_cmd *commands, t_cmd *target)
 
 /* Valide la syntaxe des tokens */
 static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
-				t_cmd *current_cmd)
+				t_cmd *current_cmd, t_shell_ctx *ctx)
 {
 	if (tokens->type == TOKEN_PIPE)
-		return (validate_pipe_token(tokens, commands, current_cmd));
+		return (validate_pipe_token(tokens, commands, current_cmd, ctx));
 	if (tokens->type >= TOKEN_REDIR_IN && tokens->type <= TOKEN_HEREDOC)
-		return (validate_redirection_token(tokens, commands, current_cmd));
-	return (validate_double_pipe(tokens, commands, current_cmd));
+		return (validate_redirection_token(tokens, commands, current_cmd, ctx));
+	return (validate_double_pipe(tokens, commands, current_cmd, ctx));
 }
 
 /* Traite un token et met à jour les commandes */
 static int	process_token(t_token **tokens, t_cmd **commands,
-			t_cmd **current_cmd)
+			t_cmd **current_cmd, t_shell_ctx *ctx)
 {
 	if ((*tokens)->type == TOKEN_WORD)
-		add_argument(*current_cmd, (*tokens)->value);
+		handle_word_token(*current_cmd, (*tokens), ctx);
 	else if ((*tokens)->type == TOKEN_PIPE)
 	{
-		add_command_to_list(commands, *current_cmd);
-		*current_cmd = new_command();
-		if (!*current_cmd)
-		{
-			free_commands(*commands);
-			return (0);
-		}
+		handle_pipe_token(commands, current_cmd, ctx);
 	}
 	else if ((*tokens)->type >= TOKEN_REDIR_IN
 		&& (*tokens)->type <= TOKEN_HEREDOC)
-		process_redirection_token(*current_cmd, tokens);
+		process_redirection_token(*current_cmd, tokens, ctx);
 	*tokens = (*tokens)->next;
 	return (1);
 }
 
 /* Convertit une liste de tokens en liste de commandes structurées */
-t_cmd	*parse_tokens_to_commands(t_token *tokens)
+/* ctx est utilisé pour le flag d'erreur de syntaxe */
+/* Retourne NULL si erreur de syntaxe */
+
+t_cmd	*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx)
 {
 	t_cmd	*commands;
 	t_cmd	*current_cmd;
 
-	if (!validate_initial_syntax(tokens))
+	if (!validate_initial_syntax(tokens, ctx))
 		return (NULL);
 	commands = NULL;
 	current_cmd = new_command();
@@ -89,14 +86,14 @@ t_cmd	*parse_tokens_to_commands(t_token *tokens)
 		return (NULL);
 	while (tokens && tokens->type != TOKEN_EOF)
 	{
-		if (!validate_token_syntax(tokens, commands, current_cmd))
+		if (!validate_token_syntax(tokens, commands, current_cmd, ctx))
 		{
 			free_commands(commands);
 			if (current_cmd && !is_command_in_list(commands, current_cmd))
 				free_commands(current_cmd);
 			return (NULL);
 		}
-		if (!process_token(&tokens, &commands, &current_cmd))
+		if (!process_token(&tokens, &commands, &current_cmd, ctx))
 			return (NULL);
 	}
 	if (current_cmd)
