@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../libft/libft.h"
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /* Convertit t_env en tableau char** pour execve */
 char	**env_to_array(t_env *env)

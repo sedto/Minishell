@@ -23,7 +23,7 @@ EXEC_SRCDIR	= execution/srcs
 OBJDIR		= objs
 PARSING_OBJDIR	= parsing/objs
 EXEC_OBJDIR	= execution/objs
-INCDIR		= parsing/includes
+INCDIR		= includes
 LIBFT_DIR	= libft
 
 # Source files - Main
@@ -54,8 +54,9 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/env/env_utils.c \
 		  $(EXEC_SRCDIR)/builtins/builtins.c \
-		  $(EXEC_SRCDIR)/utils/utils.c
-		  # $(EXEC_SRCDIR)/executor/executor.c  # Décommentez pour compiler avec executor
+		  $(EXEC_SRCDIR)/utils/utils.c \
+		  $(EXEC_SRCDIR)/executor/executor.c \
+		  $(EXEC_SRCDIR)/executor/get_path.c
 
 # All source files
 SRCS		= $(MAIN_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)

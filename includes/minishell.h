@@ -33,7 +33,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <string.h>
-# include "../../libft/libft.h"
+# include "../libft/libft.h"
 
 // Déclaration du contexte AVANT tout prototype ou typedef qui l'utilise
 
@@ -239,14 +239,15 @@ void		remove_quotes_from_commands(t_cmd *commands);
 /* ************************************************************************** */
 
 // builtins.c
-int			builtin_echo(char **args);
-int			builtin_pwd(void);
-int			builtin_env(t_env *env);
-int			builtin_export(char **args, t_env **env);
-int			builtin_unset(char **args, t_env **env);
-int			builtin_exit(char **args);
-int			is_builtin(char *cmd);
-int			execute_builtin(char **args, t_env **env);
+int			is_builtin(t_cmd *cmd);
+int			builtin_echo(t_minishell *s);
+int			builtin_pwd(t_minishell *s);
+int			builtin_env(t_minishell *s);
+int			builtin_export(t_minishell **s);
+int			builtin_cd(t_minishell *s);
+int			builtin_unset(t_minishell **s);
+int			builtin_exit(t_minishell *s);
+int			execute_builtin(t_minishell **s);
 
 /* ************************************************************************** */
 /*                          ENVIRONMENT FUNCTIONS                            */
@@ -256,9 +257,10 @@ int			execute_builtin(char **args, t_env **env);
 t_env		*create_env_node(char *key, char *value);
 t_env		*init_env(char **envp);
 char		*get_env_value(t_env *env, char *key);
-void		set_env_value(t_env **env, char *key, char *value);
-void		unset_env_value(t_env **env, char *key);
+void		set_env_value(t_minishell **s, char *key, char *value);
+void		unset_env_value(t_minishell **s, char *key);
 void		free_env(t_env *env);
+char		**env_to_tab(t_env *env);
 
 /* ************************************************************************** */
 /*                             SIGNAL HANDLING                               */
@@ -287,7 +289,9 @@ void		command_not_found(char *cmd);
 /* ************************************************************************** */
 
 // À implémenter par l'exécuteur
-// int			execute_command(t_cmd *cmd, t_env *env);
+void	execute_commands(t_minishell **s);
+char	*get_path(char *cmd, t_env *env);
+
 // int			execute_pipeline(t_cmd *cmds, t_env *env);
 // int			builtin_cd(char **args, t_env **env);
 

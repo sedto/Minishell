@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../../libft/libft.h"
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /* Crée un nouveau node d'environnement */
 t_env	*create_env_node(char *key, char *value)
@@ -81,12 +81,12 @@ char	*get_env_value(t_env *env, char *key)
 }
 
 /* Définit ou met à jour une variable d'environnement */
-void	set_env_value(t_env **env, char *key, char *value)
+void	set_env_value(t_minishell **s, char *key, char *value)
 {
 	t_env	*current;
 	t_env	*new_node;
 
-	current = *env;
+	current = (*s)->env;
 	while (current)
 	{
 		if (ft_strncmp(current->key, key, ft_strlen(key)) == 0 
@@ -101,18 +101,18 @@ void	set_env_value(t_env **env, char *key, char *value)
 	new_node = create_env_node(key, value);
 	if (new_node)
 	{
-		new_node->next = *env;
-		*env = new_node;
+		new_node->next = (*s)->env;
+		(*s)->env = new_node;
 	}
 }
 
 /* Supprime une variable d'environnement */
-void	unset_env_value(t_env **env, char *key)
+void	unset_env_value(t_minishell **s, char *key)
 {
 	t_env	*current;
 	t_env	*prev;
 
-	current = *env;
+	current = (*s)->env;
 	prev = NULL;
 	while (current)
 	{
@@ -122,7 +122,7 @@ void	unset_env_value(t_env **env, char *key)
 			if (prev)
 				prev->next = current->next;
 			else
-				*env = current->next;
+				(*s)->env = current->next;
 			free(current->key);
 			free(current->value);
 			free(current);
@@ -146,4 +146,34 @@ void	free_env(t_env *env)
 		free(env);
 		env = next;
 	}
+}
+
+char	**env_to_tab(t_env *env)
+{
+	char	**tab;
+	char	*entry;
+	int		count;
+	int		i;
+	t_env	*current;
+
+	// Compter le nombre d'éléments
+	count = 0;
+	current = env;
+	while (current)
+	{
+		count++;
+		current = current->next;
+	}
+	tab = malloc(sizeof(char *) * (count + 1));
+	current = env;
+	i = 0;
+	while (current)
+	{
+		entry = ft_strjoin(current->key, "=");
+		tab[i] = ft_strjoin(entry, current->value);
+		current = current->next;
+		i++;
+	}
+	tab[i] = NULL;
+	return (tab);
 }

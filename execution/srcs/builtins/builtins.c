@@ -11,13 +11,27 @@
 /* ************************************************************************** */
 
 #include "../../../libft/libft.h"
-#include "../../../includes/minishell.h"
+#include "minishell.h"
+
+//marche pas
+int	builtin_cd(t_minishell *s)
+{
+	t_cmd	*cmd;
+
+	cmd = s->commands;
+	if (!cmd->args[1])
+		return (perror("cd"), 1);
+	if (chdir(cmd->args[1]) != 0)
+		return (perror("cd"), 1);
+	return (0);
+}
 
 /* Builtin: pwd - affiche le répertoire courant */
-int	builtin_pwd(void)
+int	builtin_pwd(t_minishell *s)
 {
 	char	*cwd;
 
+	(void)s;
 	cwd = getcwd(NULL, 0);
 	if (!cwd)
 	{
@@ -30,16 +44,13 @@ int	builtin_pwd(void)
 }
 
 /* Builtin: echo - affiche les arguments */
-int	builtin_echo(char **args)
+int	builtin_echo(t_minishell *s)
 {
 	int	i;
 	int	newline;
+	char	**args;
 
-	if (!args[1])
-	{
-		printf("\n");
-		return (0);
-	}
+	args = s->commands->args;
 	newline = 1;
 	i = 1;
 	if (args[1] && ft_strncmp(args[1], "-n", 2) == 0 && ft_strlen(args[1]) == 2)
@@ -60,8 +71,11 @@ int	builtin_echo(char **args)
 }
 
 /* Builtin: env - affiche l'environnement */
-int	builtin_env(t_env *env)
+int	builtin_env(t_minishell *s)
 {
+	t_env	*env;
+
+	env = s->env;
 	while (env)
 	{
 		printf("%s=%s\n", env->key, env->value);
@@ -71,16 +85,19 @@ int	builtin_env(t_env *env)
 }
 
 /* Builtin: export - exporte des variables */
-int	builtin_export(char **args, t_env **env)
+//TODO check avec s->env
+//marche pas
+int	builtin_export(t_minishell **s)
 {
 	char	*equal_pos;
 	char	*key;
 	char	*value;
 	int		i;
+	t_env	*current;
 
-	if (!args[1])
+	if (!(*s)->commands->args[1])
 	{
-		t_env *current = *env;
+		current = (*s)->env;
 		while (current)
 		{
 			printf("declare -x %s=\"%s\"\n", current->key, current->value);
@@ -90,17 +107,17 @@ int	builtin_export(char **args, t_env **env)
 	}
 	
 	i = 1;
-	while (args[i])
+	while ((*s)->commands->args[i])
 	{
-		equal_pos = ft_strchr(args[i], '=');
+		equal_pos = ft_strchr((*s)->commands->args[i], '=');
 		if (equal_pos)
 		{
 			/* Extraire key et value sans modifier args[i] */
-			key = ft_substr(args[i], 0, equal_pos - args[i]);
+			key = ft_substr((*s)->commands->args[i], 0, equal_pos - (*s)->commands->args[i]);
 			value = ft_strdup(equal_pos + 1);
 			if (key && value)
 			{
-				set_env_value(env, key, value);
+				set_env_value(s, key, value);
 				free(key);
 				free(value);
 			}
@@ -112,11 +129,11 @@ int	builtin_export(char **args, t_env **env)
 		}
 		else
 		{
-			char *existing = get_env_value(*env, args[i]);
+			char *existing = get_env_value((*s)->env, (*s)->commands->args[i]);
 			if (existing)
-				set_env_value(env, args[i], existing);
+				set_env_value(s, (*s)->commands->args[i], existing);
 			else
-				set_env_value(env, args[i], "");
+				set_env_value(s, (*s)->commands->args[i], "");
 		}
 		i++;
 	}
@@ -124,68 +141,60 @@ int	builtin_export(char **args, t_env **env)
 }
 
 /* Builtin: unset - supprime des variables */
-int	builtin_unset(char **args, t_env **env)
+//marche pas
+int	builtin_unset(t_minishell **s)
 {
 	int	i;
+	char	**args;
 
+	args = (*s)->commands->args;
 	if (!args[1])
 		return (0);
 	i = 1;
 	while (args[i])
 	{
-		unset_env_value(env, args[i]);
+		unset_env_value(s, args[i]);
 		i++;
 	}
 	return (0);
 }
 
 /* Builtin: exit - quitte le shell */
-int	builtin_exit(char **args)
+int	builtin_exit(t_minishell *s)
 {
 	int	exit_code;
+	char	**args;
 
+	args = s->commands->args;
 	printf("exit\n");
 	if (!args[1])
 		exit(0);
 	exit_code = ft_atoi(args[1]);
 	exit(exit_code);
 }
-
-/* Vérifie si une commande est un builtin */
-int	is_builtin(char *cmd)
-{
-	if (ft_strncmp(cmd, "echo", 4) == 0 && ft_strlen(cmd) == 4)
-		return (1);
-	if (ft_strncmp(cmd, "cd", 2) == 0 && ft_strlen(cmd) == 2)
-		return (1);
-	if (ft_strncmp(cmd, "pwd", 3) == 0 && ft_strlen(cmd) == 3)
-		return (1);
-	if (ft_strncmp(cmd, "export", 6) == 0 && ft_strlen(cmd) == 6)
-		return (1);
-	if (ft_strncmp(cmd, "unset", 5) == 0 && ft_strlen(cmd) == 5)
-		return (1);
-	if (ft_strncmp(cmd, "env", 3) == 0 && ft_strlen(cmd) == 3)
-		return (1);
-	if (ft_strncmp(cmd, "exit", 4) == 0 && ft_strlen(cmd) == 4)
-		return (1);
-	return (0);
-}
-
 /* Exécute un builtin */
-int	execute_builtin(char **args, t_env **env)
+
+int execute_builtin(t_minishell **s) //plan de fonction pour les commandes builtin
 {
-	if (ft_strncmp(args[0], "echo", 4) == 0)
-		return (builtin_echo(args));
-	if (ft_strncmp(args[0], "pwd", 3) == 0)
-		return (builtin_pwd());
-	if (ft_strncmp(args[0], "env", 3) == 0)
-		return (builtin_env(*env));
-	if (ft_strncmp(args[0], "export", 6) == 0)
-		return (builtin_export(args, env));
-	if (ft_strncmp(args[0], "unset", 5) == 0)
-		return (builtin_unset(args, env));
-	if (ft_strncmp(args[0], "exit", 4) == 0)
-		return (builtin_exit(args));
-	/* cd sera implémenté par l'exécuteur (besoin de changer PWD) */
-	return (1);
+    t_cmd *cmd;
+
+    cmd = (*s)->commands;
+    if (!cmd || !cmd->args || !cmd->args[0])
+        return (1);
+    if (ft_strncmp(cmd->args[0], "exit", 4) == 0)
+    	return (builtin_exit(*s));
+    if (ft_strncmp(cmd->args[0], "cd", 2) == 0)
+        return (builtin_cd(*s));
+    if (ft_strncmp(cmd->args[0], "echo", 4) == 0)
+        return (builtin_echo(*s));
+    if (ft_strncmp(cmd->args[0], "pwd", 3) == 0)
+        return (builtin_pwd(*s));
+    if (ft_strncmp(cmd->args[0], "env", 3) == 0)
+        return (builtin_env(*s));
+    if (ft_strncmp(cmd->args[0], "export", 6) == 0)
+        return (builtin_export(s));
+    if (ft_strncmp(cmd->args[0], "unset", 5) == 0)
+        return (builtin_unset(s));
+    return (1);
 }
+

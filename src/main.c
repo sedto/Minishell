@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
 
@@ -26,16 +26,19 @@ void	disable_echoctl(void)
 	}
 }
 
+
 /* Boucle principale du mode interactif */
 static int	run_interactive_mode(char **envp)
 {
 	char		*input;
 	int			exit_code;
+	//struct shell qui contient tout
 	t_shell_ctx	ctx;
 
 	exit_code = 0;
 	ctx.syntax_error = 0;
 	setup_signals();
+	//on init ici la struct shell
 	while (1)
 	{
 		disable_echoctl();

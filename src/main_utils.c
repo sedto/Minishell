@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "minishell.h"
 
 /* Vérifie si l'input est une commande exit */
 int	is_exit_command(char *input)
@@ -50,13 +50,25 @@ t_cmd	*parse_tokens(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 	return (commands);
 }
 
+t_minishell	*setup_shell(char **envp)
+{
+	t_minishell	*s;
+
+	s = malloc(sizeof(t_minishell));
+	s->env = init_env(envp);
+	return (s);
+}
+
 /* Traite une ligne d'input et retourne le code de sortie */
 int	process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 {
-	t_cmd	*commands;
-
-	commands = parse_tokens(input, envp, exit_code, ctx);
-	if (!commands)
+	// t_cmd	*commands;
+	static t_minishell	*s = NULL;
+	
+	if (!s)
+		s = setup_shell(envp);
+	s->commands = parse_tokens(input, envp, exit_code, ctx);
+	if (!s->commands)
 	{
 		if (ctx->syntax_error)
 			return (2);  /* Code 2 pour erreurs de syntaxe */
@@ -64,10 +76,9 @@ int	process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 	}
 	// --- EXÉCUTION DES COMMANDES ---
 	// Remplacer ce printf par l'appel à votre exécuteur réel
-	if (commands && commands->args && commands->args[0])
-		printf("[DEBUG] Commande à exécuter : %s\n", commands->args[0]);
-	// execute_commands(commands, envp, ...); // À activer quand prêt
-	free_commands(commands);
+	if (s->commands && s->commands->args && s->commands->args[0])
+		execute_commands(&s); // À activer quand prêt
+	free_commands(s->commands);
 	return (0);
 }
 

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /* Gestionnaire pour SIGINT (Ctrl+C) */
 void	handle_sigint(int sig)
