@@ -56,7 +56,8 @@ EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/builtins/builtins.c \
 		  $(EXEC_SRCDIR)/utils/utils.c \
 		  $(EXEC_SRCDIR)/executor/executor.c \
-		  $(EXEC_SRCDIR)/executor/get_path.c
+		  $(EXEC_SRCDIR)/executor/get_path.c \
+			$(EXEC_SRCDIR)/executor/errors_env.c \
 
 # All source files
 SRCS		= $(MAIN_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)

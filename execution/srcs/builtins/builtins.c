@@ -129,40 +129,34 @@ int	builtin_export(t_minishell **s)
 		}
 		return (0);
 	}
-	
+	(*s)->exit_status = 0;
 	i = 1;
 	while ((*s)->commands->args[i])
 	{
+		if (export_with_error((*s)->commands->args[i]))
+		{
+			(*s)->exit_status = 1;
+			i++;
+			continue ;
+		}
 		equal_pos = ft_strchr((*s)->commands->args[i], '=');
 		if (equal_pos)
 		{
-			/* Extraire key et value sans modifier args[i] */
-			key = ft_substr((*s)->commands->args[i], 0, equal_pos - (*s)->commands->args[i]);
+			key = ft_substr((*s)->commands->args[i], 0,
+				equal_pos - (*s)->commands->args[i]);
 			value = ft_strdup(equal_pos + 1);
 			if (key && value)
-			{
 				set_env_value(s, key, value);
-				free(key);
-				free(value);
-			}
-			else
-			{
-				free(key);
-				free(value);
-			}
+			free(key);
+			free(value);
 		}
 		else
-		{
-			char *existing = get_env_value((*s)->env, (*s)->commands->args[i]);
-			if (existing)
-				set_env_value(s, (*s)->commands->args[i], existing);
-			else
-				set_env_value(s, (*s)->commands->args[i], "");
-		}
+			set_env_value(s, (*s)->commands->args[i], "");
 		i++;
 	}
-	return (0);
+	return ((*s)->exit_status);
 }
+
 
 /* Builtin: unset - supprime des variables */
 //marche pas
@@ -198,27 +192,30 @@ int	builtin_exit(t_minishell *s)
 }
 /* Exécute un builtin */
 
-int execute_builtin(t_minishell **s) //plan de fonction pour les commandes builtin
+int	execute_builtin(t_minishell **s)
 {
-    t_cmd *cmd;
+	t_cmd	*cmd;
 
-    cmd = (*s)->commands;
-    if (!cmd || !cmd->args || !cmd->args[0])
-        return (1);
-    if (ft_strncmp(cmd->args[0], "exit", 4) == 0)
-    	return (builtin_exit(*s));
-    if (ft_strncmp(cmd->args[0], "cd", 2) == 0)
-        return (builtin_cd(*s));
-    if (ft_strncmp(cmd->args[0], "echo", 4) == 0)
-        return (builtin_echo(*s));
-    if (ft_strncmp(cmd->args[0], "pwd", 3) == 0)
-        return (builtin_pwd(*s));
-    if (ft_strncmp(cmd->args[0], "env", 3) == 0)
-        return (builtin_env(*s));
-    if (ft_strncmp(cmd->args[0], "export", 6) == 0)
-        return (builtin_export(s));
-    if (ft_strncmp(cmd->args[0], "unset", 5) == 0)
-        return (builtin_unset(s));
-    return (1);
+	cmd = (*s)->commands;
+	if (!cmd || !cmd->args || !cmd->args[0])
+		return (1);
+	if (ft_strncmp(cmd->args[0], "exit", 5) == 0)
+		return (builtin_exit(*s));
+
+	if (ft_strncmp(cmd->args[0], "cd", 3) == 0)
+		(*s)->exit_status = builtin_cd(*s);
+	else if (ft_strncmp(cmd->args[0], "echo", 5) == 0)
+		(*s)->exit_status = builtin_echo(*s);
+	else if (ft_strncmp(cmd->args[0], "pwd", 4) == 0)
+		(*s)->exit_status = builtin_pwd(*s);
+	else if (ft_strncmp(cmd->args[0], "env", 4) == 0)
+		(*s)->exit_status = builtin_env(*s);
+	else if (ft_strncmp(cmd->args[0], "export", 7) == 0)
+		(*s)->exit_status = builtin_export(s);
+	else if (ft_strncmp(cmd->args[0], "unset", 6) == 0)
+		(*s)->exit_status = builtin_unset(s);
+	else
+		(*s)->exit_status = 1;
+	return ((*s)->exit_status);
 }
 

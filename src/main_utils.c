@@ -56,18 +56,19 @@ t_minishell	*setup_shell(char **envp)
 
 	s = malloc(sizeof(t_minishell));
 	s->env = init_env(envp);
+	s->exit_status = 0;
 	return (s);
 }
 
 /* Traite une ligne d'input et retourne le code de sortie */
-int	process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
+int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 {
 	// t_cmd	*commands;
 	static t_minishell	*s = NULL;
 	
 	if (!s)
 		s = setup_shell(envp);
-	s->commands = parse_tokens(input, envp, exit_code, ctx);
+	s->commands = parse_tokens(input, envp, s->exit_status, ctx);
 	if (!s->commands)
 	{
 		if (ctx->syntax_error)
@@ -79,15 +80,15 @@ int	process_input(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 	if (s->commands && s->commands->args && s->commands->args[0])
 		execute_commands(&s); // À activer quand prêt
 	free_commands(s->commands);
-	return (0);
+	return (s->exit_status);
 }
 
 /* Gère une ligne d'input et détermine si on doit quitter */
-int	handle_input_line(char *input, char **envp, int *exit_code, t_shell_ctx *ctx)
+int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)
 {
-	if (is_exit_command(input))
-		return (1);
-	else if (*input)
-		*exit_code = process_input(input, envp, *exit_code, ctx);
+	// if (is_exit_command(input))
+	// 	return (1);
+	if (*input)
+		return (process_input(input, envp, ctx));
 	return (0);
 }

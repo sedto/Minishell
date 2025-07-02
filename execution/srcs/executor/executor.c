@@ -75,7 +75,7 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 	if (is_builtin(cmd))
 	{
 		execute_builtin(s);
-		exit(0);
+		exit((*s)->exit_status);
 	}
 	full_path = get_path(cmd->args[0], (*s)->env);
 	if (full_path)
@@ -85,7 +85,7 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 	}
 	else
 		command_not_found(cmd->args[0]);
-	exit(1);
+	exit(-1);
 }
 
 static void	run_child_process(t_minishell **s, t_cmd *cmd,
@@ -114,7 +114,6 @@ static void	run_child_process(t_minishell **s, t_cmd *cmd,
 		close(pipe_fd[1]);
 		*prev_fd = -1;
 	}
-
 }
 
 void	execute_commands(t_minishell **s)

@@ -32,13 +32,10 @@ static int	run_interactive_mode(char **envp)
 {
 	char		*input;
 	int			exit_code;
-	//struct shell qui contient tout
 	t_shell_ctx	ctx;
 
-	exit_code = 0;
 	ctx.syntax_error = 0;
 	setup_signals();
-	//on init ici la struct shell
 	while (1)
 	{
 		disable_echoctl();
@@ -58,11 +55,7 @@ static int	run_interactive_mode(char **envp)
 		}
 		if (*input)
 			add_history(input);
-		if (handle_input_line(input, envp, &exit_code, &ctx))
-		{
-			free(input);
-			break;
-		}
+		exit_code = handle_input_line(input, envp, &ctx);
 		free(input);
 	}
 	return (exit_code);
@@ -71,16 +64,12 @@ static int	run_interactive_mode(char **envp)
 /* Point d'entrée principal du minishell */
 int	main(int argc, char **argv, char **envp)
 {
-	int	exit_code;
-
-	exit_code = 0;
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
 		t_shell_ctx ctx;
 
 		ctx.syntax_error = 0;
-		exit_code = process_input(argv[2], envp, exit_code, &ctx);
-		return (exit_code);
+		return(process_input(argv[2], envp, &ctx));
 	}
 	return (run_interactive_mode(envp));
 }
