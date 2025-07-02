@@ -84,3 +84,4 @@ void	process_normal_char(char *input, t_expand_data *data)
 	else
 		(*data->i)++;
 }
+./mini

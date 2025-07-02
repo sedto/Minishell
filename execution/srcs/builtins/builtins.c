@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: ciso <ciso@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 00:01:43 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:50:44 by ciso             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "minishell.h"
 
 //marche pas
-int	builtin_cd(t_minishell *s)
+/*int	builtin_cd(t_minishell *s)
 {
 	t_cmd	*cmd;
 
@@ -23,6 +23,30 @@ int	builtin_cd(t_minishell *s)
 		return (perror("cd"), 1);
 	if (chdir(cmd->args[1]) != 0)
 		return (perror("cd"), 1);
+	return (0);
+}*/
+int	builtin_cd(t_minishell *s)
+{
+	t_cmd	*cmd;
+	char	*target;
+
+	cmd = s->commands;
+	if (!cmd->args[1])
+	{
+		target = get_env_value(s->env, "HOME");
+		if (!target)
+		{
+			fprintf(stderr, "cd: HOME not set\n");
+			return (1);
+		}
+	}
+	else
+		target = cmd->args[1];
+	if (chdir(target) != 0)
+	{
+		perror("cd");
+		return (1);
+	}
 	return (0);
 }
 
