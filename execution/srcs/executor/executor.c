@@ -41,64 +41,105 @@ int is_builtin(t_cmd *cmd) //executer par nous et pas par execve
 		|| strcmp(cmd->args[0], "exit") == 0
 	);
 }
+#include "minishell.h"
 
-static void	exec_child(t_minishell **s, int *pipe_fd, int prev_fd)
+static int	prepare_pipe(t_cmd *cmd, int *pipe_fd)
+{
+	if (cmd->next && pipe(pipe_fd) == -1)
+	{
+		perror("pipe");
+		return (0);
+	}
+	return (1);
+}
+
+static int	has_pipe_or_input(t_cmd *cmd, int prev_fd)
+{
+	return (cmd->next || prev_fd != -1);
+}
+
+static void	exec_in_child(t_minishell **s, t_cmd *cmd,
+				int *pipe_fd, int prev_fd)
 {
 	char	*full_path;
 
 	if (prev_fd != -1)
 		dup2(prev_fd, STDIN_FILENO);
-	if ((*s)->commands->next)
+	if (cmd->next)
 	{
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], STDOUT_FILENO);
 	}
-	if (handle_redirections((*s)->commands))
+	if (handle_redirections(cmd))
 		exit(1);
-	if (is_builtin((*s)->commands))
-    {
+	if (is_builtin(cmd))
+	{
 		execute_builtin(s);
-        return ;
-    }
-	full_path = get_path((*s)->commands->args[0], (*s)->env);
+		exit(0);
+	}
+	full_path = get_path(cmd->args[0], (*s)->env);
 	if (full_path)
 	{
-		execve(full_path, (*s)->commands->args, env_to_tab((*s)->env));
-	    perror((*s)->commands->args[0]);
+		execve(full_path, cmd->args, env_to_tab((*s)->env));
+		perror(cmd->args[0]);
 	}
 	else
-		command_not_found((*s)->commands->args[0]);
-    exit(1);
+		command_not_found(cmd->args[0]);
+	exit(1);
+}
+
+static void	run_child_process(t_minishell **s, t_cmd *cmd,
+				int *pipe_fd, int *prev_fd)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		return ;
+	}
+	if (pid == 0)
+		exec_in_child(s, cmd, pipe_fd, *prev_fd);
+	if (*prev_fd != -1)
+		close(*prev_fd);
+	if (cmd->next)
+	{
+		close(pipe_fd[1]);
+		*prev_fd = pipe_fd[0];
+	}
+	else
+	{
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		*prev_fd = -1;
+	}
+
 }
 
 void	execute_commands(t_minishell **s)
 {
+	t_cmd	*cmd;
+	int		prev_fd;
 	int		pipe_fd[2];
-	int		prev_fd = -1;
-	pid_t	pid;
 
-	while ((*s)->commands)
+	cmd = (*s)->commands;
+	prev_fd = -1;
+	while (cmd)
 	{
-		if ((*s)->commands->next && pipe(pipe_fd) == -1)
-			return (perror("pipe"));
-        if (is_builtin((*s)->commands))
-            exec_child(s, pipe_fd, prev_fd);
-        else
-        {
-            pid = fork();
-            if (pid == -1)
-                return (perror("fork"));
-            if (pid == 0)
-                exec_child(s, pipe_fd, prev_fd);
-            if (prev_fd != -1)
-                close(prev_fd);
-            if ((*s)->commands->next)
-            {
-                close(pipe_fd[1]);
-                prev_fd = pipe_fd[0];
-            }
-            waitpid(pid, NULL, 0);
-        }
-		(*s)->commands = (*s)->commands->next;
+		if (!prepare_pipe(cmd, pipe_fd))
+			return ;
+		if (!has_pipe_or_input(cmd, prev_fd) && is_builtin(cmd))
+		{
+			if (handle_redirections(cmd))
+				return ;
+			execute_builtin(s);
+		}
+		else
+			run_child_process(s, cmd, pipe_fd, &prev_fd);
+		cmd = cmd->next;
 	}
+	while (wait(NULL) > 0)
+    	;
+
 }
