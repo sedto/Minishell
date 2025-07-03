@@ -34,3 +34,5 @@ file2
 # Fichiers de debug
 core
 vgcore.*
+
+minishell_tester/

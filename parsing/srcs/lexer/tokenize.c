@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 00:09:49 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:19:00 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/03 11:26:12 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,29 @@
 /* Gère les mots simples (commandes, arguments, fichiers) */
 int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
-	(void)ctx;
 	int		start;
 	char	*word;
 	t_token	*new_token;
+	(void) ctx;
 
 	start = *i;
+	// Continue jusqu'à un vrai séparateur (pas une quote!)
 	while (input[*i] && input[*i] != ' ' && input[*i] != '\t'
-		&& input[*i] != '|' && input[*i] != '<' && input[*i] != '>'
-		&& input[*i] != '\'' && input[*i] != '"')
-		(*i)++;
+		&& input[*i] != '|' && input[*i] != '<' && input[*i] != '>')
+	{
+		if (input[*i] == '\'' || input[*i] == '"')
+		{
+			char quote = input[*i];
+			(*i)++; // Skip opening quote
+			// Continue until closing quote
+			while (input[*i] && input[*i] != quote)
+				(*i)++;
+			if (input[*i] == quote)
+				(*i)++; // Skip closing quote
+		}
+		else
+			(*i)++;
+	}
 	word = ft_substr(input, start, *i - start);
 	if (!word)
 		return (0);
@@ -39,9 +52,7 @@ int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 /* Traite un caractère selon son type (quote, opérateur, ou mot) */
 static int	process_character(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
-	if (is_quote(input[*i]))
-		return (handle_quoted_word(input, i, tokens, ctx));
-	else if (is_operator_char(input[*i]))
+	if (is_operator_char(input[*i]))
 		return (handle_operator(input, i, tokens));
 	else
 		return (handle_word(input, i, tokens, ctx));

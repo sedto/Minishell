@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:56:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:09:25 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/03 11:26:31 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,48 +72,41 @@ char	*expand_single_var(char *var_name, char **envp, int exit_code)
 int	should_expand_token(char *value)
 {
 	int	len;
-	int	i;
 
 	if (!value)
 		return (1);
 	len = ft_strlen(value);
-	if (len < 2)
-		return (1);
-	if (value[0] == '\'' && value[len - 1] == '\'')
-	{
-		i = 1;
-		while (i < len - 1)
-		{
-			if (value[i] == '\'')
-				return (1);
-			i++;
-		}
+	
+	// Si ça commence ET finit par des single quotes, pas d'expansion
+	if (len >= 2 && value[0] == '\'' && value[len - 1] == '\'')
 		return (0);
-	}
+	
+	// Pour tous les autres cas (y compris double quotes), expansion
 	return (1);
 }
 
 /* Expanse toutes les variables dans une liste de tokens */
 t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)
 {
-	t_token	*current;
-	char	*expanded_value;
-	char	*old_value;
-
-	current = tokens;
+	t_token	*current = tokens;
+	
 	while (current)
 	{
-		if (current->type == TOKEN_WORD && current->value)
+		if (current->value && should_expand_token(current->value))
 		{
-			if (should_expand_token(current->value))
+			// ✅ PROTECTION POUR LES CHAÎNES VIDES
+			if (strlen(current->value) == 0)
 			{
-				old_value = current->value;
-				expanded_value = expand_string(current->value, envp, exit_code);
-				if (expanded_value)
-				{
-					current->value = expanded_value;
-					free(old_value);
-				}
+				// Ne pas toucher aux chaînes vides
+				current = current->next;
+				continue;
+			}
+			
+			char *expanded = expand_string(current->value, envp, exit_code);
+			if (expanded)
+			{
+				free(current->value);
+				current->value = expanded;
 			}
 		}
 		current = current->next;

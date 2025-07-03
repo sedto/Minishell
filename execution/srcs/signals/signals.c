@@ -6,11 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 11:03:58 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/03 11:27:02 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Gestionnaire pour SIGINT (Ctrl+C) */
 void	handle_sigint(int sig)
@@ -27,8 +27,8 @@ void	handle_sigint(int sig)
 void	handle_sigquit(int sig)
 {
 	(void)sig;
-	rl_on_new_line();
-	rl_redisplay();
+	// Ne rien faire : pas de retour à la ligne, pas de prompt, pas d'effacement
+	// Cela laisse le prompt inchangé, comme bash
 }
 
 /* Configure les gestionnaires de signaux pour le mode interactif */
