@@ -130,5 +130,5 @@ int	count_commands(t_cmd *commands)
 /* Affiche une erreur de commande non trouvée */
 void	command_not_found(char *cmd)
 {
-	printf("minishell: %s: command not found\n", cmd);
+	fprintf(stderr, "minishell: %s: command not found\n", cmd);
 }

@@ -58,6 +58,35 @@ static int	has_pipe_or_input(t_cmd *cmd, int prev_fd)
 	return (cmd->next || prev_fd != -1);
 }
 
+int has_access(const char *path, int mode)
+{
+	if (access(path, F_OK) != 0)
+		exit(127);
+    if (access(path, mode) != 0)
+	{
+        perror(path);
+        exit(126);
+    }
+    return 0;
+}
+
+static void	path_stat(char *path)
+{
+	struct stat *buf;
+
+	buf = malloc(sizeof(struct stat));
+	if (stat(path, buf) < 0)
+		perror(path);
+    if (S_ISDIR(buf->st_mode))
+	{
+        fprintf(stderr, "%s: Is a directory\n", path);
+		exit(126);
+	}
+	free(buf);
+	has_access(path, X_OK);
+}
+
+
 static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 				int *pipe_fd, int prev_fd)
 {
@@ -77,15 +106,17 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 		execute_builtin(s);
 		exit((*s)->exit_status);
 	}
+
 	full_path = get_path(cmd->args[0], (*s)->env);
 	if (full_path)
 	{
+		path_stat(full_path);
 		execve(full_path, cmd->args, env_to_tab((*s)->env));
 		perror(cmd->args[0]);
 	}
 	else
 		command_not_found(cmd->args[0]);
-	exit(-1);
+	exit(127);
 }
 
 static void	run_child_process(t_minishell **s, t_cmd *cmd,
@@ -121,6 +152,7 @@ void	execute_commands(t_minishell **s)
 	t_cmd	*cmd;
 	int		prev_fd;
 	int		pipe_fd[2];
+	int		stat;
 
 	cmd = (*s)->commands;
 	prev_fd = -1;
@@ -138,7 +170,6 @@ void	execute_commands(t_minishell **s)
 			run_child_process(s, cmd, pipe_fd, &prev_fd);
 		cmd = cmd->next;
 	}
-	while (wait(NULL) > 0)
-    	;
-
+	while (wait(&stat) > 0)
+		(*s)->exit_status = WEXITSTATUS(stat);
 }
