@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:09:51 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 01:04:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ static int	process_token(t_token **tokens, t_cmd **commands,
 	}
 	else if ((*tokens)->type >= TOKEN_REDIR_IN
 		&& (*tokens)->type <= TOKEN_HEREDOC)
+	{
 		process_redirection_token(*current_cmd, tokens, ctx);
+	}
 	*tokens = (*tokens)->next;
 	return (1);
 }

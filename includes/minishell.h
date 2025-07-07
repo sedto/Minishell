@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/07 17:23:39 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 00:58:08 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 typedef struct s_shell_ctx
 {
 	int				syntax_error;
+	int				exit_code; // Ajouté pour la gestion fine des erreurs parsing/exécution
 	// Tu peux ajouter d'autres flags ici plus tard
 }					t_shell_ctx;
 

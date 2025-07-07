@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:19:01 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 01:04:44 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,8 +177,8 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 		if (new_file)
 		{
 			if (current_cmd->input_file)
-				free(current_cmd->input_file);  /* Libérer l'ancien fichier */
-			current_cmd->input_file = new_file;  /* Dernière redirection l'emporte */
+				free(current_cmd->input_file);
+			current_cmd->input_file = new_file;
 			current_cmd->heredoc = 0;
 		}
 	}

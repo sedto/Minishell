@@ -59,9 +59,9 @@
    - Problème: Toutes les redirections sont ouvertes au lieu de la dernière
    - ls >file1 >file2 → doit écrire seulement dans file2
 
-8. ❌ FIX MINEUR - Gestion variables vides (Priorité BASSE)
-   - Tests concernés: 66
-   - echo <missing <"./test_files/infile" <missing → mauvais exit code
+8. ✅ CORRIGÉ - Gestion variables vides (Test 66, Priorité BASSE)
+   - Test 66: echo <missing <"./test_files/infile" <missing → bon exit code (1)
+   - Correction: propagation correcte du code d'erreur lors d'une redirection échouée sur un builtin sans pipe
 
 📊 NOUVELLES PRIORITÉS :
 

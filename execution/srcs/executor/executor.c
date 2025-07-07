@@ -163,7 +163,10 @@ void	execute_commands(t_minishell **s)
 		if (!has_pipe_or_input(cmd, prev_fd) && is_builtin(cmd))
 		{
 			if (handle_redirections(cmd))
+			{
+				(*s)->exit_status = 1;
 				return ;
+			}
 			execute_builtin(s);
 		}
 		else
