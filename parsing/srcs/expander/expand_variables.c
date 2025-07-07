@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:56:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/03 11:26:31 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:23:40 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	*expand_single_var(char *var_name, char **envp, int exit_code)
 	return (result);
 }
 
-/* Détermine si un token doit être expansé (gère les quotes complexes) */
+/* Expanse toutes les variables dans une liste de tokens */
 int	should_expand_token(char *value)
 {
 	int	len;
@@ -111,5 +111,6 @@ t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)
 		}
 		current = current->next;
 	}
+	tokens = remove_empty_tokens(tokens); // Supprimer les tokens vides après expansion
 	return (tokens);
 }

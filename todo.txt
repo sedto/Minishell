@@ -1,0 +1,92 @@
+épartition des Tâches - Bugs à Corriger
+###############################
+#         TODO MINISHELL      #
+###############################
+📊 PROGRESSION: 107/146 tests passés (73%)
+
+🟦 PARSING  - TERMINÉ ✅
+
+1. ✅ CORRIGÉ - Parsing des redirections collées
+   - Test 130: ✅ cat <minishell.h>./outfiles/outfile
+   - Tokenizer corrigé, sépare correctement <file>file2
+
+2. ✅ CORRIGÉ - Validation des fichiers de redirection  
+   - Test 64: ✅ cat <"1""2""3""4""5"
+   - Validation fonctionnelle
+
+3. ✅ CORRIGÉ - Suppression des tokens vides (Priorité BASSE)
+   - Tests concernés: 134, 135
+   - Test 134: $EMPTY → tokens vides supprimés après expansion
+   - Test 135: $EMPTY echo hi → token vide supprimé, echo s'exécute
+   - Solution: remove_empty_tokens() ajoutée dans expand_variables.c
+   - Avantage: Correction à la source implémentée ✅
+
+🟥 EXÉCUTION  - 7 tâches critiques restantes
+
+1. ✅ CORRIGÉ - Builtins avec validation d'arguments
+   - Test 40: ✅ cd $PWD hi
+   - Test 50: ✅ exit hello  
+   - Test 51: ✅ exit 42 world
+   - Validation d'arguments implémentée
+
+2. ✅ SERA CORRIGÉ - Variables vides (sera fixé côté parsing)
+   - Tests concernés: 134, 135
+   - Plus besoin de gestion côté exécution une fois le parsing corrigé
+
+3. ❌ FIX CRITIQUE - Execution avec redirections (Priorité MAX)
+   - Tests concernés: 59, 61, 65, 83
+   - Problème: echo avec redirections input échoue (exit 127 au lieu de 0)
+   - echo hi < ./test_files/infile bye bye → doit afficher "hi bye bye"
+   - echo <"./test_files/infile" "bonjour 42" → doit afficher "bonjour 42"
+
+4. ✅ CORRIGÉ - Pipeline vs Builtin Export
+   - Test 56: ✅ export GHOST=123 | env | grep GHOST
+   - Export en pipeline fonctionne
+
+5. ❌ FIX CRITIQUE - Ordre Pipeline + Redirection (Priorité MAX)  
+   - Tests concernés: 73, 75, 78, 80, 91-98, 121-127
+   - Problème: Pipe vs redirection dans le mauvais ordre
+   - echo hi >file | echo bye → doit afficher "bye", pas "hi"
+   - cat <file | echo hi → doit afficher "hi", pas rien
+
+6. ❌ FIX MAJEUR - Gestion des erreurs redirections (Priorité HAUTE)
+   - Tests concernés: 85, 88, 105, 108, 116-118, 127, 129
+   - Problème: Fichiers créés même en cas d'erreur permission
+   - ls >file1 >invalid_permission → ne doit pas créer file1
+
+7. ❌ FIX MAJEUR - Redirections multiples (Priorité MOYENNE)
+   - Tests concernés: 84, 92, 94, 113-114, 122, 124-125
+   - Problème: Toutes les redirections sont ouvertes au lieu de la dernière
+   - ls >file1 >file2 → doit écrire seulement dans file2
+
+8. ❌ FIX MINEUR - Gestion variables vides (Priorité BASSE)
+   - Tests concernés: 66
+   - echo <missing <"./test_files/infile" <missing → mauvais exit code
+
+📊 NOUVELLES PRIORITÉS :
+
+🟦 PARSING (vous) - 1 tâche simple :
+1. Suppression tokens vides → Tests 134, 135 (fonction remove_empty_tokens)
+
+🟥 EXÉCUTION (votre mate) - 5 tâches critiques :
+
+🔥 PRIORITÉ MAX (à faire en premier):
+1. Echo avec redirections input → Tests 59, 61, 65, 83
+2. Ordre pipeline/redirection → Tests 73, 75, 78, 80, 91-98, 121-127
+
+🔥 PRIORITÉ HAUTE:
+3. Gestion erreurs redirections → Tests 85, 88, 105, 108, 116-118, 127, 129
+
+🔥 PRIORITÉ MOYENNE:
+4. Redirections multiples → Tests 84, 92, 94, 113-114, 122, 124-125
+
+🔥 PRIORITÉ BASSE:
+5. Variables vides edge cases → Test 66
+
+✅ PROGRESSION: 
+- PARSING: 95% terminé (plus qu'une fonction à ajouter!)
+- BUILTINS: 100% terminé  
+- EXÉCUTION: ~45% terminé (2 tests de moins à gérer côté exécution)
+
+📝 PROCHAINE ÉTAPE: Côté PARSING terminé ! Focus sur les 5 tâches critiques d'EXÉCUTION
+###############################

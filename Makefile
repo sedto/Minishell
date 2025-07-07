@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/28 11:08:49 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/07/07 17:26:59 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,6 +43,7 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/expander/expand_quotes.c \
 		  $(PARSING_SRCDIR)/expander/expand_utils.c \
 		  $(PARSING_SRCDIR)/expander/expand_buffer.c \
+		  $(PARSING_SRCDIR)/expander/expand_helpers.c \
 		  $(PARSING_SRCDIR)/parser/create_commande.c \
 		  $(PARSING_SRCDIR)/parser/parse_commands.c \
 		  $(PARSING_SRCDIR)/parser/parse_handlers.c \

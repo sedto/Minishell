@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:19:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/07 17:23:39 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,5 +324,13 @@ void				setup_signals(void);
 void				reset_signals(void);
 void				handle_sigint(int sig);
 void				handle_sigquit(int sig);
+
+/* ************************************************************************** */
+/*                          HELPERS FUNCTIONS                               */
+/* ************************************************************************** */
+
+// expand_helpers.c
+int					is_only_spaces(char *str);
+t_token				*remove_empty_tokens(t_token *tokens);
 
 #endif
