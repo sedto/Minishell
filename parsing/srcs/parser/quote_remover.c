@@ -6,13 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:56:55 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/03 11:25:47 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:46:03 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Initialise les variables pour la suppression des quotes */
+/*
+ * Initialise les variables de position et d'état pour la suppression des quotes.
+ * Utilisé en interne par le quote remover.
+ */
 static void	init_quote_removal(int *i, int *j, int *in_single, int *in_double)
 {
 	*i = 0;
@@ -21,7 +24,10 @@ static void	init_quote_removal(int *i, int *j, int *in_single, int *in_double)
 	*in_double = 0;
 }
 
-/* Supprime toutes les quotes non-protégées selon les règles bash */
+/*
+ * Supprime toutes les quotes non protégées d'une chaîne selon les règles bash.
+ * Retourne une nouvelle chaîne sans quotes inutiles.
+ */
 static char	*remove_all_unprotected_quotes(char *str)
 {
 	char	*result;

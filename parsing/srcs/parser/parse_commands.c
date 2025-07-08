@@ -6,13 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 02:06:59 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:46:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Vérifie si une commande est vide (pas d'args ni de redirections) */
+/*
+ * Vérifie si la commande passée en paramètre est vide (aucun argument ni redirection).
+ * Retourne 1 si vide, 0 sinon.
+ */
 int	is_empty_command(t_cmd *cmd)
 {
 	if (!cmd)
@@ -24,7 +27,10 @@ int	is_empty_command(t_cmd *cmd)
 	return (1);
 }
 
-/* Vérifie si une commande est dans la liste chainée */
+/*
+ * Vérifie si une commande (target) est présente dans la liste chainée de commandes.
+ * Utile pour éviter les doublons lors de l'ajout.
+ */
 static int	is_command_in_list(t_cmd *commands, t_cmd *target)
 {
 	t_cmd	*current;
@@ -41,7 +47,10 @@ static int	is_command_in_list(t_cmd *commands, t_cmd *target)
 	return (0);
 }
 
-/* Valide la syntaxe des tokens */
+/*
+ * Valide la syntaxe d'un token courant selon son type (pipe, redirection, etc).
+ * Retourne 1 si valide, 0 sinon et signale l'erreur dans le contexte.
+ */
 static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
 				t_cmd *current_cmd, t_shell_ctx *ctx)
 {
@@ -52,7 +61,10 @@ static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
 	return (validate_double_pipe(tokens, commands, current_cmd, ctx));
 }
 
-/* Traite un token et met à jour les commandes */
+/*
+ * Traite un token courant et met à jour la structure de commandes en conséquence.
+ * Appelle le handler approprié selon le type de token (mot, pipe, redirection).
+ */
 static int	process_token(t_token **tokens, t_cmd **commands,
 			t_cmd **current_cmd, t_shell_ctx *ctx)
 {

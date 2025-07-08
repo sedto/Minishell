@@ -6,13 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 02:40:32 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:46:04 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Crée une nouvelle structure de commande initialisée à zéro */
+/*
+ * Alloue et initialise une nouvelle structure de commande (t_cmd).
+ * Tous les champs sont mis à zéro ou NULL.
+ */
 t_cmd	*new_command(void)
 {
 	t_cmd	*cmd;
@@ -29,7 +32,10 @@ t_cmd	*new_command(void)
 	return (cmd);
 }
 
-/* Ajoute un argument au tableau d'arguments d'une commande */
+/*
+ * Ajoute un argument (copie de la chaîne) au tableau d'arguments d'une commande.
+ * Réalloue le tableau si nécessaire.
+ */
 void	add_argument(t_cmd *cmd, char *arg)
 {
 	char	**new_args;

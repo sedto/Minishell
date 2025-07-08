@@ -6,13 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:04 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:09:50 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 16:46:02 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Traite les tokens de redirection (>, >>, <, <<) */
+/*
+ * Traite un token de redirection (>, >>, <, <<) et appelle le handler correspondant.
+ * Met à jour la commande courante avec les fichiers/redirections.
+ */
 void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx *ctx)
 {
 	if ((*tokens)->type == TOKEN_REDIR_OUT)
