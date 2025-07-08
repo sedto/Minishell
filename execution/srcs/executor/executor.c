@@ -1,12 +1,51 @@
 #include "minishell.h"
 
-/* Valide toutes les redirections comme bash (ouvre/ferme dans l'ordre) */
+/* NOUVELLE FONCTION: Valide toutes les redirections comme bash */
 static int	validate_all_redirections(t_cmd *cmd)
 {
-	(void)cmd;
+	int	fd;
+	
+	/* Vérifier les permissions SANS créer les fichiers */
+	if (cmd->output_file)
+	{
+		/* Si le fichier existe, vérifier permission écriture */
+		if (access(cmd->output_file, F_OK) == 0)
+		{
+			if (access(cmd->output_file, W_OK) < 0)
+			{
+				perror(cmd->output_file);
+				return (1);
+			}
+		}
+		else
+		{
+			/* Fichier n'existe pas, tester création temporaire */
+			fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_EXCL, 0644);
+			if (fd < 0)
+			{
+				perror(cmd->output_file);
+				return (1);
+			}
+			/* Supprimer immédiatement le fichier test */
+			close(fd);
+			unlink(cmd->output_file);
+		}
+	}
+	
+	if (cmd->input_file)
+	{
+		/* Vérifier que le fichier existe et est lisible */
+		if (access(cmd->input_file, R_OK) < 0)
+		{
+			perror(cmd->input_file);
+			return (1);
+		}
+	}
+	
 	return (0);
 }
 
+/* MODIFIÉE: Ajouter l'appel à validate_all_redirections */
 static int	handle_redirections(t_cmd *cmd)
 {
 	int	fd;

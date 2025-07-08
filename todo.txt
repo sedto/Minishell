@@ -2,85 +2,60 @@
 ###############################
 #         TODO MINISHELL      #
 ###############################
-📊 PROGRESSION: 118/146 tests passés (81%)
+📊 PROGRESSION: 110/146 tests passés (~75%)
 
 🟦 PARSING  - TERMINÉ ✅
 
-1. ✅ CORRIGÉ - Parsing des redirections collées
-   - Test 130: ✅ cat <minishell.h>./outfiles/outfile
-   - Tokenizer corrigé, sépare correctement <file>file2
-
-2. ✅ CORRIGÉ - Validation des fichiers de redirection  
-   - Test 64: ✅ cat <"1""2""3""4""5"
-   - Validation fonctionnelle
-
-3. ✅ CORRIGÉ - Suppression des tokens vides (Priorité BASSE)
-   - Tests concernés: 134, 135
-   - Test 134: $EMPTY → tokens vides supprimés après expansion
-   - Test 135: $EMPTY echo hi → token vide supprimé, echo s'exécute
-   - Solution: remove_empty_tokens() ajoutée dans expand_variables.c
-   - Avantage: Correction à la source implémentée ✅
+1. ✅ Parsing des redirections collées
+2. ✅ Validation des fichiers de redirection
+3. ✅ Suppression des tokens vides (remove_empty_tokens)
 
 🟥 EXÉCUTION  - 4 tâches critiques restantes
 
-1. ✅ CORRIGÉ - Builtins avec validation d'arguments
-   - Test 40: ✅ cd $PWD hi
-   - Test 50: ✅ exit hello  
-   - Test 51: ✅ exit 42 world
-   - Validation d'arguments implémentée
-
-2. ✅ SERA CORRIGÉ - Variables vides (sera fixé côté parsing)
-   - Tests concernés: 134, 135
-   - Plus besoin de gestion côté exécution une fois le parsing corrigé
-
-3. ❌ FIX CRITIQUE - Execution avec redirections (Priorité MAX)
+1. ❌ FIX CRITIQUE - Execution avec redirections input (Priorité MAX)
    - Tests concernés: 59, 61, 65, 83
    - Problème: echo avec redirections input échoue (exit 127 au lieu de 0)
    - echo hi < ./test_files/infile bye bye → doit afficher "hi bye bye"
    - echo <"./test_files/infile" "bonjour 42" → doit afficher "bonjour 42"
 
-4. ✅ CORRIGÉ - Pipeline vs Builtin Export
-   - Test 56: ✅ export GHOST=123 | env | grep GHOST
-   - Export en pipeline fonctionne
-
-5. ❌ FIX CRITIQUE - Ordre Pipeline + Redirection (Priorité MAX)  
+2. ❌ FIX CRITIQUE - Ordre Pipeline + Redirection (Priorité MAX)
    - Tests concernés: 73, 75, 78, 80, 91-98, 121-127
    - Problème: Pipe vs redirection dans le mauvais ordre
    - echo hi >file | echo bye → doit afficher "bye", pas "hi"
    - cat <file | echo hi → doit afficher "hi", pas rien
 
-6. ❌ FIX MAJEUR - Gestion des erreurs redirections (Priorité HAUTE)
-   - Tests concernés: 85, 88, 105, 108, 116-118, 127, 129
-   - Problème: Fichiers créés même en cas d'erreur permission
+3. ❌ FIX MAJEUR - Gestion des erreurs redirections (Priorité HAUTE)
+   - Tests concernés: 85, 88, 105, 108, 116-118, 126, 127, 129
+   - Problème: Fichiers créés même en cas d'erreur permission, ou propagation d'erreur dans les pipes
    - ls >file1 >invalid_permission → ne doit pas créer file1
 
-7. ✅ CORRIGÉ - Redirections multiples (Priorité MOYENNE)
-   - Tests concernés: 84, 92, 94, 113-114, 122, 124-125
-   - Problème: Toutes les redirections sont ouvertes au lieu de la dernière
-   - ls >file1 >file2 → doit écrire seulement dans file2
-   - HACK implémenté côté parsing : tous les fichiers sont créés, seul le dernier est utilisé
+4. ❌ FIX MAJEUR - Redirections multiples avec pipes (Priorité MOYENNE)
+   - Tests concernés: 84, 88, 92, 94, 113-118, 121-129
+   - Problème: Plusieurs redirections de sortie dans un pipeline ne respectent pas le comportement bash (création, permissions, propagation)
+   - ls >file1 >file2 | echo bye, echo hi >file1 >file2 | echo bye, etc.
 
-8. ✅ CORRIGÉ - Gestion variables vides (Test 66, Priorité BASSE)
-   - Test 66: echo <missing <"./test_files/infile" <missing → bon exit code (1)
-   - Correction: propagation correcte du code d'erreur lors d'une redirection échouée sur un builtin sans pipe
+✅ Builtins, parsing, et la majorité des pipes/redirects simples OK
 
 📊 NOUVELLES PRIORITÉS :
 
 🟦 PARSING : 100% terminé !
 
-🟥 EXÉCUTION (reste 3 tâches critiques) :
+🟥 EXÉCUTION (reste 4 tâches critiques) :
 
-🔥 PRIORITÉ MAX (à faire en premier):
+🔥 PRIORITÉ MAX :
 1. Echo avec redirections input → Tests 59, 61, 65, 83
 2. Ordre pipeline/redirection → Tests 73, 75, 78, 80, 91-98, 121-127
 
-🔥 PRIORITÉ HAUTE:
-3. Gestion erreurs redirections → Tests 85, 88, 105, 108, 116-118, 127, 129
+🔥 PRIORITÉ HAUTE :
+3. Gestion erreurs redirections → Tests 85, 88, 105, 108, 116-118, 126, 127, 129
+
+🔥 PRIORITÉ MOYENNE :
+4. Redirections multiples avec pipes → Tests 84, 88, 92, 94, 113-118, 121-129
 
 ✅ PROGRESSION: 
 - PARSING: 100% terminé
 - BUILTINS: 100% terminé  
-- EXÉCUTION: ~81% terminé
+- EXÉCUTION: ~75% terminé
 
-📝 PROCHAINE ÉTAPE: Focus sur les 3 tâches critiques d'EXÉCUTION
+📝 PROCHAINE ÉTAPE: Focus sur les 4 tâches critiques d'EXÉCUTION (pipes + redirections + erreurs + multiples)
 ###############################
