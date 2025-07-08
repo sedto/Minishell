@@ -2,7 +2,7 @@
 ###############################
 #         TODO MINISHELL      #
 ###############################
-📊 PROGRESSION: 107/146 tests passés (73%)
+📊 PROGRESSION: 118/146 tests passés (81%)
 
 🟦 PARSING  - TERMINÉ ✅
 
@@ -21,7 +21,7 @@
    - Solution: remove_empty_tokens() ajoutée dans expand_variables.c
    - Avantage: Correction à la source implémentée ✅
 
-🟥 EXÉCUTION  - 7 tâches critiques restantes
+🟥 EXÉCUTION  - 4 tâches critiques restantes
 
 1. ✅ CORRIGÉ - Builtins avec validation d'arguments
    - Test 40: ✅ cd $PWD hi
@@ -54,10 +54,11 @@
    - Problème: Fichiers créés même en cas d'erreur permission
    - ls >file1 >invalid_permission → ne doit pas créer file1
 
-7. ❌ FIX MAJEUR - Redirections multiples (Priorité MOYENNE)
+7. ✅ CORRIGÉ - Redirections multiples (Priorité MOYENNE)
    - Tests concernés: 84, 92, 94, 113-114, 122, 124-125
    - Problème: Toutes les redirections sont ouvertes au lieu de la dernière
    - ls >file1 >file2 → doit écrire seulement dans file2
+   - HACK implémenté côté parsing : tous les fichiers sont créés, seul le dernier est utilisé
 
 8. ✅ CORRIGÉ - Gestion variables vides (Test 66, Priorité BASSE)
    - Test 66: echo <missing <"./test_files/infile" <missing → bon exit code (1)
@@ -65,10 +66,9 @@
 
 📊 NOUVELLES PRIORITÉS :
 
-🟦 PARSING (vous) - 1 tâche simple :
-1. Suppression tokens vides → Tests 134, 135 (fonction remove_empty_tokens)
+🟦 PARSING : 100% terminé !
 
-🟥 EXÉCUTION (votre mate) - 5 tâches critiques :
+🟥 EXÉCUTION (reste 3 tâches critiques) :
 
 🔥 PRIORITÉ MAX (à faire en premier):
 1. Echo avec redirections input → Tests 59, 61, 65, 83
@@ -77,16 +77,10 @@
 🔥 PRIORITÉ HAUTE:
 3. Gestion erreurs redirections → Tests 85, 88, 105, 108, 116-118, 127, 129
 
-🔥 PRIORITÉ MOYENNE:
-4. Redirections multiples → Tests 84, 92, 94, 113-114, 122, 124-125
-
-🔥 PRIORITÉ BASSE:
-5. Variables vides edge cases → Test 66
-
 ✅ PROGRESSION: 
-- PARSING: 95% terminé (plus qu'une fonction à ajouter!)
+- PARSING: 100% terminé
 - BUILTINS: 100% terminé  
-- EXÉCUTION: ~45% terminé (2 tests de moins à gérer côté exécution)
+- EXÉCUTION: ~81% terminé
 
-📝 PROCHAINE ÉTAPE: Côté PARSING terminé ! Focus sur les 5 tâches critiques d'EXÉCUTION
+📝 PROCHAINE ÉTAPE: Focus sur les 3 tâches critiques d'EXÉCUTION
 ###############################

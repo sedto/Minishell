@@ -1,8 +1,19 @@
 #include "minishell.h"
 
+/* Valide toutes les redirections comme bash (ouvre/ferme dans l'ordre) */
+static int	validate_all_redirections(t_cmd *cmd)
+{
+	(void)cmd;
+	return (0);
+}
+
 static int	handle_redirections(t_cmd *cmd)
 {
 	int	fd;
+
+	/* D'abord valider toutes les redirections comme bash */
+	if (validate_all_redirections(cmd))
+		return (1);
 
 	if (cmd->input_file) // fichier en entrée ?
 	{

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 01:04:44 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/08 02:06:23 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
 	(void)ctx;
 	char	*new_file;
+	int		fd;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -136,9 +137,16 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
+			// HACK : Créer le fichier immédiatement pour simuler bash
 			if (current_cmd->output_file)
-				free(current_cmd->output_file);  /* Libérer l'ancien fichier */
-			current_cmd->output_file = new_file;  /* Dernière redirection l'emporte */
+			{
+				// Ouvrir et fermer l'ancien fichier pour le créer
+				fd = open(current_cmd->output_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+				if (fd >= 0)
+					close(fd);
+				free(current_cmd->output_file);
+			}
+			current_cmd->output_file = new_file;
 			current_cmd->append = 0;
 		}
 	}
@@ -149,6 +157,7 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ct
 {
 	(void)ctx;
 	char	*new_file;
+	int		fd;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -156,9 +165,16 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ct
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
+			// HACK : Créer le fichier immédiatement pour simuler bash
 			if (current_cmd->output_file)
-				free(current_cmd->output_file);  /* Libérer l'ancien fichier */
-			current_cmd->output_file = new_file;  /* Dernière redirection l'emporte */
+			{
+				// Ouvrir et fermer l'ancien fichier pour le créer
+				fd = open(current_cmd->output_file, O_CREAT | O_WRONLY | O_APPEND, 0644);
+				if (fd >= 0)
+					close(fd);
+				free(current_cmd->output_file);
+			}
+			current_cmd->output_file = new_file;
 			current_cmd->append = 1;
 		}
 	}
