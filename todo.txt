@@ -1,61 +1,81 @@
-épartition des Tâches - Bugs à Corriger
-###############################
-#         TODO MINISHELL      #
-###############################
-📊 PROGRESSION: 110/146 tests passés (~75%)
+# TODO MINISHELL – Adapté au Tester
 
-🟦 PARSING  - TERMINÉ ✅
+## 📊 PROGRESSION : 110/146 tests OK
 
-1. ✅ Parsing des redirections collées
-2. ✅ Validation des fichiers de redirection
-3. ✅ Suppression des tokens vides (remove_empty_tokens)
+---
 
-🟥 EXÉCUTION  - 4 tâches critiques restantes
+## 🟦 PARSING – OK ✅
 
-1. ❌ FIX CRITIQUE - Execution avec redirections input (Priorité MAX)
-   - Tests concernés: 59, 61, 65, 83
-   - Problème: echo avec redirections input échoue (exit 127 au lieu de 0)
-   - echo hi < ./test_files/infile bye bye → doit afficher "hi bye bye"
-   - echo <"./test_files/infile" "bonjour 42" → doit afficher "bonjour 42"
+- Parsing des redirections collées : OK
+- Validation des fichiers de redirection : OK
+- Suppression des tokens vides : OK
 
-2. ❌ FIX CRITIQUE - Ordre Pipeline + Redirection (Priorité MAX)
-   - Tests concernés: 73, 75, 78, 80, 91-98, 121-127
-   - Problème: Pipe vs redirection dans le mauvais ordre
-   - echo hi >file | echo bye → doit afficher "bye", pas "hi"
-   - cat <file | echo hi → doit afficher "hi", pas rien
+---
 
-3. ❌ FIX MAJEUR - Gestion des erreurs redirections (Priorité HAUTE)
-   - Tests concernés: 85, 88, 105, 108, 116-118, 126, 127, 129
-   - Problème: Fichiers créés même en cas d'erreur permission, ou propagation d'erreur dans les pipes
-   - ls >file1 >invalid_permission → ne doit pas créer file1
+## 🟥 EXÉCUTION – À corriger
 
-4. ❌ FIX MAJEUR - Redirections multiples avec pipes (Priorité MOYENNE)
-   - Tests concernés: 84, 88, 92, 94, 113-118, 121-129
-   - Problème: Plusieurs redirections de sortie dans un pipeline ne respectent pas le comportement bash (création, permissions, propagation)
-   - ls >file1 >file2 | echo bye, echo hi >file1 >file2 | echo bye, etc.
+### 🔥 PRIORITÉ MAX
 
-✅ Builtins, parsing, et la majorité des pipes/redirects simples OK
+#### 1. Redirections input sur echo
+- Tests KO : 59, 61, 65, 83
+- Problème : `echo hi < ./test_files/infile bye bye` doit afficher `hi bye bye`
+- Problème : `echo <"./test_files/infile" "bonjour 42"` doit afficher `bonjour 42`
+- Corriger la gestion des arguments après redirection
 
-📊 NOUVELLES PRIORITÉS :
+#### 2. Ordre pipes/redirections (le pipe doit écraser la redirection si besoin)
+- Tests KO : 73, 75, 78, 80, 91, 92, 93, 94, 95, 96, 97, 98, 100, 101, 121, 122, 123, 124, 125, 126, 127, 129
+- Exemples :
+  - `cat <file | echo hi` doit afficher `hi`
+  - `echo hi >file | echo bye` doit afficher `bye`
+  - Toujours appliquer le pipe avant la redirection
 
-🟦 PARSING : 100% terminé !
+---
 
-🟥 EXÉCUTION (reste 4 tâches critiques) :
+### 🔥 PRIORITÉ HAUTE
 
-🔥 PRIORITÉ MAX :
-1. Echo avec redirections input → Tests 59, 61, 65, 83
-2. Ordre pipeline/redirection → Tests 73, 75, 78, 80, 91-98, 121-127
+#### 3. Gestion fine des erreurs de redirection (aucun fichier créé si erreur)
+- Tests KO : 85, 88, 96, 97, 98, 101, 105, 108, 116, 117, 118, 127, 129
+- Exemples :
+  - `ls >file1 >invalid_permission` ne doit pas créer file1 si erreur
+  - Valider toutes les redirections avant toute création de fichier
 
-🔥 PRIORITÉ HAUTE :
-3. Gestion erreurs redirections → Tests 85, 88, 105, 108, 116-118, 126, 127, 129
+---
 
-🔥 PRIORITÉ MOYENNE :
-4. Redirections multiples avec pipes → Tests 84, 88, 92, 94, 113-118, 121-129
+### 🟧 PRIORITÉ MOYENNE
 
-✅ PROGRESSION: 
-- PARSING: 100% terminé
-- BUILTINS: 100% terminé  
-- EXÉCUTION: ~75% terminé
+#### 4. Redirections multiples (seul le dernier fichier doit être écrit)
+- Tests KO : 84, 92, 94, 113, 114, 122, 124, 125
+- Exemples :
+  - `ls >file1 >file2` doit écrire seulement dans file2
+  - Ne créer les fichiers intermédiaires que si toutes les redirections sont valides
 
-📝 PROCHAINE ÉTAPE: Focus sur les 4 tâches critiques d'EXÉCUTION (pipes + redirections + erreurs + multiples)
-###############################
+---
+
+### 🟨 PRIORITÉ BASSE
+
+#### 5. Export en pipeline
+- Test KO : 56
+- `export GHOST=123 | env | grep GHOST` doit afficher la variable
+
+#### 6. Gestion variables vides et propagation du code d’erreur
+- Tests KO : 66, 78
+- Exemples :
+  - `echo <missing <"./test_files/infile" <missing` → bon exit code (1)
+  - Propagation correcte du code d’erreur lors d’une redirection échouée sur un builtin sans pipe
+
+---
+
+## ✅ POINTS VALIDÉS
+
+- Builtins : tous les tests OK (cd, exit, echo, export, unset, pwd)
+- Pipes simples : OK
+- Redirections simples : OK
+- Variables d’environnement : OK
+- Parsing : OK
+
+---
+
+## 📝 PROCHAINE ÉTAPE
+
+- Reprendre les corrections d’exécution une par une, en commençant par les priorités MAX (redirections sur echo, ordre pipe/redirection).
+- Utiliser le tester pour valider chaque correction (voir numéros de tests ci-dessus).
