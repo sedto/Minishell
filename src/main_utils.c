@@ -57,6 +57,8 @@ t_minishell	*setup_shell(char **envp)
 	s = malloc(sizeof(t_minishell));
 	s->env = init_env(envp);
 	s->exit_status = 0;
+	s->saved_stdout = dup(STDOUT_FILENO);
+	s->saved_stdin = dup(STDIN_FILENO);
 	return (s);
 }
 
@@ -77,6 +79,7 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 	}
 	// --- EXÉCUTION DES COMMANDES ---
 	// Remplacer ce printf par l'appel à votre exécuteur réel
+
 	if (s->commands && s->commands->args && s->commands->args[0])
 		execute_commands(&s); // À activer quand prêt
 	free_commands(s->commands);

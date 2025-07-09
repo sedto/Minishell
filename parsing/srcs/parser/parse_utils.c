@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /*
  * Traite un token de redirection (>, >>, <, <<) et appelle le handler correspondant.
@@ -26,4 +26,15 @@ void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx
 		handle_redirect_in(current_cmd, tokens, ctx);
 	else if ((*tokens)->type == TOKEN_HEREDOC)
 		handle_heredoc(current_cmd, tokens, ctx);
+}
+
+t_file	*create_t_file_node(char *str)
+{
+	t_file	*new;
+
+	new = malloc(sizeof(t_file));
+	new->name = str;
+	new->fd = -1;
+	new->next = NULL;
+	return (new);
 }

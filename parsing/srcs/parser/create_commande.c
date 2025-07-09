@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /*
  * Alloue et initialise une nouvelle structure de commande (t_cmd).
@@ -24,10 +24,7 @@ t_cmd	*new_command(void)
 	if (!cmd)
 		return (NULL);
 	cmd->args = NULL;
-	cmd->input_file = NULL;
-	cmd->output_file = NULL;
-	cmd->append = 0;
-	cmd->heredoc = 0;
+	cmd->files = NULL;
 	cmd->next = NULL;
 	return (cmd);
 }
@@ -107,6 +104,8 @@ void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
 void	free_commands(t_cmd *commands)
 {
 	t_cmd	*current;
+	t_file	*fcurrent;
+	t_file	*fnext;
 	t_cmd	*next;
 	int		i;
 
@@ -121,10 +120,17 @@ void	free_commands(t_cmd *commands)
 				free(current->args[i++]);
 			free(current->args);
 		}
-		if (current->input_file)
-			free(current->input_file);
-		if (current->output_file)
-			free(current->output_file);
+		if (current->files)
+		{
+			fcurrent = current->files;
+			while (fcurrent)
+			{
+				fnext = fcurrent->next;
+				free(fcurrent->name);
+				free(fcurrent);
+				fcurrent = fnext;
+			}
+		}
 		free(current);
 		current = next;
 	}
@@ -135,6 +141,8 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
 	(void)ctx;
 	char	*new_file;
+	t_file	*node;
+	t_file	*tmp;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -142,11 +150,17 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
-			/* SUPPRIMÉ: Le HACK qui créait les fichiers immédiatement */
-			if (current_cmd->output_file)
-				free(current_cmd->output_file);
-			current_cmd->output_file = new_file;
-			current_cmd->append = 0;
+			node = create_t_file_node(new_file);
+			node->type = OUTPUT;
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }
@@ -156,6 +170,8 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ct
 {
 	(void)ctx;
 	char	*new_file;
+	t_file	*node;
+	t_file	*tmp;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -163,11 +179,17 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ct
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
-			/* SUPPRIMÉ: Le HACK qui créait les fichiers immédiatement */
-			if (current_cmd->output_file)
-				free(current_cmd->output_file);
-			current_cmd->output_file = new_file;
-			current_cmd->append = 1;
+			node = create_t_file_node(new_file);
+			node->type = APPEND;
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }
@@ -177,6 +199,8 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
 	(void)ctx;
 	char	*new_file;
+	t_file	*node;
+	t_file	*tmp;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -184,10 +208,17 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
-			if (current_cmd->input_file)
-				free(current_cmd->input_file);
-			current_cmd->input_file = new_file;
-			current_cmd->heredoc = 0;
+			node = create_t_file_node(new_file);
+			node->type = INPUT;
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }
@@ -197,6 +228,8 @@ void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
 	(void)ctx;
 	char	*new_file;
+	t_file	*node;
+	t_file	*tmp;
 
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
@@ -204,10 +237,17 @@ void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 		new_file = ft_strdup((*token)->value);
 		if (new_file)
 		{
-			if (current_cmd->input_file)
-				free(current_cmd->input_file);  /* Libérer l'ancien fichier */
-			current_cmd->input_file = new_file;  /* Dernière redirection l'emporte */
-			current_cmd->heredoc = 1;
+			node = create_t_file_node(new_file);
+			node->type = HEREDOC;
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }

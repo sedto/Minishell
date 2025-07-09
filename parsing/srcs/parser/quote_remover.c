@@ -96,16 +96,19 @@ static void	process_file_quotes(char **filename)
 void	remove_quotes_from_commands(t_cmd *commands)
 {
 	t_cmd	*current;
+	t_file	*tmp;
 
 	current = commands;
 	while (current)
 	{
 		if (current->args)
 			process_args_quotes(current->args);
-		if (current->input_file)
-			process_file_quotes(&current->input_file);
-		if (current->output_file)
-			process_file_quotes(&current->output_file);
+		tmp = current->files;
+		while (tmp)
+		{
+			process_file_quotes(&tmp->name);
+			tmp = tmp->next;
+		}
 		current = current->next;
 	}
 }

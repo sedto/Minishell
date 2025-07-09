@@ -30,6 +30,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdbool.h>
 # include <sys/stat.h>
 # include <sys/wait.h>
 # include <termios.h>
@@ -76,15 +77,29 @@ typedef struct s_token
 	struct s_token	*next;
 }					t_token;
 
+typedef enum
+{
+	APPEND,
+	OUTPUT,
+	INPUT,
+	HEREDOC
+} e_redir;
+
+// contient un fichier et pointe vers le suivant pour tous les stocker + tester
+// le append, heredoc, et fd sont plus geres dans la commande mais pour chaque fichier
+typedef struct s_file
+{
+	char			*name;
+	int				fd;
+	e_redir			type;
+	struct s_file	*next;
+}					t_file;
+
+
 typedef struct s_cmd
 {
 	char			**args;
-	char			*input_file; //parser doit faire un char **
-	char			*output_file; //parser doit faire un char **
-	//int			fd_in;
-	//int			fd_out;
-	int				append;
-	int				heredoc;
+	t_file			*files;
 	struct s_cmd	*next;
 }					t_cmd;
 
@@ -102,6 +117,8 @@ typedef struct s_minishell
 	t_cmd			*commands;
 	int				exit_status;
 	int				in_heredoc;
+	int				saved_stdout;
+	int				saved_stdin;
 }					t_minishell;
 
 // Structure pour passer les données lors de l'expansion des variables
@@ -247,6 +264,7 @@ void				handle_heredoc(t_cmd *current_cmd, t_token **token,
 						t_shell_ctx *ctx);
 void				process_redirection_token(t_cmd *current_cmd,
 						t_token **tokens, t_shell_ctx *ctx);
+t_file				*create_t_file_node(char *str);
 
 // quote_remover.c
 void				remove_quotes_from_commands(t_cmd *commands);
@@ -303,6 +321,7 @@ char				*find_executable(char *cmd, t_env *env);
 int					count_commands(t_cmd *commands);
 void				command_not_found(char *cmd);
 void				print_tbl(char **tbl);
+void				print_ll(t_file *ll);
 
 /* ************************************************************************** */
 /*                           EXECUTION FUNCTIONS                             */

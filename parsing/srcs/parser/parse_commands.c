@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../includes/minishell.h"
+#include "minishell.h"
 
 /*
  * Vérifie si la commande passée en paramètre est vide (aucun argument ni redirection).
@@ -22,7 +22,7 @@ int	is_empty_command(t_cmd *cmd)
 		return (1);
 	if (cmd->args && cmd->args[0])
 		return (0);
-	if (cmd->input_file || cmd->output_file)
+	if (cmd->files)
 		return (0);
 	return (1);
 }

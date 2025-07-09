@@ -23,6 +23,18 @@ void	print_tbl(char **tbl)
 		i++;
 	}
 }
+
+void	print_ll(t_file *ll)
+{
+	t_file *tmp;
+
+	tmp = ll;
+	while (tmp)
+	{
+		printf("%s\n", tmp->name);
+		tmp = tmp->next;
+	}
+}
 /* Convertit t_env en tableau char** pour execve */
 char	**env_to_array(t_env *env)
 {
