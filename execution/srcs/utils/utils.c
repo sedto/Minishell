@@ -12,6 +12,17 @@
 
 #include "minishell.h"
 
+void	print_tbl(char **tbl)
+{
+	int	i;
+
+	i = 0;
+	while (tbl[i])
+	{
+		printf("%s\n", tbl[i]);
+		i++;
+	}
+}
 /* Convertit t_env en tableau char** pour execve */
 char	**env_to_array(t_env *env)
 {

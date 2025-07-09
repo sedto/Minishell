@@ -91,7 +91,6 @@ int is_builtin(t_cmd *cmd) //executer par nous et pas par execve
 		|| strcmp(cmd->args[0], "exit") == 0
 	);
 }
-#include "minishell.h"
 
 static int	prepare_pipe(t_cmd *cmd, int *pipe_fd)
 {
@@ -208,6 +207,8 @@ void	execute_commands(t_minishell **s)
 	prev_fd = -1;
 	while (cmd)
 	{
+		// print_tbl(cmd->args);
+		// printf("-----\n");
 		if (!prepare_pipe(cmd, pipe_fd))
 			return ;
 		if (!has_pipe_or_input(cmd, prev_fd) && is_builtin(cmd))
@@ -222,6 +223,9 @@ void	execute_commands(t_minishell **s)
 		else
 			run_child_process(s, cmd, pipe_fd, &prev_fd);
 		cmd = cmd->next;
+		//gerer les fins de redirections dans fichier mais pas impacter les pipes
+		// dup2(pipe_fd[1], 1);
+		// dup2(pipe_fd[0], 0);
 	}
 	while (wait(&stat) > 0)
 		(*s)->exit_status = WEXITSTATUS(stat);

@@ -79,8 +79,10 @@ typedef struct s_token
 typedef struct s_cmd
 {
 	char			**args;
-	char			*input_file;
-	char			*output_file;
+	char			*input_file; //parser doit faire un char **
+	char			*output_file; //parser doit faire un char **
+	//int			fd_in;
+	//int			fd_out;
 	int				append;
 	int				heredoc;
 	struct s_cmd	*next;
@@ -300,6 +302,7 @@ void				free_array(char **array);
 char				*find_executable(char *cmd, t_env *env);
 int					count_commands(t_cmd *commands);
 void				command_not_found(char *cmd);
+void				print_tbl(char **tbl);
 
 /* ************************************************************************** */
 /*                           EXECUTION FUNCTIONS                             */
