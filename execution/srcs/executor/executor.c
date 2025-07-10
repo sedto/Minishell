@@ -46,39 +46,83 @@
 // 	}	
 // 	return (0);
 // }
-
-/* MODIFIÉE: Ajouter l'appel à validate_all_redirections */
-static int	handle_redirections(t_cmd *cmd)
+/*Ajouter pour tester heredoc*/
+static int handle_heredoc_execution(t_file *file)
 {
-	int		fd;
-	t_file	*tmp;
+    int     pipe_fd[2];
+    pid_t   pid;
+    int     status;
 
-	/* D'abord valider toutes les redirections comme bash */
-	// if (validate_all_redirections(cmd))
-	// 	return (1);
-	tmp = cmd->files;
-	while (tmp)
-	{
-		if (tmp->type == INPUT)
-		{
-			fd = open(tmp->name, O_RDONLY); // en lecture seule
-			if (fd < 0 || dup2(fd, STDIN_FILENO) == -1) // dup2 remplace stdin par fd
-				return (perror("Error open input"), fd > 0 && close(fd), 1);
-			close(fd);
-		}
-		else
-		{
-			if (tmp->type == APPEND)
-				fd = open(tmp->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
-			else if (tmp->type == OUTPUT)
-				fd = open(tmp->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd < 0 || dup2(fd, STDOUT_FILENO) == -1) // dup2 remplace stdout par fd
-				return (perror("Error open output"), fd > 0 && close(fd), 1);
-			close(fd);
-		}
-		tmp = tmp->next;
-	}
-	return (0);
+    if (!file || !file->heredoc_content)
+        return (-1);
+    
+    if (pipe(pipe_fd) == -1)
+    {
+        perror("pipe");
+        return (-1);
+    }
+    
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+        return (-1);
+    }
+    
+    if (pid == 0)  // Enfant - écrit le contenu
+    {
+        close(pipe_fd[0]);
+        write(pipe_fd[1], file->heredoc_content, ft_strlen(file->heredoc_content));
+        close(pipe_fd[1]);
+        exit(0);
+    }
+    else  // Parent
+    {
+        close(pipe_fd[1]);
+        waitpid(pid, &status, 0);
+        return (pipe_fd[0]);
+    }
+}
+/*Modifie pour tester les heredocs.*/
+/* MODIFIÉE: Ajouter l'appel à validate_all_redirections */
+static int handle_redirections(t_cmd *cmd)
+{
+    int     fd;
+    t_file  *tmp;
+
+    tmp = cmd->files;
+    while (tmp)
+    {
+        if (tmp->type == INPUT)
+        {
+            fd = open(tmp->name, O_RDONLY);
+            if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
+                return (perror("Error open input"), fd > 0 && close(fd), 1);
+            close(fd);
+        }
+        else if (tmp->type == HEREDOC)
+        {
+            // NOUVELLE GESTION: utiliser le contenu stocké
+            fd = handle_heredoc_execution(tmp);
+            if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
+                return (perror("Error heredoc"), fd > 0 && close(fd), 1);
+            close(fd);
+        }
+        else
+        {
+            if (tmp->type == APPEND)
+                fd = open(tmp->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            else if (tmp->type == OUTPUT)
+                fd = open(tmp->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fd < 0 || dup2(fd, STDOUT_FILENO) == -1)
+                return (perror("Error open output"), fd > 0 && close(fd), 1);
+            close(fd);
+        }
+        tmp = tmp->next;
+    }
+    return (0);
 }
 // Plus tard avec excve, on lira directement dans le fichier.txt et on ecrira dans sortie.txt
 

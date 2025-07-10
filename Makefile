@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/07/07 17:26:59 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/07/10 10:56:26 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,8 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
 		  $(PARSING_SRCDIR)/parser/parse_validation.c \
 		  $(PARSING_SRCDIR)/parser/parse_utils.c \
-		  $(PARSING_SRCDIR)/parser/quote_remover.c
+		  $(PARSING_SRCDIR)/parser/quote_remover.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_utils.c
 
 # Source files - Execution
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \

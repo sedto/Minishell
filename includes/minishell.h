@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 02:07:00 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 10:50:51 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ typedef enum
 typedef struct s_file
 {
 	char			*name;
+	char			*heredoc_content;
 	int				fd;
 	e_redir			type;
 	struct s_file	*next;
@@ -268,6 +269,9 @@ t_file				*create_t_file_node(char *str);
 
 // quote_remover.c
 void				remove_quotes_from_commands(t_cmd *commands);
+
+char 				*read_heredoc_content(char *delimiter, int *should_exit);
+t_file 				*create_heredoc_file(char *delimiter, char *content);
 
 /* ************************************************************************** */
 /*                             BUILTIN FUNCTIONS                              */

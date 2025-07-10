@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:16 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 16:46:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 11:04:33 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,39 +101,42 @@ void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
 }
 
 /* Libère toute la mémoire allouée pour la liste de commandes */
-void	free_commands(t_cmd *commands)
+/* MODIFIER free_commands pour libérer heredoc_content */
+void free_commands(t_cmd *commands)
 {
-	t_cmd	*current;
-	t_file	*fcurrent;
-	t_file	*fnext;
-	t_cmd	*next;
-	int		i;
+    t_cmd   *current;
+    t_file  *fcurrent;
+    t_file  *fnext;
+    t_cmd   *next;
+    int     i;
 
-	current = commands;
-	while (current)
-	{
-		next = current->next;
-		if (current->args)
-		{
-			i = 0;
-			while (current->args[i])
-				free(current->args[i++]);
-			free(current->args);
-		}
-		if (current->files)
-		{
-			fcurrent = current->files;
-			while (fcurrent)
-			{
-				fnext = fcurrent->next;
-				free(fcurrent->name);
-				free(fcurrent);
-				fcurrent = fnext;
-			}
-		}
-		free(current);
-		current = next;
-	}
+    current = commands;
+    while (current)
+    {
+        next = current->next;
+        if (current->args)
+        {
+            i = 0;
+            while (current->args[i])
+                free(current->args[i++]);
+            free(current->args);
+        }
+        if (current->files)
+        {
+            fcurrent = current->files;
+            while (fcurrent)
+            {
+                fnext = fcurrent->next;
+                free(fcurrent->name);
+                if (fcurrent->heredoc_content)  // NOUVEAU
+                    free(fcurrent->heredoc_content);
+                free(fcurrent);
+                fcurrent = fnext;
+            }
+        }
+        free(current);
+        current = next;
+    }
 }
 
 /* Gère les redirections de sortie (>) */
@@ -194,60 +197,5 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token, t_shell_ctx *ct
 	}
 }
 
-/* Gère les redirections d'entrée (<) */
-void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
-{
-	(void)ctx;
-	char	*new_file;
-	t_file	*node;
-	t_file	*tmp;
 
-	*token = (*token)->next;
-	if (*token && (*token)->type == TOKEN_WORD)
-	{
-		new_file = ft_strdup((*token)->value);
-		if (new_file)
-		{
-			node = create_t_file_node(new_file);
-			node->type = INPUT;
-			if (current_cmd->files)
-			{
-				tmp = current_cmd->files;
-				while (tmp->next)
-					tmp = tmp->next;
-				tmp->next = node;
-			}
-			else
-				current_cmd->files = node;
-		}
-	}
-}
 
-/* Gère les heredoc (<<) */
-void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
-{
-	(void)ctx;
-	char	*new_file;
-	t_file	*node;
-	t_file	*tmp;
-
-	*token = (*token)->next;
-	if (*token && (*token)->type == TOKEN_WORD)
-	{
-		new_file = ft_strdup((*token)->value);
-		if (new_file)
-		{
-			node = create_t_file_node(new_file);
-			node->type = HEREDOC;
-			if (current_cmd->files)
-			{
-				tmp = current_cmd->files;
-				while (tmp->next)
-					tmp = tmp->next;
-				tmp->next = node;
-			}
-			else
-				current_cmd->files = node;
-		}
-	}
-}
