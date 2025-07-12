@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ciso <ciso@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/02 16:50:44 by ciso             ###   ########.fr       */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	builtin_cd(t_minishell *s)
 		target = get_env_value(s->env, "HOME");
 		if (!target)
 		{
-			fprintf(stderr, "cd: HOME not set\n");
+			write(STDERR_FILENO, "cd: HOME not set\n", 17);
 			return (1);
 		}
 	}
@@ -203,12 +203,14 @@ int	builtin_exit(t_minishell *s)
 		exit(0);
 	if (is_str_num(args[1]))
 	{
-		fprintf(stderr, "minishell: exit: %s: numeric argument required\n", args[1]);
+		write(STDERR_FILENO, "minishell: exit: ", 17);
+		write(STDERR_FILENO, args[1], ft_strlen(args[1]));
+		write(STDERR_FILENO, ": numeric argument required\n", 28);
 		exit(255);
 	}
 	if (args[2])
 	{
-		fprintf(stderr, "minishell: exit: too many arguments\n");
+		write(STDERR_FILENO, "minishell: exit: too many arguments\n", 37);
 		return (1);
 	}
 	exit_code = ft_atoi(args[1]);

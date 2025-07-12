@@ -6,12 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/21 02:42:13 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-#include <stdint.h>
+
+#define MAX_SIZE_T ((size_t)-1)
 
 /* Calcule la taille d'expansion pour l'allocation */
 static size_t	calculate_expansion_size(size_t input_len, int var_count)
@@ -22,8 +23,8 @@ static size_t	calculate_expansion_size(size_t input_len, int var_count)
 	if (var_count > 1000)
 		var_count = 1000;
 	var_expansion = (size_t)var_count * 1024;
-	if (var_expansion > SIZE_MAX - input_len)
-		max_expansion = SIZE_MAX;
+	if (var_expansion > MAX_SIZE_T - input_len)
+		max_expansion = MAX_SIZE_T;
 	else
 		max_expansion = input_len + var_expansion;
 	if (max_expansion < input_len * 2)

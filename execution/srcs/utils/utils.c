@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 00:01:47 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,5 +153,7 @@ int	count_commands(t_cmd *commands)
 /* Affiche une erreur de commande non trouvée */
 void	command_not_found(char *cmd)
 {
-	fprintf(stderr, "minishell: %s: command not found\n", cmd);
+	write(STDERR_FILENO, "minishell: ", 11);
+	write(STDERR_FILENO, cmd, ft_strlen(cmd));
+	write(STDERR_FILENO, ": command not found\n", 20);
 }

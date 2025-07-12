@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 16:59:15 by dibsejra          #+#    #+#             */
-/*   Updated: 2024/10/13 17:44:47 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,3 @@ int	ft_atoi(const char *str)
 	}
 	return (result * sign);
 }
-
-/*int	main(void)
-{
-	char str[] = "-1234abcd5";
-	printf("Valeur apres atoi: %d\n", ft_atoi(str));
-}*/

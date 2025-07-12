@@ -179,7 +179,8 @@ static void	path_stat(char *path)
 		perror(path);
     if (S_ISDIR(buf->st_mode))
 	{
-        fprintf(stderr, "%s: is a directory\n", path);
+        write(STDERR_FILENO, path, ft_strlen(path));
+        write(STDERR_FILENO, ": is a directory\n", 17);
 		exit(126);
 	}
 	free(buf);

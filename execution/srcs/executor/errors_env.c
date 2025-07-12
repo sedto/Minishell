@@ -24,7 +24,9 @@ int	export_with_error(char *arg)
 {
 	if (!is_valid_export_key(arg))
 	{
-		fprintf(stderr, "minishell: export: `%s`: not a valid identifier\n", arg);
+		write(STDERR_FILENO, "minishell: export: `", 20);
+		write(STDERR_FILENO, arg, ft_strlen(arg));
+		write(STDERR_FILENO, "`: not a valid identifier\n", 26);
 		return (1);
 	}
 	return (0);
