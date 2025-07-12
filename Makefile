@@ -82,7 +82,7 @@ ifeq ($(UNAME_S),Darwin)
     RL_LIB		= -L/opt/homebrew/opt/readline/lib
 else
     # Linux (Ubuntu) - standard paths
-    RL_INC		= 
+    RL_INC		= -I/usr/include/readline 
     RL_LIB		= 
 endif
 
