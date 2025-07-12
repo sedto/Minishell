@@ -6,104 +6,93 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 10:52:38 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/10 11:09:10 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:00 by Gemini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
-/* Lit le contenu du heredoc ligne par ligne */
-char *read_heredoc_content(char *delimiter, int *should_exit)
+#include "../../../includes/minishell.h"
+
+char	*read_heredoc_content(char *delimiter, int *should_exit, t_minishell *s, int expand)
 {
-    char    *line;
-    char    *content;
-    char    *temp;
-    char    *with_newline;
-    int     delim_len;
+	char	*line;
+	char	*content;
+	char	*temp;
+	char	*with_newline;
+	int		delim_len;
 
-    if (!delimiter)
-        return (NULL);
-    
-    *should_exit = 0;
-    delim_len = ft_strlen(delimiter);
-    content = ft_strdup("");
-    if (!content)
-        return (NULL);
-
-    while (1)
-    {
-        write(STDOUT_FILENO, "> ", 2);  // Prompt heredoc
-        line = readline("");
-        
-        // Ctrl+D pendant heredoc
-        if (!line)
-        {
-            printf("minishell: warning: here-document delimited by end-of-file (wanted '%s')\n", delimiter);
-            break;
-        }
-        
-        // Ctrl+C pendant heredoc
-        if (g_signal == SIGINT)
-        {
-            free(line);
-            free(content);
-            *should_exit = 1;
-            return (NULL);
-        }
-        
-        // Vérifier délimiteur
-        if (ft_strncmp(line, delimiter, (size_t)delim_len) == 0 && ft_strlen(line) == (size_t)delim_len)
-        {
-            free(line);
-            break;
-        }
-        
-        // Ajouter ligne au contenu
-        with_newline = ft_strjoin(line, "\n");
-        if (!with_newline)
-        {
-            free(line);
-            free(content);
-            return (NULL);
-        }
-        
-        temp = ft_strjoin(content, with_newline);
-        free(content);
-        free(with_newline);
-        free(line);
-        
-        if (!temp)
-            return (NULL);
-        content = temp;
-    }
-    
-    return (content);
+	if (!delimiter)
+		return (NULL);
+	*should_exit = 0;
+	delim_len = ft_strlen(delimiter);
+	content = ft_strdup("");
+	if (!content)
+		return (NULL);
+	while (1)
+	{
+		write(STDOUT_FILENO, "> ", 2);
+		line = readline("");
+		if (!line)
+		{
+			printf("minishell: warning: here-document delimited by end-of-file (wanted '%s')\n", delimiter);
+			break ;
+		}
+		if (g_signal == SIGINT)
+		{
+			free(line);
+			free(content);
+			*should_exit = 1;
+			return (NULL);
+		}
+		if (ft_strncmp(line, delimiter, (size_t)delim_len) == 0 && ft_strlen(line) == (size_t)delim_len)
+		{
+			free(line);
+			break ;
+		}
+		if (expand)
+		{
+			char *expanded_line = expand_string(line, env_to_tab(s->env), s->exit_status);
+			free(line);
+			line = expanded_line;
+		}
+		with_newline = ft_strjoin(line, "\n");
+		if (!with_newline)
+		{
+			free(line);
+			free(content);
+			return (NULL);
+		}
+		temp = ft_strjoin(content, with_newline);
+		free(content);
+		free(with_newline);
+		free(line);
+		if (!temp)
+			return (NULL);
+		content = temp;
+	}
+	return (content);
 }
 
-/* Crée un noeud t_file pour heredoc */
-t_file *create_heredoc_file(char *delimiter, char *content)
+t_file	*create_heredoc_file(char *delimiter, char *content)
 {
-    t_file  *file;
+	t_file	*file;
 
-    file = malloc(sizeof(t_file));
-    if (!file)
-        return (NULL);
-    
-    file->name = ft_strdup(delimiter);
-    file->heredoc_content = content;
-    file->fd = -1;
-    file->type = HEREDOC;
-    file->next = NULL;
-    
-    if (!file->name)
-    {
-        free(file->heredoc_content);
-        free(file);
-        return (NULL);
-    }
-    
-    return (file);
+	file = malloc(sizeof(t_file));
+	if (!file)
+		return (NULL);
+	file->name = ft_strdup(delimiter);
+	file->heredoc_content = content;
+	file->fd = -1;
+	file->type = HEREDOC;
+	file->next = NULL;
+	if (!file->name)
+	{
+		free(file->heredoc_content);
+		free(file);
+		return (NULL);
+	}
+	return (file);
 }
-/* Gère les redirections d'entrée (<) */
+
 void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 {
 	(void)ctx;
@@ -132,52 +121,46 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 	}
 }
 
-/* Gère les heredoc (<<) */
-void handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
+void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx, t_minishell *s)
 {
-    char    *delimiter;
-    char    *content; 
-    t_file  *node;
-    t_file  *tmp;
-    int     should_exit;
+	char	*delimiter;
+	char	*content;
+	t_file	*node;
+	t_file	*tmp;
+	int		should_exit;
+	int		expand;
 
-    *token = (*token)->next;
-    if (*token && (*token)->type == TOKEN_WORD)
-    {
-        delimiter = (*token)->value;
-        
-        // LECTURE IMMÉDIATE du contenu heredoc
-        content = read_heredoc_content(delimiter, &should_exit);
-        
-        if (should_exit)  // Ctrl+C pendant heredoc
-        {
-            ctx->syntax_error = 1;
-            return;
-        }
-        
-        if (!content)
-        {
-            ctx->syntax_error = 1;
-            return;
-        }
-        
-        // Créer le noeud avec le contenu
-        node = create_heredoc_file(delimiter, content);
-        if (!node)
-        {
-            free(content);
-            return;
-        }
-        
-        // Ajouter à la liste des fichiers
-        if (current_cmd->files)
-        {
-            tmp = current_cmd->files;
-            while (tmp->next)
-                tmp = tmp->next;
-            tmp->next = node;
-        }
-        else
-            current_cmd->files = node;
-    }
+	*token = (*token)->next;
+	if (*token && (*token)->type == TOKEN_WORD)
+	{
+		delimiter = (*token)->value;
+		expand = (ft_strchr(delimiter, '\'') == NULL && ft_strchr(delimiter, '"') == NULL);
+		delimiter = remove_quotes(delimiter);
+		content = read_heredoc_content(delimiter, &should_exit, s, expand);
+		if (should_exit)
+		{
+			ctx->syntax_error = 1;
+			return ;
+		}
+		if (!content)
+		{
+			ctx->syntax_error = 1;
+			return ;
+		}
+		node = create_heredoc_file(delimiter, content);
+		if (!node)
+		{
+			free(content);
+			return ;
+		}
+		if (current_cmd->files)
+		{
+			tmp = current_cmd->files;
+			while (tmp->next)
+				tmp = tmp->next;
+				tmp->next = node;
+		}
+		else
+			current_cmd->files = node;
+	}
 }

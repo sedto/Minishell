@@ -6,11 +6,14 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/03 11:27:02 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:00 by Gemini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <signal.h>
 
 /* Gestionnaire pour SIGINT (Ctrl+C) */
 void	handle_sigint(int sig)

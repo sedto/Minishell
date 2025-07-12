@@ -6,27 +6,25 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 16:41:33 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:19:02 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:00 by Gemini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/* Vérifie si l'input est une commande exit */
 int	is_exit_command(char *input)
 {
 	return (ft_strncmp(input, "exit", 4) == 0 && (input[4] == '\0'
 			|| input[4] == ' ' || input[4] == '\t'));
 }
 
-/* Parse une ligne d'input complète en commandes exécutables */
-t_cmd	*parse_tokens(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
+t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 {
 	char	*cleaned_input;
 	t_token	*tokens;
 	t_cmd	*commands;
 
-	ctx->syntax_error = 0;  /* Reset du flag erreur syntaxe */
+	ctx->syntax_error = 0;
 	cleaned_input = clean_input(input);
 	if (!cleaned_input)
 		return (NULL);
@@ -36,8 +34,8 @@ t_cmd	*parse_tokens(char *input, char **envp, int exit_code, t_shell_ctx *ctx)
 		free(cleaned_input);
 		return (NULL);
 	}
-	tokens = expand_all_tokens(tokens, envp, exit_code);
-	commands = parse_tokens_to_commands(tokens, ctx);
+	tokens = expand_all_tokens(tokens, env_to_tab(s->env), s->exit_status);
+	commands = parse_tokens_to_commands(tokens, ctx, s);
 	if (!commands)
 	{
 		free_tokens(tokens);
@@ -62,35 +60,27 @@ t_minishell	*setup_shell(char **envp)
 	return (s);
 }
 
-/* Traite une ligne d'input et retourne le code de sortie */
 int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 {
-	// t_cmd	*commands;
 	static t_minishell	*s = NULL;
-	
+
 	if (!s)
 		s = setup_shell(envp);
-	s->commands = parse_tokens(input, envp, s->exit_status, ctx);
+	s->commands = parse_tokens(input, s, ctx);
 	if (!s->commands)
 	{
 		if (ctx->syntax_error)
-			return (2);  /* Code 2 pour erreurs de syntaxe */
-		return (1);      /* Code 1 pour autres erreurs */
+			return (2);
+		return (1);
 	}
-	// --- EXÉCUTION DES COMMANDES ---
-	// Remplacer ce printf par l'appel à votre exécuteur réel
-
 	if (s->commands && s->commands->args && s->commands->args[0])
-		execute_commands(&s); // À activer quand prêt
+		execute_commands(&s);
 	free_commands(s->commands);
 	return (s->exit_status);
 }
 
-/* Gère une ligne d'input et détermine si on doit quitter */
 int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)
 {
-	// if (is_exit_command(input))
-	// 	return (1);
 	if (*input)
 		return (process_input(input, envp, ctx));
 	return (0);

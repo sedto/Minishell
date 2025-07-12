@@ -73,8 +73,21 @@ OBJS		= $(MAIN_OBJS) $(PARSING_OBJS) $(EXEC_OBJS)
 # Compiler and flags
 CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror -g
-INCLUDES	= -I$(INCDIR) -I$(LIBFT_DIR)
-LIBS		= -L$(LIBFT_DIR) -lft -lreadline
+
+# OS-specific Readline flags
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    # macOS (Homebrew)
+    RL_INC		= -I/opt/homebrew/opt/readline/include
+    RL_LIB		= -L/opt/homebrew/opt/readline/lib
+else
+    # Linux (Ubuntu) - standard paths
+    RL_INC		= 
+    RL_LIB		= 
+endif
+
+INCLUDES	= -I$(INCDIR) -I$(LIBFT_DIR) $(RL_INC)
+LIBS		= -L$(LIBFT_DIR) -lft -lreadline $(RL_LIB)
 
 # Libft
 LIBFT		= $(LIBFT_DIR)/libft.a

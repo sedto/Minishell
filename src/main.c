@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 01:56:46 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/07 17:28:33 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:00 by Gemini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,9 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-/* Disable ECHOCTL to prevent control characters from being echoed to the terminal */
 void	disable_echoctl(void)
 {
-	struct termios term;
+	struct termios	term;
 
 	if (tcgetattr(STDIN_FILENO, &term) == 0)
 	{
@@ -26,8 +25,6 @@ void	disable_echoctl(void)
 	}
 }
 
-
-/* Boucle principale du mode interactif */
 static int	run_interactive_mode(char **envp)
 {
 	char		*input;
@@ -41,17 +38,15 @@ static int	run_interactive_mode(char **envp)
 		disable_echoctl();
 		g_signal = 0;
 		input = readline("minishell$ ");
-		/* Ctrl+D (EOF) */
 		if (!input)
 		{
 			printf("exit\n");
-			break;
+			break ;
 		}
-		/* Ctrl+C - affichage déjà géré par handle_sigint */
 		if (g_signal == SIGINT)
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		if (*input)
 			add_history(input);
@@ -61,15 +56,14 @@ static int	run_interactive_mode(char **envp)
 	return (exit_code);
 }
 
-/* Point d'entrée principal du minishell */
 int	main(int argc, char **argv, char **envp)
 {
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
-		t_shell_ctx ctx;
+		t_shell_ctx	ctx;
 
 		ctx.syntax_error = 0;
-		return(process_input(argv[2], envp, &ctx));
+		return (process_input(argv[2], envp, &ctx));
 	}
 	return (run_interactive_mode(envp));
 }

@@ -1,0 +1,51 @@
+Explicatif des modifications apportées au minishell :
+
+1.  **Correction de l'expansion des variables dans les Heredocs** :
+    *   **Fichier modifié** : `parsing/srcs/parser/heredoc_utils.c`
+    *   **Modification** : La logique d'expansion des variables a été ajustée
+        dans la fonction `read_heredoc_content`. Auparavant, l'expansion
+        pouvait ne pas se produire correctement ou causer des problèmes
+        de gestion de mémoire. La correction assure que chaque ligne lue
+        dans un heredoc est correctement passée à `expand_string` et que
+        la mémoire est gérée de manière appropriée après l'expansion.
+
+2.  **Refonte de la gestion des Pipelines et Redirections** :
+    *   **Fichier modifié** : `execution/srcs/executor/executor.c`
+    *   **Problème initial** : Les tests échouaient principalement sur les cas
+        impliquant des pipelines et des redirections, notamment lorsque des
+        commandes intégrées étaient impliquées. La sortie des commandes
+        n'était pas toujours correctement redirigée, et les descripteurs
+        de fichiers n'étaient pas gérés de manière optimale, entraînant
+        des comportements inattendus (par exemple, la sortie d'une commande
+        précédente "fuyait" dans le pipeline).
+    *   **Modifications apportées** :
+        *   **Simplification de `execute_commands`** : La fonction a été
+            refactorisée pour simplifier la logique de création des processus
+            enfants et la gestion des pipes. Désormais, chaque commande dans
+            un pipeline est exécutée dans un processus enfant distinct.
+        *   **Gestion unifiée des descripteurs de fichiers** : La logique de
+            `dup2` et `close` pour les descripteurs de fichiers d'entrée/sortie
+            et de pipe a été consolidée et rendue plus robuste. Cela garantit
+            que l'entrée et la sortie de chaque commande sont correctement
+            connectées aux pipes ou aux fichiers de redirection, et que les
+            descripteurs de fichiers sont fermés au bon moment pour éviter
+            les fuites.
+        *   **Gestion des commandes intégrées** : Les commandes intégrées qui
+            ne font pas partie d'un pipeline sont désormais exécutées
+            directement dans le processus parent, avec une gestion temporaire
+            des redirections qui sont restaurées après l'exécution. Cela est
+            crucial pour que des commandes comme `cd` ou `export` affectent
+            l'environnement du shell principal.
+        *   **Suppression de fonctions inutilisées** : Plusieurs fonctions
+            auxiliaires (`prepare_pipe`, `has_pipe_or_input`,
+            `run_child_process`, `exec_in_child`, `path_stat`, `has_access`)
+            qui étaient devenues obsolètes ou redondantes après la refonte
+            de `execute_commands` ont été supprimées pour nettoyer le code
+            et éviter les erreurs de compilation.
+        *   **Correction du message d'erreur "Is a directory"** : Le message
+            d'erreur pour les répertoires a été ajusté de "Is a directory"
+            à "is a directory" pour correspondre au comportement de Bash.
+
+Ces modifications ont permis de résoudre les problèmes d'expansion des
+heredocs et de stabiliser la gestion des pipelines et des redirections,
+rendant le minishell plus conforme au comportement attendu d'un shell standard.

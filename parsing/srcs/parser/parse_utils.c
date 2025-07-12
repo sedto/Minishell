@@ -6,17 +6,13 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:04 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/08 16:46:02 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/10 15:00:00 by Gemini          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-/*
- * Traite un token de redirection (>, >>, <, <<) et appelle le handler correspondant.
- * Met à jour la commande courante avec les fichiers/redirections.
- */
-void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx *ctx)
+void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx *ctx, t_minishell *s)
 {
 	if ((*tokens)->type == TOKEN_REDIR_OUT)
 		handle_redirect_out(current_cmd, tokens, ctx);
@@ -25,7 +21,7 @@ void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx
 	else if ((*tokens)->type == TOKEN_REDIR_IN)
 		handle_redirect_in(current_cmd, tokens, ctx);
 	else if ((*tokens)->type == TOKEN_HEREDOC)
-		handle_heredoc(current_cmd, tokens, ctx);
+		handle_heredoc(current_cmd, tokens, ctx, s);
 }
 
 t_file	*create_t_file_node(char *str)

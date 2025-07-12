@@ -40,11 +40,6 @@ int	builtin_cd(t_minishell *s)
 			return (1);
 		}
 	}
-	else if (cmd->args[2])
-	{
-		fprintf(stderr, "cd: too many arguments\n");
-		return (1);
-	}
 	else
 		target = cmd->args[1];
 	if (chdir(target) != 0)
@@ -186,9 +181,11 @@ static int is_str_num(char *str)
 	int	i;
 
 	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
 	while (str[i])
 	{
-		if ((str[i] < '0' || str[i] > '9') && str[i] != '-' && str[i] != '+')
+		if (str[i] < '0' || str[i] > '9')
 			return (1);
 		i++;
 	}
@@ -201,20 +198,20 @@ int	builtin_exit(t_minishell *s)
 	char	**args;
 
 	args = s->commands->args;
+	printf("exit\n");
 	if (!args[1])
 		exit(0);
-	if (args[2])
-	{
-		fprintf(stderr, "exit: too many arguments\n");
-		return (1);
-	}
 	if (is_str_num(args[1]))
 	{
-		fprintf(stderr, "exit: numeric argument required\n");
-		return (2);
+		fprintf(stderr, "minishell: exit: %s: numeric argument required\n", args[1]);
+		exit(255);
+	}
+	if (args[2])
+	{
+		fprintf(stderr, "minishell: exit: too many arguments\n");
+		return (1);
 	}
 	exit_code = ft_atoi(args[1]);
-	printf("exit\n");
 	exit(exit_code);
 }
 /* Exécute un builtin */

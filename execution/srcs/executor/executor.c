@@ -179,7 +179,7 @@ static void	path_stat(char *path)
 		perror(path);
     if (S_ISDIR(buf->st_mode))
 	{
-        fprintf(stderr, "%s: Is a directory\n", path);
+        fprintf(stderr, "%s: is a directory\n", path);
 		exit(126);
 	}
 	free(buf);
@@ -221,39 +221,14 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 	exit(127);
 }
 
-static void	run_child_process(t_minishell **s, t_cmd *cmd,
-				int *pipe_fd, int *prev_fd)
-{
-	pid_t	pid;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		return ;
-	}
-	if (pid == 0)
-		exec_in_child(s, cmd, pipe_fd, *prev_fd);
-	if (*prev_fd != -1)
-		close(*prev_fd);
-	if (cmd->next)
-	{
-		close(pipe_fd[1]);
-		*prev_fd = pipe_fd[0];
-	}
-	else
-	{
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		*prev_fd = -1;
-	}
-}
 
 void	execute_commands(t_minishell **s)
 {
 	int		prev_fd;
 	int		pipe_fd[2];
 	int		stat;
+	pid_t	pid;
 
 	prev_fd = -1;
 	while ((*s)->commands)
@@ -262,21 +237,36 @@ void	execute_commands(t_minishell **s)
 			return ;
 		if (!has_pipe_or_input((*s)->commands, prev_fd) && is_builtin((*s)->commands))
 		{
+			int original_stdin = dup(STDIN_FILENO);
+			int original_stdout = dup(STDOUT_FILENO);
 			if (handle_redirections((*s)->commands))
-			{
 				(*s)->exit_status = 1;
-				dup2((*s)->saved_stdout, STDOUT_FILENO);
-				dup2((*s)->saved_stdin, STDIN_FILENO);
-				return ;
-			}
-			execute_builtin(s);
-			dup2((*s)->saved_stdout, STDOUT_FILENO);
-			dup2((*s)->saved_stdin, STDIN_FILENO);
+			else
+				execute_builtin(s);
+			dup2(original_stdin, STDIN_FILENO);
+			dup2(original_stdout, STDOUT_FILENO);
+			close(original_stdin);
+			close(original_stdout);
 		}
 		else
-			run_child_process(s, (*s)->commands, pipe_fd, &prev_fd);
+		{
+			pid = fork();
+			if (pid == -1)
+				return (perror("fork"));
+			if (pid == 0)
+				exec_in_child(s, (*s)->commands, pipe_fd, prev_fd);
+			if (prev_fd != -1)
+				close(prev_fd);
+			if ((*s)->commands->next)
+			{
+				close(pipe_fd[1]);
+				prev_fd = pipe_fd[0];
+			}
+		}
 		(*s)->commands = (*s)->commands->next;
 	}
+	if (prev_fd != -1)
+		close(prev_fd);
 	while (wait(&stat) > 0)
 		(*s)->exit_status = WEXITSTATUS(stat);
 }
