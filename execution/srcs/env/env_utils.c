@@ -181,3 +181,19 @@ char	**env_to_tab(t_env *env)
 	tab[i] = NULL;
 	return (tab);
 }
+
+/* Libère un tableau de chaînes alloué par env_to_tab */
+void	free_env_tab(char **tab)
+{
+	int	i;
+
+	if (!tab)
+		return ;
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+}

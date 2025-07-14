@@ -301,6 +301,7 @@ void				set_env_value(t_minishell **s, char *key, char *value);
 void				unset_env_value(t_minishell **s, char *key);
 void				free_env(t_env *env);
 char				**env_to_tab(t_env *env);
+void				free_env_tab(char **tab);
 
 /* ************************************************************************** */
 /*                             SIGNAL HANDLING                               */

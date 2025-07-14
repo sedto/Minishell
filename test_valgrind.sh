@@ -81,6 +81,51 @@ echo "🔍 Test 6: Exit normal (exit 0)"
 echo "exit 0" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
 echo ""
 
+# Test 7: Heredoc simple
+echo "🔍 Test 7: Heredoc simple (cat << EOF)"
+echo -e "cat << EOF\nhello\nEOF" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 8: Heredoc + pipe
+echo "🔍 Test 8: Heredoc + pipe (cat << EOF | grep hello)"
+echo -e "cat << EOF | grep hello\nhello\nworld\nEOF" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 9: Redirection append (>>)"
+echo "🔍 Test 9: Redirection append (echo hello >> /tmp/test_valgrind)"
+echo "echo hello >> /tmp/test_valgrind" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 10: Redirection input (<)"
+echo "🔍 Test 10: Redirection input (cat < /tmp/test_valgrind)"
+echo "cat < /tmp/test_valgrind" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 11: Pipeline complexe (ls | grep minishell | wc -l)"
+echo "🔍 Test 11: Pipeline complexe (ls | grep minishell | wc -l)"
+echo "ls | grep minishell | wc -l" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 12: Redirection + pipeline (echo hello > /tmp/test_valgrind | cat /tmp/test_valgrind)"
+echo "🔍 Test 12: Redirection + pipeline (echo hello > /tmp/test_valgrind | cat /tmp/test_valgrind)"
+echo "echo hello > /tmp/test_valgrind | cat /tmp/test_valgrind" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 13: Redirection invalide (cat < /fichier/inexistant)"
+echo "🔍 Test 13: Redirection invalide (cat < /fichier/inexistant)"
+echo "cat < /fichier/inexistant" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 14: Expansion variable dans pipeline (echo $USER | cat)"
+echo "🔍 Test 14: Expansion variable dans pipeline (echo \$USER | cat)"
+echo "echo $USER | cat" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
+# Test 15: Heredoc + expansion variable (cat << EOF; echo $USER)"
+echo "🔍 Test 15: Heredoc + expansion variable (cat << EOF; echo \$USER)"
+echo -e "cat << EOF\n$USER\nEOF" | valgrind $VALGRIND_OPTS ./minishell 2>&1 | grep -E "(ERROR SUMMARY|definitely lost|indirectly lost|possibly lost)"
+echo ""
+
 # Nettoyage
 rm -f /tmp/test_valgrind .valgrind.supp
 
