@@ -309,6 +309,8 @@ char				**env_to_tab(t_env *env);
 // signals.c
 void				setup_signals(void);
 void				reset_signals(void);
+void				ignore_signals(void);
+void				restore_signals(void);
 void				handle_sigint(int sig);
 void				handle_sigquit(int sig);
 void				process_signals(void);

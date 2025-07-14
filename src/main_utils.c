@@ -94,10 +94,23 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 	if (s->commands && s->commands->args && s->commands->args[0])
 	{
 		t_cmd *commands_to_free = s->commands;
+		ignore_signals();
 		execute_commands(&s);
+		restore_signals();
+		/* Si l'exécution a été interrompue, nettoie l'état */
+		if (g_signal == SIGINT)
+		{
+			process_signals();
+		}
 		free_commands(commands_to_free);
 	}
 	s->commands = NULL;
+	/* Assure-toi que stdin/stdout sont correctement restaurés */
+	if (dup2(s->saved_stdin, STDIN_FILENO) == -1 || 
+		dup2(s->saved_stdout, STDOUT_FILENO) == -1)
+	{
+		/* En cas d'erreur, continue quand même */
+	}
 	return (s->exit_status);
 }
 

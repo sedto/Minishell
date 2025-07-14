@@ -234,7 +234,7 @@ void	execute_commands(t_minishell **s)
 
 	prev_fd = -1;
 	last_pid = -1;
-	while ((*s)->commands)
+	while ((*s)->commands && g_signal != SIGINT)
 	{
 		if (!prepare_pipe((*s)->commands, pipe_fd))
 			return ;
@@ -276,12 +276,19 @@ void	execute_commands(t_minishell **s)
 	{
 		waitpid(last_pid, &stat, 0);
 		(*s)->exit_status = WEXITSTATUS(stat);
-		while (wait(NULL) > 0)
+		while (wait(NULL) > 0 && g_signal != SIGINT)
 			;
 	}
 	else
 	{
-		while (wait(&stat) > 0)
+		while (wait(&stat) > 0 && g_signal != SIGINT)
 			(*s)->exit_status = WEXITSTATUS(stat);
+	}
+	/* Si CTRL+C pendant l'exécution, nettoie les processus restants */
+	if (g_signal == SIGINT)
+	{
+		(*s)->exit_status = 130;  /* Code d'erreur standard pour SIGINT */
+		while (wait(NULL) > 0)  /* Nettoie tous les processus restants */
+			;
 	}
 }

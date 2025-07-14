@@ -57,8 +57,39 @@ void	reset_signals(void)
 	signal(SIGQUIT, SIG_DFL);
 }
 
-/* Plus besoin de process_signals() */
+/* Nettoie les processus zombies et reset le signal */
 void	process_signals(void)
 {
+	int status;
+	
+	/* Nettoie tous les processus zombies sans attendre */
+	while (waitpid(-1, &status, WNOHANG) > 0)
+		;
 	g_signal = 0;  /* Reset le signal */
+}
+
+/* Gestionnaire spécial pour SIGINT pendant l'exécution */
+void	handle_sigint_exec(int sig)
+{
+	(void)sig;
+	g_signal = SIGINT;
+	/* Ne pas interrompre le parent, juste marquer le signal */
+}
+
+/* Configure les signaux pour l'exécution des commandes */
+void	ignore_signals(void)
+{
+	struct sigaction	sa_int;
+	
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = 0;
+	sa_int.sa_handler = handle_sigint_exec;
+	sigaction(SIGINT, &sa_int, NULL);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+/* Restaure les signaux après l'exécution des commandes */
+void	restore_signals(void)
+{
+	setup_signals();
 }

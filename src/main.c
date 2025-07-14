@@ -43,10 +43,18 @@ static int	run_interactive_mode(char **envp)
 			printf("exit\n");
 			break ;
 		}
-		if (g_signal == SIGINT)
+		/* Si l'utilisateur a tapé quelque chose, ignore g_signal car c'est une vraie commande */
+		if (g_signal == SIGINT && (!input || !*input))
 		{
-			free(input);
+			if (input)
+				free(input);
+			process_signals();
 			continue ;
+		}
+		/* Reset g_signal car on a une vraie commande */
+		if (input && *input)
+		{
+			g_signal = 0;
 		}
 		if (*input)
 			add_history(input);
