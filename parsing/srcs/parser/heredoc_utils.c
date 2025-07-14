@@ -158,7 +158,7 @@ void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx, t_min
 			tmp = current_cmd->files;
 			while (tmp->next)
 				tmp = tmp->next;
-				tmp->next = node;
+			tmp->next = node;
 		}
 		else
 			current_cmd->files = node;
