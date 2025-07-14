@@ -23,6 +23,7 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 	char	*cleaned_input;
 	t_token	*tokens;
 	t_cmd	*commands;
+	char	**env_array;
 
 	ctx->syntax_error = 0;
 	cleaned_input = clean_input(input);
@@ -34,7 +35,9 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 		free(cleaned_input);
 		return (NULL);
 	}
-	tokens = expand_all_tokens(tokens, env_to_tab(s->env), s->exit_status);
+	env_array = env_to_tab(s->env);
+	tokens = expand_all_tokens(tokens, env_array, s->exit_status);
+	free_array(env_array);
 	commands = parse_tokens_to_commands(tokens, ctx, s);
 	if (!commands)
 	{
@@ -60,12 +63,26 @@ t_minishell	*setup_shell(char **envp)
 	return (s);
 }
 
-int	process_input(char *input, char **envp, t_shell_ctx *ctx)
+t_minishell	*get_shell_instance(char **envp)
 {
 	static t_minishell	*s = NULL;
 
-	if (!s)
+	if (!s && envp)
 		s = setup_shell(envp);
+	else if (!envp && s)
+	{
+		s = NULL;
+	}
+	return (s);
+}
+
+int	process_input(char *input, char **envp, t_shell_ctx *ctx)
+{
+	t_minishell	*s;
+
+	s = get_shell_instance(envp);
+	if (!s)
+		return (1);
 	s->commands = parse_tokens(input, s, ctx);
 	if (!s->commands)
 	{
@@ -76,7 +93,23 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 	if (s->commands && s->commands->args && s->commands->args[0])
 		execute_commands(&s);
 	free_commands(s->commands);
+	s->commands = NULL;
 	return (s->exit_status);
+}
+
+void	cleanup_shell(t_minishell *s)
+{
+	if (!s)
+		return ;
+	if (s->env)
+		free_env(s->env);
+	if (s->commands)
+		free_commands(s->commands);
+	if (s->saved_stdout != -1)
+		close(s->saved_stdout);
+	if (s->saved_stdin != -1)
+		close(s->saved_stdin);
+	free(s);
 }
 
 int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)

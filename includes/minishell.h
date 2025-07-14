@@ -155,6 +155,7 @@ char				*clean_input(char *str);
 // main_utils.c
 int					is_exit_command(char *input);
 t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx, t_minishell *s);
+t_minishell			*get_shell_instance(char **envp);
 int					process_input(char *input, char **envp, t_shell_ctx *ctx);
 int					handle_input_line(char *input, char **envp, t_shell_ctx *ctx);
 
@@ -319,6 +320,7 @@ void				process_signals(void);
 // utils.c
 char				**env_to_array(t_env *env);
 void				free_array(char **array);
+void				cleanup_shell(t_minishell *s);
 char				*find_executable(char *cmd, t_env *env);
 int					count_commands(t_cmd *commands);
 void				command_not_found(char *cmd);

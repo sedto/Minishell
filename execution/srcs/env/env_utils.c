@@ -170,7 +170,11 @@ char	**env_to_tab(t_env *env)
 	while (current)
 	{
 		entry = ft_strjoin(current->key, "=");
-		tab[i] = ft_strjoin(entry, current->value);
+		if (entry)
+		{
+			tab[i] = ft_strjoin(entry, current->value);
+			free(entry);
+		}
 		current = current->next;
 		i++;
 	}
