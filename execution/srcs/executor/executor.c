@@ -180,7 +180,7 @@ static void	path_stat(char *path)
     if (S_ISDIR(buf->st_mode))
 	{
         write(STDERR_FILENO, path, ft_strlen(path));
-        write(STDERR_FILENO, ": is a directory\n", 17);
+        write(STDERR_FILENO, ": Is a directory\n", 17);
 		exit(126);
 	}
 	free(buf);
@@ -230,8 +230,10 @@ void	execute_commands(t_minishell **s)
 	int		pipe_fd[2];
 	int		stat;
 	pid_t	pid;
+	pid_t	last_pid;
 
 	prev_fd = -1;
+	last_pid = -1;
 	while ((*s)->commands)
 	{
 		if (!prepare_pipe((*s)->commands, pipe_fd))
@@ -256,6 +258,8 @@ void	execute_commands(t_minishell **s)
 				return (perror("fork"));
 			if (pid == 0)
 				exec_in_child(s, (*s)->commands, pipe_fd, prev_fd);
+			if (!(*s)->commands->next)
+				last_pid = pid;
 			if (prev_fd != -1)
 				close(prev_fd);
 			if ((*s)->commands->next)
@@ -268,6 +272,16 @@ void	execute_commands(t_minishell **s)
 	}
 	if (prev_fd != -1)
 		close(prev_fd);
-	while (wait(&stat) > 0)
+	if (last_pid != -1)
+	{
+		waitpid(last_pid, &stat, 0);
 		(*s)->exit_status = WEXITSTATUS(stat);
+		while (wait(NULL) > 0)
+			;
+	}
+	else
+	{
+		while (wait(&stat) > 0)
+			(*s)->exit_status = WEXITSTATUS(stat);
+	}
 }
