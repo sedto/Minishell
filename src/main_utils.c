@@ -71,6 +71,7 @@ t_minishell	*get_shell_instance(char **envp)
 		s = setup_shell(envp);
 	else if (!envp && s)
 	{
+		cleanup_shell(s);
 		s = NULL;
 	}
 	return (s);
@@ -91,8 +92,11 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 		return (1);
 	}
 	if (s->commands && s->commands->args && s->commands->args[0])
+	{
+		t_cmd *commands_to_free = s->commands;
 		execute_commands(&s);
-	free_commands(s->commands);
+		free_commands(commands_to_free);
+	}
 	s->commands = NULL;
 	return (s->exit_status);
 }

@@ -88,9 +88,19 @@ t_cmd	*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx, t_minishell *
 			return (NULL);
 		}
 		if (!process_token(&tokens, &commands, &current_cmd, ctx, s))
+		{
+			free_commands(commands);
+			if (current_cmd && !is_command_in_list(commands, current_cmd))
+				free_commands(current_cmd);
 			return (NULL);
+		}
 	}
 	if (current_cmd)
-		add_command_to_list(&commands, current_cmd);
+	{
+		if (!is_empty_command(current_cmd))
+			add_command_to_list(&commands, current_cmd);
+		else
+			free_commands(current_cmd);
+	}
 	return (commands);
 }

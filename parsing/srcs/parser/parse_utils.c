@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:57:04 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 21:11:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/14 22:18:14 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ t_file	*create_t_file_node(char *str)
 
 	new = malloc(sizeof(t_file));
 	new->name = str;
+	new->heredoc_content = NULL;
 	new->fd = -1;
+	new->type = 0;
 	new->next = NULL;
 	return (new);
 }

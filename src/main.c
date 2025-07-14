@@ -30,7 +30,6 @@ static int	run_interactive_mode(char **envp)
 	char		*input;
 	int			exit_code;
 	t_shell_ctx	ctx;
-	t_minishell	*shell;
 
 	ctx.syntax_error = 0;
 	setup_signals();
@@ -54,13 +53,9 @@ static int	run_interactive_mode(char **envp)
 		exit_code = handle_input_line(input, envp, &ctx);
 		free(input);
 	}
-	shell = get_shell_instance(NULL);
-	if (shell)
-	{
-		cleanup_shell(shell);
-		get_shell_instance(NULL);
-	}
+	get_shell_instance(NULL);
 	rl_clear_history();
+	rl_cleanup_after_signal();
 	return (exit_code);
 }
 
@@ -71,16 +66,10 @@ int	main(int argc, char **argv, char **envp)
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
 		t_shell_ctx	ctx;
-		t_minishell	*shell;
-
+	
 		ctx.syntax_error = 0;
 		exit_code = process_input(argv[2], envp, &ctx);
-		shell = get_shell_instance(NULL);
-		if (shell)
-		{
-			cleanup_shell(shell);
-			get_shell_instance(NULL);
-		}
+		get_shell_instance(NULL);
 		return (exit_code);
 	}
 	return (run_interactive_mode(envp));
