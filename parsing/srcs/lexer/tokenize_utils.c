@@ -5,63 +5,32 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/03 01:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:09:49 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/06/10 16:50:01 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/07/15 00:49:16 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Vérifie si le caractère est un guillemet */
-int	is_quote(char c)
-{
-	return (c == '\'' || c == '"');
-}
-
-/* Vérifie si le caractère est un opérateur */
 int	is_operator_char(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
 }
 
-/* Ignore les espaces et tabulations */
-void	skip_spaces(char *input, int *i)
+static int	handle_unclosed_quote(t_shell_ctx *ctx)
 {
-	while (input[*i] == ' ' || input[*i] == '\t')
-		(*i)++;
+	ctx->syntax_error = 1;
+	printf("minishell: syntax error: unclosed quote\n");
+	return (0);
 }
 
-/* Ajoute un token EOF à la fin de la liste */
-void	add_eof_token(t_token **tokens)
+static int	create_quoted_token(char *input, int start, int end,
+		t_token **tokens)
 {
-	t_token	*eof_token;
-
-	eof_token = create_token(TOKEN_EOF, "");
-	if (eof_token)
-		add_token_to_list(tokens, eof_token);
-}
-
-/* Gère les mots entre guillemets */
-int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
-{
-	char	quote_type;
-	int		start;
 	char	*content;
 	t_token	*new_token;
 
-	quote_type = input[*i];
-	start = *i;
-	(*i)++;
-	while (input[*i] && input[*i] != quote_type)
-		(*i)++;
-	// Vérifier si la quote de fermeture a été trouvée
-	if (!input[*i])
-	{
-		ctx->syntax_error = 1;
-		printf("minishell: syntax error: unclosed quote\n");
-		return (0);
-	}
-	content = ft_substr(input, start + 1, *i - start - 1);
+	content = ft_substr(input, start + 1, end - start - 1);
 	if (!content)
 		return (0);
 	new_token = create_token(TOKEN_WORD, content);
@@ -69,10 +38,24 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 	if (!new_token)
 		return (0);
 	add_token_to_list(tokens, new_token);
-	(*i)++;
 	return (1);
 }
 
-// Remplacement effectif :
-// Dans chaque fonction qui utilisait g_syntax_error, ajouter t_shell_ctx *ctx en paramètre
-// Et remplacer g_syntax_error = 1; par ctx->syntax_error = 1;
+int	handle_quoted_word(char *input, int *i, t_token **tokens,
+		t_shell_ctx *ctx)
+{
+	char	quote_type;
+	int		start;
+
+	quote_type = input[*i];
+	start = *i;
+	(*i)++;
+	while (input[*i] && input[*i] != quote_type)
+		(*i)++;
+	if (!input[*i])
+		return (handle_unclosed_quote(ctx));
+	if (!create_quoted_token(input, start, *i, tokens))
+		return (0);
+	(*i)++;
+	return (1);
+}

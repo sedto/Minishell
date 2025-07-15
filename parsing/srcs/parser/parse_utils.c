@@ -12,7 +12,8 @@
 
 #include "../../../includes/minishell.h"
 
-void	process_redirection_token(t_cmd *current_cmd, t_token **tokens, t_shell_ctx *ctx, t_minishell *s)
+void	process_redirection_token(t_cmd *current_cmd, t_token **tokens,
+		t_shell_ctx *ctx, t_minishell *s)
 {
 	if ((*tokens)->type == TOKEN_REDIR_OUT)
 		handle_redirect_out(current_cmd, tokens, ctx);

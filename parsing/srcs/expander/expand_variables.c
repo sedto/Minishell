@@ -12,7 +12,6 @@
 
 #include "../../../includes/minishell.h"
 
-/* Cherche une variable dans l'environnement et retourne sa valeur */
 char	*find_var_in_env(char *var_name, char **envp)
 {
 	int	i;
@@ -32,7 +31,6 @@ char	*find_var_in_env(char *var_name, char **envp)
 	return (NULL);
 }
 
-/* Gère les variables spéciales ($?, $$, $0) */
 char	*handle_special_var(char *var_name, int exit_code)
 {
 	if (ft_strncmp(var_name, "?", 1) == 0 && ft_strlen(var_name) == 1)
@@ -44,73 +42,23 @@ char	*handle_special_var(char *var_name, int exit_code)
 	return (NULL);
 }
 
-/* Expanse une variable en cherchant les spéciales puis l'environnement */
-char	*expand_single_var(char *var_name, char **envp, int exit_code)
+char	*get_variable_value(char *var_name, char **envp, int exit_code)
 {
 	char	*special_value;
 	char	*env_value;
-	char	*result;
 
+	if (!var_name)
+		return (ft_strdup(""));
 	special_value = handle_special_var(var_name, exit_code);
 	if (special_value)
 		return (special_value);
 	env_value = find_var_in_env(var_name, envp);
 	if (env_value)
-	{
-		result = ft_strdup(env_value);
-		if (!result)
-			return (NULL);
-		return (result);
-	}
-	result = ft_strdup("");
-	if (!result)
-		return (NULL);
-	return (result);
+		return (ft_strdup(env_value));
+	return (ft_strdup(""));
 }
 
-/* Expanse toutes les variables dans une liste de tokens */
-int	should_expand_token(char *value)
+char	*expand_single_var(char *var_name, char **envp, int exit_code)
 {
-	int	len;
-
-	if (!value)
-		return (1);
-	len = ft_strlen(value);
-	
-	// Si ça commence ET finit par des single quotes, pas d'expansion
-	if (len >= 2 && value[0] == '\'' && value[len - 1] == '\'')
-		return (0);
-	
-	// Pour tous les autres cas (y compris double quotes), expansion
-	return (1);
-}
-
-/* Expanse toutes les variables dans une liste de tokens */
-t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)
-{
-	t_token	*current = tokens;
-	
-	while (current)
-	{
-		if (current->value && should_expand_token(current->value))
-		{
-			// ✅ PROTECTION POUR LES CHAÎNES VIDES
-			if (strlen(current->value) == 0)
-			{
-				// Ne pas toucher aux chaînes vides
-				current = current->next;
-				continue;
-			}
-			
-			char *expanded = expand_string(current->value, envp, exit_code);
-			if (expanded)
-			{
-				free(current->value);
-				current->value = expanded;
-			}
-		}
-		current = current->next;
-	}
-	tokens = remove_empty_tokens(tokens); // Supprimer les tokens vides après expansion
-	return (tokens);
+	return (get_variable_value(var_name, envp, exit_code));
 }

@@ -5,36 +5,41 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/03 00:09:49 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/03 11:26:12 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/06/10 16:49:58 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/06/20 05:22:44 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Gère les mots simples (commandes, arguments, fichiers) */
+static void	skip_whitespace(char *input, int *i)
+{
+	while (input[*i] && (input[*i] == ' ' || input[*i] == '\t'))
+		(*i)++;
+}
+
+static void	skip_quoted_section(char *input, int *i, char quote)
+{
+	(*i)++;
+	while (input[*i] && input[*i] != quote)
+		(*i)++;
+	if (input[*i] == quote)
+		(*i)++;
+}
+
 int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
 	int		start;
 	char	*word;
 	t_token	*new_token;
-	(void) ctx;
 
+	(void)ctx;
 	start = *i;
-	// Continue jusqu'à un vrai séparateur (pas une quote!)
 	while (input[*i] && input[*i] != ' ' && input[*i] != '\t'
 		&& input[*i] != '|' && input[*i] != '<' && input[*i] != '>')
 	{
 		if (input[*i] == '\'' || input[*i] == '"')
-		{
-			char quote = input[*i];
-			(*i)++; // Skip opening quote
-			// Continue until closing quote
-			while (input[*i] && input[*i] != quote)
-				(*i)++;
-			if (input[*i] == quote)
-				(*i)++; // Skip closing quote
-		}
+			skip_quoted_section(input, i, input[*i]);
 		else
 			(*i)++;
 	}
@@ -49,17 +54,14 @@ int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 	return (1);
 }
 
-/* Traite un caractère selon son type (quote, opérateur, ou mot) */
-static int	process_character(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
+static int	process_character(char *input, int *i, t_token **tokens,
+		t_shell_ctx *ctx)
 {
 	if (is_operator_char(input[*i]))
 		return (handle_operator(input, i, tokens));
 	else
 		return (handle_word(input, i, tokens, ctx));
 }
-
-/* Fonction principale de tokenisation : divise l'entrée en tokens */
-/* Ajout du contexte pour la gestion des erreurs de quote */
 
 t_token	*tokenize(char *input, t_shell_ctx *ctx)
 {
@@ -68,13 +70,19 @@ t_token	*tokenize(char *input, t_shell_ctx *ctx)
 
 	tokens = NULL;
 	i = 0;
+	if (!input)
+		return (NULL);
 	while (input[i])
 	{
-		skip_spaces(input, &i);
-		if (!input[i])
-			break ;
-		if (!process_character(input, &i, &tokens, ctx))
-			break ;
+		skip_whitespace(input, &i);
+		if (input[i])
+		{
+			if (!process_character(input, &i, &tokens, ctx))
+			{
+				free_tokens(tokens);
+				return (NULL);
+			}
+		}
 	}
 	add_eof_token(&tokens);
 	return (tokens);

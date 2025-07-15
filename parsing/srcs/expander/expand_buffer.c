@@ -12,7 +12,7 @@
 
 #include "../../../includes/minishell.h"
 
-#define MAX_SIZE_T ((size_t)-1)
+#define MAX_SIZE_T 18446744073709551615UL
 
 /* Calcule la taille d'expansion pour l'allocation */
 static size_t	calculate_expansion_size(size_t input_len, int var_count)

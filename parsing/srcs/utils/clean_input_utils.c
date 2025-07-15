@@ -12,13 +12,11 @@
 
 #include "../../../includes/minishell.h"
 
-/* Vérifie si un espace doit être ajouté avant le caractère actuel */
 static int	should_add_space_before(char *cleaned, int j)
 {
 	return (j > 0 && cleaned[j - 1] != ' ' && cleaned[j - 1] != '\t');
 }
 
-/* Vérifie si un espace doit être ajouté après le caractère actuel */
 static int	should_add_space_after(char next_char)
 {
 	return (next_char && next_char != ' ' && next_char != '\t'
@@ -26,7 +24,6 @@ static int	should_add_space_after(char next_char)
 		&& next_char != '>' && next_char != '"' && next_char != '\'');
 }
 
-/* Ajoute un espace si nécessaire avant ou après une quote */
 void	add_space_if_needed(char *cleaned, int *j, char next_char, int closing)
 {
 	if (closing && should_add_space_after(next_char))
@@ -35,7 +32,6 @@ void	add_space_if_needed(char *cleaned, int *j, char next_char, int closing)
 		cleaned[(*j)++] = ' ';
 }
 
-/* Gère les guillemets simples et leur espacement */
 int	handle_single_quote(t_clean_data *data)
 {
 	if (!(*data->in_double_quote))
@@ -53,7 +49,6 @@ int	handle_single_quote(t_clean_data *data)
 	return (0);
 }
 
-/* Gère les guillemets doubles et leur espacement */
 int	handle_double_quote(t_clean_data *data)
 {
 	if (!(*data->in_single_quote))

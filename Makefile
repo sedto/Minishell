@@ -44,13 +44,21 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/expander/expand_utils.c \
 		  $(PARSING_SRCDIR)/expander/expand_buffer.c \
 		  $(PARSING_SRCDIR)/expander/expand_helpers.c \
+		  $(PARSING_SRCDIR)/expander/expand_char_handlers.c \
+		  $(PARSING_SRCDIR)/expander/expand_tokens.c \
 		  $(PARSING_SRCDIR)/parser/create_commande.c \
 		  $(PARSING_SRCDIR)/parser/parse_commands.c \
 		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
 		  $(PARSING_SRCDIR)/parser/parse_validation.c \
 		  $(PARSING_SRCDIR)/parser/parse_utils.c \
 		  $(PARSING_SRCDIR)/parser/quote_remover.c \
-		  $(PARSING_SRCDIR)/parser/heredoc_utils.c
+		  $(PARSING_SRCDIR)/parser/heredoc_utils.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_handlers.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_loop.c \
+		  $(PARSING_SRCDIR)/parser/parse_main.c \
+		  $(PARSING_SRCDIR)/parser/cmd_cleanup.c \
+		  $(PARSING_SRCDIR)/parser/cmd_utils.c \
+		  $(PARSING_SRCDIR)/parser/redirect_handlers.c
 
 # Source files - Execution
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \

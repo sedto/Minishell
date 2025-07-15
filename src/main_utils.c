@@ -46,8 +46,14 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 		return (NULL);
 	}
 	remove_quotes_from_commands(commands);
+	if (commands && commands->args && commands->args[0])
+		printf("DEBUG CMD_AFTER_PARSE_TOKENS: [%s]\n", commands->args[0]);
 	free_tokens(tokens);
+	if (commands && commands->args && commands->args[0])
+		printf("DEBUG CMD_AFTER_FREE_TOKENS: [%s]\n", commands->args[0]);
 	free(cleaned_input);
+	if (commands && commands->args && commands->args[0])
+		printf("DEBUG CMD_AFTER_FREE_INPUT: [%s]\n", commands->args[0]);
 	return (commands);
 }
 
@@ -84,7 +90,10 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 	s = get_shell_instance(envp);
 	if (!s)
 		return (1);
-	s->commands = parse_tokens(input, s, ctx);
+	t_cmd *temp_commands = parse_tokens(input, s, ctx);
+	if (temp_commands && temp_commands->args && temp_commands->args[0])
+		printf("DEBUG CMD_BEFORE_ASSIGNMENT: [%s]\n", temp_commands->args[0]);
+	s->commands = temp_commands;
 	if (!s->commands)
 	{
 		if (ctx->syntax_error)
@@ -92,7 +101,10 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 		return (1);
 	}
 	if (s->commands && s->commands->args && s->commands->args[0])
+		printf("DEBUG CMD_AFTER_ASSIGNMENT: [%s]\n", s->commands->args[0]);
+	if (s->commands && s->commands->args && s->commands->args[0])
 	{
+		printf("DEBUG BEFORE_EXEC: [%s]\n", s->commands->args[0]);
 		t_cmd *commands_to_free = s->commands;
 		ignore_signals();
 		execute_commands(&s);

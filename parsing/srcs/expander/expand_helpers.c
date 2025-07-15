@@ -12,7 +12,6 @@
 
 #include "../../../includes/minishell.h"
 
-/* Vérifie si une chaîne ne contient que des espaces ou tabulations */
 int	is_only_spaces(char *str)
 {
 	int	i;
@@ -29,7 +28,17 @@ int	is_only_spaces(char *str)
 	return (1);
 }
 
-/* Supprime les tokens vides de la liste chaînée */
+static void	remove_current_token(t_token **tokens, t_token **prev,
+		t_token *current, t_token *next)
+{
+	if (*prev)
+		(*prev)->next = next;
+	else
+		*tokens = next;
+	free(current->value);
+	free(current);
+}
+
 t_token	*remove_empty_tokens(t_token *tokens)
 {
 	t_token	*current;
@@ -45,21 +54,19 @@ t_token	*remove_empty_tokens(t_token *tokens)
 		{
 			prev = current;
 			current = next;
-			continue;
+			continue ;
 		}
 		if (!current->value || ft_strlen(current->value) == 0
 			|| is_only_spaces(current->value))
 		{
-			if (prev)
-				prev->next = next;
-			else
-				tokens = next;
-			free(current->value);
-			free(current);
+			remove_current_token(&tokens, &prev, current, next);
+			current = next;
 		}
 		else
+		{
 			prev = current;
-		current = next;
+			current = next;
+		}
 	}
 	return (tokens);
 }

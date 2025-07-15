@@ -235,6 +235,25 @@ void				free_commands(t_cmd *commands);
 
 // parse_commands.c
 int					is_empty_command(t_cmd *cmd);
+int					is_command_in_list(t_cmd *commands, t_cmd *target);
+int					validate_token_syntax(t_token *tokens, t_cmd *commands,
+						t_cmd *current_cmd, t_shell_ctx *ctx);
+int					handle_token_type(t_token **tokens, t_cmd **commands,
+						t_cmd **current_cmd, t_shell_ctx *ctx);
+int					handle_redirection_type(t_token **tokens, t_cmd *current_cmd,
+						t_shell_ctx *ctx, t_minishell *s);
+
+typedef struct s_parse_data
+{
+	t_cmd			**commands;
+	t_cmd			**current_cmd;
+	t_shell_ctx		*ctx;
+	t_minishell		*s;
+}	t_parse_data;
+
+// parse_main.c
+t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx,
+						t_minishell *s);
 
 // parse_handlers.c
 void				handle_word_token(t_cmd *current_cmd, t_token *token,
@@ -269,8 +288,28 @@ void				remove_quotes_from_commands(t_cmd *commands);
 char				*remove_quotes(char *str);
 
 // heredoc_utils.c
-char				*read_heredoc_content(char *delimiter, int *should_exit, t_minishell *s, int expand);
+char				*process_heredoc_expansion(char *line, t_minishell *s);
+int					check_heredoc_delimiter(char *line, char *delimiter, int delim_len);
+char				*process_heredoc_line(char *line, t_minishell *s, int expand);
+char				*append_line_to_content(char *content, char *with_newline);
+int					handle_heredoc_readline(char **line, char *delimiter,
+						char **content, int *should_exit);
+
+// heredoc_loop.c
+char				*read_heredoc_loop(char *delimiter, int *should_exit,
+						t_minishell *s, int expand);
+char				*read_heredoc_content(char *delimiter, int *should_exit,
+						t_minishell *s, int expand);
+
+// heredoc_handlers.c
 t_file				*create_heredoc_file(char *delimiter, char *content);
+void				handle_redirect_in(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+void				add_heredoc_to_files(t_cmd *current_cmd, t_file *node);
+int					process_heredoc_token(char *delimiter, char **content,
+						int *should_exit, t_minishell *s);
+void				handle_heredoc(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx, t_minishell *s);
 
 /* ************************************************************************** */
 /*                             BUILTIN FUNCTIONS                              */

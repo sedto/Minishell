@@ -23,7 +23,7 @@ int	is_empty_command(t_cmd *cmd)
 	return (1);
 }
 
-static int	is_command_in_list(t_cmd *commands, t_cmd *target)
+int	is_command_in_list(t_cmd *commands, t_cmd *target)
 {
 	t_cmd	*current;
 
@@ -39,8 +39,8 @@ static int	is_command_in_list(t_cmd *commands, t_cmd *target)
 	return (0);
 }
 
-static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
-				t_cmd *current_cmd, t_shell_ctx *ctx)
+int	validate_token_syntax(t_token *tokens, t_cmd *commands,
+		t_cmd *current_cmd, t_shell_ctx *ctx)
 {
 	if (tokens->type == TOKEN_PIPE)
 		return (validate_pipe_token(tokens, commands, current_cmd, ctx));
@@ -49,58 +49,23 @@ static int	validate_token_syntax(t_token *tokens, t_cmd *commands,
 	return (validate_double_pipe(tokens, commands, current_cmd, ctx));
 }
 
-static int	process_token(t_token **tokens, t_cmd **commands,
-				t_cmd **current_cmd, t_shell_ctx *ctx, t_minishell *s)
+int	handle_token_type(t_token **tokens, t_cmd **commands,
+		t_cmd **current_cmd, t_shell_ctx *ctx)
 {
 	if ((*tokens)->type == TOKEN_WORD)
 		handle_word_token(*current_cmd, (*tokens), ctx);
 	else if ((*tokens)->type == TOKEN_PIPE)
-	{
 		handle_pipe_token(commands, current_cmd, ctx);
-	}
-	else if ((*tokens)->type >= TOKEN_REDIR_IN
-		&& (*tokens)->type <= TOKEN_HEREDOC)
-	{
-		process_redirection_token(*current_cmd, tokens, ctx, s);
-	}
 	*tokens = (*tokens)->next;
 	return (1);
 }
 
-t_cmd	*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx, t_minishell *s)
+int	handle_redirection_type(t_token **tokens, t_cmd *current_cmd,
+		t_shell_ctx *ctx, t_minishell *s)
 {
-	t_cmd	*commands;
-	t_cmd	*current_cmd;
-
-	if (!validate_initial_syntax(tokens, ctx))
-		return (NULL);
-	commands = NULL;
-	current_cmd = new_command();
-	if (!current_cmd)
-		return (NULL);
-	while (tokens && tokens->type != TOKEN_EOF)
-	{
-		if (!validate_token_syntax(tokens, commands, current_cmd, ctx))
-		{
-			free_commands(commands);
-			if (current_cmd && !is_command_in_list(commands, current_cmd))
-				free_commands(current_cmd);
-			return (NULL);
-		}
-		if (!process_token(&tokens, &commands, &current_cmd, ctx, s))
-		{
-			free_commands(commands);
-			if (current_cmd && !is_command_in_list(commands, current_cmd))
-				free_commands(current_cmd);
-			return (NULL);
-		}
-	}
-	if (current_cmd)
-	{
-		if (!is_empty_command(current_cmd))
-			add_command_to_list(&commands, current_cmd);
-		else
-			free_commands(current_cmd);
-	}
-	return (commands);
+	if ((*tokens)->type >= TOKEN_REDIR_IN
+		&& (*tokens)->type <= TOKEN_HEREDOC)
+		process_redirection_token(current_cmd, tokens, ctx, s);
+	*tokens = (*tokens)->next;
+	return (1);
 }

@@ -74,7 +74,11 @@ static int handle_heredoc_execution(t_file *file)
     if (pid == 0)  // Enfant - écrit le contenu
     {
         close(pipe_fd[0]);
-        write(pipe_fd[1], file->heredoc_content, ft_strlen(file->heredoc_content));
+        if (file->heredoc_content)
+        {
+            printf("DEBUG HEREDOC CONTENT: [%s]\n", file->heredoc_content);
+            write(pipe_fd[1], file->heredoc_content, ft_strlen(file->heredoc_content));
+        }
         close(pipe_fd[1]);
         exit(0);
     }
@@ -176,11 +180,16 @@ static void	path_stat(char *path)
 
 	buf = malloc(sizeof(struct stat));
 	if (stat(path, buf) < 0)
-		perror(path);
-    if (S_ISDIR(buf->st_mode))
 	{
-        write(STDERR_FILENO, path, ft_strlen(path));
-        write(STDERR_FILENO, ": Is a directory\n", 17);
+		perror(path);
+		free(buf);
+		exit(127);
+	}
+	if (S_ISDIR(buf->st_mode))
+	{
+		write(STDERR_FILENO, path, ft_strlen(path));
+		write(STDERR_FILENO, ": Is a directory\n", 17);
+		free(buf);
 		exit(126);
 	}
 	free(buf);
@@ -210,6 +219,7 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 		exit((*s)->exit_status);
 	}
 
+	printf("DEBUG EXEC_CMD: [%s]\n", cmd->args[0]);
 	full_path = get_path(cmd->args[0], (*s)->env);
 	if (full_path)
 	{

@@ -62,7 +62,7 @@ static void	process_expansion_loop(char *input, t_expand_data *data,
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
-	int		vars[4];
+	int				vars[4];
 
 	if (!input)
 		return (NULL);
