@@ -12,29 +12,39 @@
 
 #include "../../../includes/minishell.h"
 
-/* Gère les mots simples (commandes, arguments, fichiers) */
+/*
+** Processes quotes in input string, advancing index to closing quote
+*/
+static int	process_quotes(char *input, int *i)
+{
+	char	quote;
+
+	quote = input[*i];
+	(*i)++;
+	while (input[*i] && input[*i] != quote)
+		(*i)++;
+	if (input[*i] == quote)
+		(*i)++;
+	return (1);
+}
+
+/*
+** Handles word tokens (commands, arguments, files)
+** Manages quotes within words
+*/
 int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
 	int		start;
 	char	*word;
 	t_token	*new_token;
-	(void) ctx;
 
+	(void)ctx;
 	start = *i;
-	// Continue jusqu'à un vrai séparateur (pas une quote!)
 	while (input[*i] && input[*i] != ' ' && input[*i] != '\t'
 		&& input[*i] != '|' && input[*i] != '<' && input[*i] != '>')
 	{
 		if (input[*i] == '\'' || input[*i] == '"')
-		{
-			char quote = input[*i];
-			(*i)++; // Skip opening quote
-			// Continue until closing quote
-			while (input[*i] && input[*i] != quote)
-				(*i)++;
-			if (input[*i] == quote)
-				(*i)++; // Skip closing quote
-		}
+			process_quotes(input, i);
 		else
 			(*i)++;
 	}
@@ -49,8 +59,11 @@ int	handle_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 	return (1);
 }
 
-/* Traite un caractère selon son type (quote, opérateur, ou mot) */
-static int	process_character(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
+/*
+** Processes a character according to its type (operator or word)
+*/
+static int	process_character(char *input, int *i, t_token **tokens,
+						t_shell_ctx *ctx)
 {
 	if (is_operator_char(input[*i]))
 		return (handle_operator(input, i, tokens));
@@ -58,9 +71,10 @@ static int	process_character(char *input, int *i, t_token **tokens, t_shell_ctx 
 		return (handle_word(input, i, tokens, ctx));
 }
 
-/* Fonction principale de tokenisation : divise l'entrée en tokens */
-/* Ajout du contexte pour la gestion des erreurs de quote */
-
+/*
+** Main tokenization function: divides input into tokens
+** Returns linked list of tokens for parsing
+*/
 t_token	*tokenize(char *input, t_shell_ctx *ctx)
 {
 	t_token	*tokens;

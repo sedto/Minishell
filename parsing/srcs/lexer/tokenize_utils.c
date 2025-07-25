@@ -12,26 +12,26 @@
 
 #include "../../../includes/minishell.h"
 
-/* Vérifie si le caractère est un guillemet */
-int	is_quote(char c)
-{
-	return (c == '\'' || c == '"');
-}
-
-/* Vérifie si le caractère est un opérateur */
+/*
+** Checks if character is an operator (|, <, >)
+*/
 int	is_operator_char(char c)
 {
 	return (c == '|' || c == '<' || c == '>');
 }
 
-/* Ignore les espaces et tabulations */
+/*
+** Skips spaces and tabs in input string
+*/
 void	skip_spaces(char *input, int *i)
 {
 	while (input[*i] == ' ' || input[*i] == '\t')
 		(*i)++;
 }
 
-/* Ajoute un token EOF à la fin de la liste */
+/*
+** Adds EOF token at the end of token list
+*/
 void	add_eof_token(t_token **tokens)
 {
 	t_token	*eof_token;
@@ -41,7 +41,27 @@ void	add_eof_token(t_token **tokens)
 		add_token_to_list(tokens, eof_token);
 }
 
-/* Gère les mots entre guillemets */
+/*
+** Processes content between quotes, handles unclosed quotes
+*/
+static int	process_quote_content(char *input, int *i, char quote_type,
+						t_shell_ctx *ctx)
+{
+	(*i)++;
+	while (input[*i] && input[*i] != quote_type)
+		(*i)++;
+	if (!input[*i])
+	{
+		ctx->syntax_error = 1;
+		printf("minishell: syntax error: unclosed quote\n");
+		return (0);
+	}
+	return (1);
+}
+
+/*
+** Handles words between quotes, creates corresponding token
+*/
 int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 {
 	char	quote_type;
@@ -51,16 +71,8 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 
 	quote_type = input[*i];
 	start = *i;
-	(*i)++;
-	while (input[*i] && input[*i] != quote_type)
-		(*i)++;
-	// Vérifier si la quote de fermeture a été trouvée
-	if (!input[*i])
-	{
-		ctx->syntax_error = 1;
-		printf("minishell: syntax error: unclosed quote\n");
+	if (!process_quote_content(input, i, quote_type, ctx))
 		return (0);
-	}
 	content = ft_substr(input, start + 1, *i - start - 1);
 	if (!content)
 		return (0);
@@ -72,7 +84,3 @@ int	handle_quoted_word(char *input, int *i, t_token **tokens, t_shell_ctx *ctx)
 	(*i)++;
 	return (1);
 }
-
-// Remplacement effectif :
-// Dans chaque fonction qui utilisait g_syntax_error, ajouter t_shell_ctx *ctx en paramètre
-// Et remplacer g_syntax_error = 1; par ctx->syntax_error = 1;
