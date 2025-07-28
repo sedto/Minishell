@@ -218,6 +218,7 @@ void				handle_double_quote_char(char *input, t_expand_data *data,
 						int *in_double_quote, int in_single_quote);
 int					should_process_variable(char *input, int i);
 void				process_normal_char(char *input, t_expand_data *data);
+int					calc_buffer_size(char *input);
 
 // expand_utils.c
 int					extract_var_name(char *input, int start, char **var_name);

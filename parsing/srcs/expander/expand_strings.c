@@ -6,13 +6,15 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/28 02:09:51 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/28 22:23:33 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-/* Traite un caractère selon son type (quote, variable, normal) */
+/*
+** Processes character by type (quote, variable, normal)
+*/
 static void	process_character(char *input, t_expand_data *data,
 				int *in_single_quote, int *in_double_quote)
 {
@@ -28,7 +30,9 @@ static void	process_character(char *input, t_expand_data *data,
 		process_normal_char(input, data);
 }
 
-/* Initialise les variables pour l'expansion */
+/*
+** Initializes variables for expansion
+*/
 static void	init_expansion_vars(int *i, int *j, int *in_single_quote,
 				int *in_double_quote)
 {
@@ -38,7 +42,9 @@ static void	init_expansion_vars(int *i, int *j, int *in_single_quote,
 	*in_double_quote = 0;
 }
 
-/* Traite la boucle principale d'expansion */
+/*
+** Processes main expansion loop
+*/
 static void	process_expansion_loop(char *input, t_expand_data *data,
 				int *in_single_quote, int *in_double_quote)
 {
@@ -58,11 +64,13 @@ static void	process_expansion_loop(char *input, t_expand_data *data,
 	}
 }
 
-// Fonction principale d'expansion avec tracking correct des quotes
+/*
+** Main expansion function with correct quote tracking
+*/
 char	*expand_string(char *input, char **envp, int exit_code)
 {
 	t_expand_data	data;
-	int		vars[4];
+	int				vars[4];
 
 	if (!input)
 		return (NULL);

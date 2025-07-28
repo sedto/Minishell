@@ -12,9 +12,9 @@
 
 #include "../../../includes/minishell.h"
 
-#define MAX_SIZE_T ((size_t)-1)
-
-/* Calcule la taille d'expansion pour l'allocation */
+/*
+** Calculates expansion size for allocation
+*/
 static size_t	calculate_expansion_size(size_t input_len, int var_count)
 {
 	size_t	max_expansion;
@@ -23,8 +23,8 @@ static size_t	calculate_expansion_size(size_t input_len, int var_count)
 	if (var_count > 1000)
 		var_count = 1000;
 	var_expansion = (size_t)var_count * 1024;
-	if (var_expansion > MAX_SIZE_T - input_len)
-		max_expansion = MAX_SIZE_T;
+	if (var_expansion > (size_t) - 1 - input_len)
+		max_expansion = (size_t) - 1;
 	else
 		max_expansion = input_len + var_expansion;
 	if (max_expansion < input_len * 2)
@@ -34,7 +34,9 @@ static size_t	calculate_expansion_size(size_t input_len, int var_count)
 	return (max_expansion);
 }
 
-/* Alloue un buffer pour le résultat avec une taille estimée */
+/*
+** Allocates result buffer with estimated size
+*/
 char	*allocate_result_buffer(char *input)
 {
 	char	*result;
@@ -53,7 +55,9 @@ char	*allocate_result_buffer(char *input)
 	return (result);
 }
 
-/* Copie la valeur d'une variable dans le buffer résultat avec protection */
+/*
+** Copies variable value to result buffer with protection
+*/
 void	copy_var_value_to_result(char *result, int *j, char *var_value,
 			int max_size)
 {
