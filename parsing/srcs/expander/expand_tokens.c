@@ -28,7 +28,6 @@ static void	expand_single_token(t_token *current, char **envp, int exit_code)
 {
 	(void)envp;
 	(void)exit_code;
-	
 	if (!current->value || !should_expand_token(current->value))
 		return ;
 	if (ft_strlen(current->value) == 0)

@@ -36,3 +36,4 @@ core
 vgcore.*
 
 minishell_tester/
+*.dSYM/

@@ -25,6 +25,13 @@ void	disable_echoctl(void)
 	}
 }
 
+static void	clean_shell(void)
+{
+	get_shell_instance(NULL);
+	rl_clear_history();
+	rl_cleanup_after_signal();
+}
+
 static int	run_interactive_mode(char **envp)
 {
 	char		*input;
@@ -43,38 +50,24 @@ static int	run_interactive_mode(char **envp)
 			printf("exit\n");
 			break ;
 		}
-		/* Si l'utilisateur a tapé quelque chose, ignore g_signal car c'est une vraie commande */
 		if (g_signal == SIGINT && (!input || !*input))
-		{
-			if (input)
-				free(input);
 			process_signals();
-			continue ;
-		}
-		/* Reset g_signal car on a une vraie commande */
-		if (input && *input)
-		{
-			g_signal = 0;
-		}
-		if (*input)
-			add_history(input);
-		exit_code = handle_input_line(input, envp, &ctx);
-		free(input);
+		else
+			exit_code = handle_input_line(input, envp, &ctx);
+		if (input)
+			free(input);
 	}
-	get_shell_instance(NULL);
-	rl_clear_history();
-	rl_cleanup_after_signal();
+	clean_shell();
 	return (exit_code);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	int	exit_code;
+	int			exit_code;
+	t_shell_ctx	ctx;
 
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
-		t_shell_ctx	ctx;
-	
 		ctx.syntax_error = 0;
 		exit_code = process_input(argv[2], envp, &ctx);
 		get_shell_instance(NULL);

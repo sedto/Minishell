@@ -36,7 +36,7 @@ void	init_expand_data(t_expand_data *data, char *input, char **envp,
 		int exit_code)
 {
 	size_t	expansion_size;
-	
+
 	if (!input)
 	{
 		data->result = NULL;

@@ -56,8 +56,7 @@ t_token	*remove_empty_tokens(t_token *tokens)
 			current = next;
 			continue ;
 		}
-		if (!current->value || ft_strlen(current->value) == 0
-			|| is_only_spaces(current->value))
+		if (!current->value || !*current->value || is_only_spaces(current->value))
 		{
 			remove_current_token(&tokens, &prev, current, next);
 			current = next;

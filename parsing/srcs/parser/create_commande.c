@@ -36,8 +36,8 @@ static char	**create_new_args_array(char **args, char *arg_copy, int count)
 		free(arg_copy);
 		return (NULL);
 	}
-	i = 0;
-	while (i < count)
+	i = -1;
+	while (++i < count)
 	{
 		new_args[i] = ft_strdup(args[i]);
 		if (!new_args[i])
@@ -48,7 +48,6 @@ static char	**create_new_args_array(char **args, char *arg_copy, int count)
 			free(arg_copy);
 			return (NULL);
 		}
-		i++;
 	}
 	new_args[count] = arg_copy;
 	new_args[count + 1] = NULL;

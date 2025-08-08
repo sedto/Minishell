@@ -86,8 +86,8 @@ CFLAGS		= -Wall -Wextra -Werror -g
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
     # macOS (Homebrew)
-    RL_INC		= -I/opt/homebrew/opt/readline/include
-    RL_LIB		= -L/opt/homebrew/opt/readline/lib
+    RL_INC		= -I/usr/local/opt/readline/include
+    RL_LIB		= -L/usr/local/opt/readline/lib
 else
     # Linux (Ubuntu) - standard paths
     RL_INC		= -I/usr/include/readline 

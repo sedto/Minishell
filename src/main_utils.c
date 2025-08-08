@@ -18,6 +18,20 @@ int	is_exit_command(char *input)
 			|| input[4] == ' ' || input[4] == '\t'));
 }
 
+t_cmd	*view_commands(t_cmd *commands, t_token *tokens, char *cleaned_input)
+{
+	if (!commands)
+	{
+		free_tokens(tokens);
+		free(cleaned_input);
+		return (NULL);
+	}
+	remove_quotes_from_commands(commands);
+	free_tokens(tokens);
+	free(cleaned_input);
+	return (commands);
+}
+
 t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 {
 	char	*cleaned_input;
@@ -39,22 +53,7 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 	tokens = expand_all_tokens(tokens, env_array, s->exit_status);
 	free_array(env_array);
 	commands = parse_tokens_to_commands(tokens, ctx, s);
-	if (!commands)
-	{
-		free_tokens(tokens);
-		free(cleaned_input);
-		return (NULL);
-	}
-	remove_quotes_from_commands(commands);
-	if (commands && commands->args && commands->args[0])
-		printf("DEBUG CMD_AFTER_PARSE_TOKENS: [%s]\n", commands->args[0]);
-	free_tokens(tokens);
-	if (commands && commands->args && commands->args[0])
-		printf("DEBUG CMD_AFTER_FREE_TOKENS: [%s]\n", commands->args[0]);
-	free(cleaned_input);
-	if (commands && commands->args && commands->args[0])
-		printf("DEBUG CMD_AFTER_FREE_INPUT: [%s]\n", commands->args[0]);
-	return (commands);
+	return (view_commands(commands, tokens, cleaned_input));
 }
 
 t_minishell	*setup_shell(char **envp)
@@ -90,10 +89,7 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 	s = get_shell_instance(envp);
 	if (!s)
 		return (1);
-	t_cmd *temp_commands = parse_tokens(input, s, ctx);
-	if (temp_commands && temp_commands->args && temp_commands->args[0])
-		printf("DEBUG CMD_BEFORE_ASSIGNMENT: [%s]\n", temp_commands->args[0]);
-	s->commands = temp_commands;
+	s->commands = parse_tokens(input, s, ctx);
 	if (!s->commands)
 	{
 		if (ctx->syntax_error)
@@ -101,28 +97,17 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 		return (1);
 	}
 	if (s->commands && s->commands->args && s->commands->args[0])
-		printf("DEBUG CMD_AFTER_ASSIGNMENT: [%s]\n", s->commands->args[0]);
-	if (s->commands && s->commands->args && s->commands->args[0])
 	{
-		printf("DEBUG BEFORE_EXEC: [%s]\n", s->commands->args[0]);
-		t_cmd *commands_to_free = s->commands;
 		ignore_signals();
 		execute_commands(&s);
 		restore_signals();
-		/* Si l'exécution a été interrompue, nettoie l'état */
 		if (g_signal == SIGINT)
-		{
 			process_signals();
-		}
-		free_commands(commands_to_free);
+		free_commands(s->commands);
 	}
 	s->commands = NULL;
-	/* Assure-toi que stdin/stdout sont correctement restaurés */
-	if (dup2(s->saved_stdin, STDIN_FILENO) == -1 || 
-		dup2(s->saved_stdout, STDOUT_FILENO) == -1)
-	{
-		/* En cas d'erreur, continue quand même */
-	}
+	dup2(s->saved_stdin, 0);
+	dup2(s->saved_stdout, 1);
 	return (s->exit_status);
 }
 
@@ -143,6 +128,10 @@ void	cleanup_shell(t_minishell *s)
 
 int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)
 {
+	if (input && *input)
+		g_signal = 0;
+	if (*input)
+		add_history(input);
 	if (*input)
 		return (process_input(input, envp, ctx));
 	return (0);
