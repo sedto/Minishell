@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_buffer.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static char	**extract_paths_from_env(t_env *env)
@@ -29,7 +41,7 @@ static char	*search_path(char **paths, char *cmd)
 		len1 = ft_strlen(paths[i]);
 		full = malloc(len1 + len2 + 2);
 		if (!full)
-			return (NULL); 
+			return (NULL);
 		ft_memcpy(full, paths[i], len1);
 		full[len1] = '/';
 		ft_memcpy(full + len1 + 1, cmd, len2);

@@ -59,8 +59,7 @@ char	*append_line_to_content(char *content, char *with_newline)
 int	handle_heredoc_readline(char **line, char *delimiter,
 		char **content, int *should_exit)
 {
-	write(STDOUT_FILENO, "> ", 2);
-	*line = readline("");
+	*line = readline("> ");
 	if (!(*line))
 	{
 		printf("minishell: warning: here-document delimited by "

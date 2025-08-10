@@ -12,7 +12,7 @@
 
 #include "../../../includes/minishell.h"
 
-int	is_only_spaces(char *str)
+int	spaces(char *str)
 {
 	int	i;
 
@@ -56,16 +56,14 @@ t_token	*remove_empty_tokens(t_token *tokens)
 			current = next;
 			continue ;
 		}
-		if (!current->value || !*current->value || is_only_spaces(current->value))
+		if (!current->value || !*current->value || spaces(current->value))
 		{
 			remove_current_token(&tokens, &prev, current, next);
 			current = next;
+			continue ;
 		}
-		else
-		{
-			prev = current;
-			current = next;
-		}
+		prev = current;
+		current = next;
 	}
 	return (tokens);
 }

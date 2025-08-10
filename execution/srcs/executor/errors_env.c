@@ -1,5 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_buffer.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "minishell.h"
 
 int	is_valid_export_key(char *s)
 {
@@ -18,7 +29,6 @@ int	is_valid_export_key(char *s)
 	}
 	return (1);
 }
-
 
 int	export_with_error(char *arg)
 {

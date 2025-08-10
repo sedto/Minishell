@@ -33,7 +33,6 @@ char	*remove_quotes(char *str)
 	result = malloc(ft_strlen(str) + 1);
 	if (!result)
 		return (NULL);
-	printf("DEBUG REMOVE_QUOTES_IN: [%s]\n", str);
 	init_quote_removal(&i, &j, &in_single_quote, &in_double_quote);
 	while (str[i])
 	{
@@ -46,7 +45,6 @@ char	*remove_quotes(char *str)
 		i++;
 	}
 	result[j] = '\0';
-	printf("DEBUG REMOVE_QUOTES_OUT: [%s]\n", result);
 	return (result);
 }
 

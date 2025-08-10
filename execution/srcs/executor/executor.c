@@ -1,150 +1,120 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_buffer.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/* NOUVELLE FONCTION: Valide toutes les redirections comme bash */
-// static int	validate_all_redirections(t_cmd *cmd)
-// {
-// 	// int	fd;
-// 	t_file	*tmp;
-// 	tmp = cmd->files;
-// 	while (tmp)
-// 	{
-// 		if (tmp->type == INPUT)
-// 		{
-// 		/* Vérifier que le fichier existe et est lisible */
-// 			if (access(tmp->name, R_OK) < 0)
-// 			{
-// 				perror(tmp->name);
-// 				return (1);
-// 			}
-// 		}
-// 		else if (tmp->type == OUTPUT || tmp->type == APPEND)
-// 		{
-// 			/* Si le fichier existe, vérifier permission écriture */
-// 			if (access(tmp->name, F_OK) == 0)
-// 			{
-// 				if (access(tmp->name, W_OK) < 0)
-// 				{
-// 					perror(tmp->name);
-// 					return (1);
-// 				}
-// 			}
-// 		}
-// 		tmp = tmp->next;
-// 		// else
-// 		// {
-// 		// 	/* Fichier n'existe pas, tester création temporaire */
-// 		// 	fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_EXCL, 0644);
-// 		// 	if (fd < 0)
-// 		// 	{
-// 		// 		perror(cmd->output_file);
-// 		// 		return (1);
-// 		// 	}
-// 		// 	/* Supprimer immédiatement le fichier test */
-// 		// 	close(fd);
-// 		// 	unlink(cmd->output_file);
-// 		// }
-// 	}	
-// 	return (0);
-// }
-/*Ajouter pour tester heredoc*/
-static int handle_heredoc_execution(t_file *file)
+static void	heredoc_in_child(int *pipe_fd, t_file *file)
 {
-    int     pipe_fd[2];
-    pid_t   pid;
-    int     status;
-
-    if (!file || !file->heredoc_content)
-        return (-1);
-    
-    if (pipe(pipe_fd) == -1)
-    {
-        perror("pipe");
-        return (-1);
-    }
-    
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        close(pipe_fd[0]);
-        close(pipe_fd[1]);
-        return (-1);
-    }
-    
-    if (pid == 0)  // Enfant - écrit le contenu
-    {
-        close(pipe_fd[0]);
-        if (file->heredoc_content)
-        {
-            printf("DEBUG HEREDOC CONTENT: [%s]\n", file->heredoc_content);
-            write(pipe_fd[1], file->heredoc_content, ft_strlen(file->heredoc_content));
-        }
-        close(pipe_fd[1]);
-        exit(0);
-    }
-    else  // Parent
-    {
-        close(pipe_fd[1]);
-        waitpid(pid, &status, 0);
-        return (pipe_fd[0]);
-    }
+	close(pipe_fd[0]);
+	if (file->heredoc_content)
+	{
+		write(pipe_fd[1], file->heredoc_content,
+			ft_strlen(file->heredoc_content));
+	}
+	close(pipe_fd[1]);
+	exit(0);
 }
-/*Modifie pour tester les heredocs.*/
-/* MODIFIÉE: Ajouter l'appel à validate_all_redirections */
-static int handle_redirections(t_cmd *cmd)
-{
-    int     fd;
-    t_file  *tmp;
 
-    tmp = cmd->files;
-    while (tmp)
-    {
-        if (tmp->type == INPUT)
-        {
-            fd = open(tmp->name, O_RDONLY);
-            if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
-                return (perror("Error open input"), fd > 0 && close(fd), 1);
-            close(fd);
-        }
-        else if (tmp->type == HEREDOC)
-        {
-            // NOUVELLE GESTION: utiliser le contenu stocké
-            fd = handle_heredoc_execution(tmp);
-            if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
-                return (perror("Error heredoc"), fd > 0 && close(fd), 1);
-            close(fd);
-        }
-        else
-        {
-            if (tmp->type == APPEND)
-                fd = open(tmp->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
-            else if (tmp->type == OUTPUT)
-                fd = open(tmp->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            if (fd < 0 || dup2(fd, STDOUT_FILENO) == -1)
-                return (perror("Error open output"), fd > 0 && close(fd), 1);
-            close(fd);
-        }
-        tmp = tmp->next;
-    }
-    return (0);
+static int	handle_heredoc_execution(t_file *file)
+{
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		status;
+
+	if (!file || !file->heredoc_content)
+		return (-1);
+	if (pipe(pipe_fd) == -1)
+	{
+		perror("pipe");
+		return (-1);
+	}
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		return (-1);
+	}
+	if (pid == 0)
+		heredoc_in_child(pipe_fd, file);
+	close(pipe_fd[1]);
+	waitpid(pid, &status, 0);
+	return (pipe_fd[0]);
 }
-// Plus tard avec excve, on lira directement dans le fichier.txt et on ecrira dans sortie.txt
 
-// SAVOIR SI CEST UN BUILTIN OU PAS
-int is_builtin(t_cmd *cmd) //executer par nous et pas par execve
+static int	handle_redir_in(t_file *f)
 {
-    if (!cmd->args || !cmd->args[0])//contient le nom de la commande
-        return 0;
+	int	fd;
 
-    return (
-        	strcmp(cmd->args[0], "echo") == 0
-		|| strcmp(cmd->args[0], "cd") == 0
-		|| strcmp(cmd->args[0], "pwd") == 0
-		|| strcmp(cmd->args[0], "export") == 0
-		|| strcmp(cmd->args[0], "unset") == 0
-		|| strcmp(cmd->args[0], "env") == 0
-		|| strcmp(cmd->args[0], "exit") == 0
-	);
+	fd = open(f->name, O_RDONLY);
+	if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
+		return (perror("Error open input"), fd > 0 && close(fd), 1);
+	close(fd);
+	return (0);
+}
+
+static int	handle_redir_out(t_file *f)
+{
+	int	fd;
+
+	fd = 0;
+	if (f->type == APPEND)
+		fd = open(f->name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else if (f->type == OUTPUT)
+		fd = open(f->name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0 || dup2(fd, STDOUT_FILENO) == -1)
+		return (perror("Error open output"), fd > 0 && close(fd), 1);
+	close(fd);
+	return (0);
+}
+
+static int	handle_redirections(t_cmd *cmd)
+{
+	int		fd;
+	t_file	*tmp;
+	int		ret;
+
+	ret = 0;
+	tmp = cmd->files;
+	while (tmp)
+	{
+		if (tmp->type == INPUT)
+			ret = handle_redir_in(tmp);
+		else if (tmp->type == HEREDOC)
+		{
+			fd = handle_heredoc_execution(tmp);
+			if (fd < 0 || dup2(fd, STDIN_FILENO) == -1)
+				return (perror("Error heredoc"), fd > 0 && close(fd), 1);
+			close(fd);
+		}
+		else
+			ret = handle_redir_out(tmp);
+		if (ret != 0)
+			return (ret);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int	is_builtin(t_cmd *cmd)
+{
+	if (!cmd->args || !cmd->args[0])
+		return (0);
+	return (strcmp(cmd->args[0], "echo") == 0 || strcmp(cmd->args[0], "cd") == 0
+		|| strcmp(cmd->args[0], "pwd") == 0 || strcmp(cmd->args[0],
+			"export") == 0 || strcmp(cmd->args[0], "unset") == 0
+		|| strcmp(cmd->args[0], "env") == 0 || strcmp(cmd->args[0],
+			"exit") == 0);
 }
 
 static int	prepare_pipe(t_cmd *cmd, int *pipe_fd)
@@ -162,21 +132,21 @@ static int	has_pipe_or_input(t_cmd *cmd, int prev_fd)
 	return (cmd->next || prev_fd != -1);
 }
 
-int has_access(const char *path, int mode)
+int	has_access(const char *path, int mode)
 {
 	if (access(path, F_OK) != 0)
 		exit(127);
-    if (access(path, mode) != 0)
+	if (access(path, mode) != 0)
 	{
-        perror(path);
-        exit(126);
-    }
-    return 0;
+		perror(path);
+		exit(126);
+	}
+	return (0);
 }
 
 static void	path_stat(char *path)
 {
-	struct stat *buf;
+	struct stat	*buf;
 
 	buf = malloc(sizeof(struct stat));
 	if (stat(path, buf) < 0)
@@ -196,9 +166,8 @@ static void	path_stat(char *path)
 	has_access(path, X_OK);
 }
 
-
-static void	exec_in_child(t_minishell **s, t_cmd *cmd,
-				int *pipe_fd, int prev_fd)
+static void	exec_in_child(t_minishell **s, t_cmd *cmd, int *pipe_fd,
+		int prev_fd)
 {
 	char	*full_path;
 
@@ -218,7 +187,6 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 		execute_builtin(s);
 		exit((*s)->exit_status);
 	}
-
 	printf("DEBUG EXEC_CMD: [%s]\n", cmd->args[0]);
 	full_path = get_path(cmd->args[0], (*s)->env);
 	if (full_path)
@@ -232,8 +200,6 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 	exit(127);
 }
 
-
-
 void	execute_commands(t_minishell **s)
 {
 	int		prev_fd;
@@ -241,6 +207,8 @@ void	execute_commands(t_minishell **s)
 	int		stat;
 	pid_t	pid;
 	pid_t	last_pid;
+	int		original_stdin;
+	int		original_stdout;
 
 	prev_fd = -1;
 	last_pid = -1;
@@ -248,10 +216,11 @@ void	execute_commands(t_minishell **s)
 	{
 		if (!prepare_pipe((*s)->commands, pipe_fd))
 			return ;
-		if (!has_pipe_or_input((*s)->commands, prev_fd) && is_builtin((*s)->commands))
+		if (!has_pipe_or_input((*s)->commands, prev_fd)
+			&& is_builtin((*s)->commands))
 		{
-			int original_stdin = dup(STDIN_FILENO);
-			int original_stdout = dup(STDOUT_FILENO);
+			original_stdin = dup(STDIN_FILENO);
+			original_stdout = dup(STDOUT_FILENO);
 			if (handle_redirections((*s)->commands))
 				(*s)->exit_status = 1;
 			else
@@ -294,11 +263,10 @@ void	execute_commands(t_minishell **s)
 		while (wait(&stat) > 0 && g_signal != SIGINT)
 			(*s)->exit_status = WEXITSTATUS(stat);
 	}
-	/* Si CTRL+C pendant l'exécution, nettoie les processus restants */
 	if (g_signal == SIGINT)
 	{
-		(*s)->exit_status = 130;  /* Code d'erreur standard pour SIGINT */
-		while (wait(NULL) > 0)  /* Nettoie tous les processus restants */
+		(*s)->exit_status = 130;
+		while (wait(NULL) > 0)
 			;
 	}
 }
