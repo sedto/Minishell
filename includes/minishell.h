@@ -157,6 +157,7 @@ int					is_exit_command(char *input);
 t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx, t_minishell *s);
 int					process_input(char *input, char **envp, t_shell_ctx *ctx);
 int					handle_input_line(char *input, char **envp, t_shell_ctx *ctx);
+void				cleanup_shell(void);
 
 // clean_input_utils.c
 void				add_space_if_needed(char *cleaned, int *j, char next_char,
@@ -300,7 +301,9 @@ char				*get_env_value(t_env *env, char *key);
 void				set_env_value(t_minishell **s, char *key, char *value);
 void				unset_env_value(t_minishell **s, char *key);
 void				free_env(t_env *env);
+void				free_minishell(t_minishell *s);
 char				**env_to_tab(t_env *env);
+void				free_env_tab(char **tab);
 
 /* ************************************************************************** */
 /*                             SIGNAL HANDLING                               */

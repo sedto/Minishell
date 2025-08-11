@@ -31,6 +31,11 @@ int	builtin_cd(t_minishell *s)
 	char	*target;
 
 	cmd = s->commands;
+	if (cmd->args[1] && cmd->args[2])
+	{
+		write(STDERR_FILENO, "minishell: cd: too many arguments\n", 34);
+		return (1);
+	}
 	if (!cmd->args[1])
 	{
 		target = get_env_value(s->env, "HOME");
@@ -206,7 +211,7 @@ int	builtin_exit(t_minishell *s)
 		write(STDERR_FILENO, "minishell: exit: ", 17);
 		write(STDERR_FILENO, args[1], ft_strlen(args[1]));
 		write(STDERR_FILENO, ": numeric argument required\n", 28);
-		exit(255);
+		exit(2);
 	}
 	if (args[2])
 	{

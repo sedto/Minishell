@@ -34,7 +34,11 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 		free(cleaned_input);
 		return (NULL);
 	}
-	tokens = expand_all_tokens(tokens, env_to_tab(s->env), s->exit_status);
+	{
+		char **envp = env_to_tab(s->env);
+		tokens = expand_all_tokens(tokens, envp, s->exit_status);
+		free_env_tab(envp);
+	}
 	commands = parse_tokens_to_commands(tokens, ctx, s);
 	if (!commands)
 	{
@@ -60,23 +64,36 @@ t_minishell	*setup_shell(char **envp)
 	return (s);
 }
 
+static t_minishell	*g_shell = NULL;
+
 int	process_input(char *input, char **envp, t_shell_ctx *ctx)
 {
-	static t_minishell	*s = NULL;
-
-	if (!s)
-		s = setup_shell(envp);
-	s->commands = parse_tokens(input, s, ctx);
-	if (!s->commands)
+	if (!g_shell)
+		g_shell = setup_shell(envp);
+	g_shell->commands = parse_tokens(input, g_shell, ctx);
+	if (!g_shell->commands)
 	{
 		if (ctx->syntax_error)
 			return (2);
 		return (1);
 	}
-	if (s->commands && s->commands->args && s->commands->args[0])
-		execute_commands(&s);
-	free_commands(s->commands);
-	return (s->exit_status);
+	{
+		t_cmd *cmd_list = g_shell->commands;
+		if (g_shell->commands->args && g_shell->commands->args[0])
+			execute_commands(&g_shell);
+		free_commands(cmd_list);
+		g_shell->commands = NULL;
+		return (g_shell->exit_status);
+	}
+}
+
+void	cleanup_shell(void)
+{
+	if (g_shell)
+	{
+		free_minishell(g_shell);
+		g_shell = NULL;
+	}
 }
 
 int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)

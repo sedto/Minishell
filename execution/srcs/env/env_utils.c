@@ -148,6 +148,18 @@ void	free_env(t_env *env)
 	}
 }
 
+void	free_minishell(t_minishell *s)
+{
+	if (!s)
+		return ;
+	free_env(s->env);
+	if (s->commands)
+		free_commands(s->commands);
+	close(s->saved_stdout);
+	close(s->saved_stdin);
+	free(s);
+}
+
 char	**env_to_tab(t_env *env)
 {
 	char	**tab;
@@ -165,15 +177,37 @@ char	**env_to_tab(t_env *env)
 		current = current->next;
 	}
 	tab = malloc(sizeof(char *) * (count + 1));
+	if (!tab)
+		return (NULL);
 	current = env;
 	i = 0;
 	while (current)
 	{
 		entry = ft_strjoin(current->key, "=");
+		if (!entry)
+			return (free_env_tab(tab), NULL);
 		tab[i] = ft_strjoin(entry, current->value);
+		free(entry);
+		if (!tab[i])
+			return (free_env_tab(tab), NULL);
 		current = current->next;
 		i++;
 	}
 	tab[i] = NULL;
 	return (tab);
+}
+
+void	free_env_tab(char **tab)
+{
+	int	i;
+
+	if (!tab)
+		return ;
+	i = 0;
+	while (tab[i])
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
 }

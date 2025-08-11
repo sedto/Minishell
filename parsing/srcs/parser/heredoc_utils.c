@@ -50,7 +50,9 @@ char	*read_heredoc_content(char *delimiter, int *should_exit, t_minishell *s, in
 		}
 		if (expand)
 		{
-			char *expanded_line = expand_string(line, env_to_tab(s->env), s->exit_status);
+			char **envp = env_to_tab(s->env);
+			char *expanded_line = expand_string(line, envp, s->exit_status);
+			free_env_tab(envp);
 			free(line);
 			line = expanded_line;
 		}
@@ -139,15 +141,18 @@ void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx, t_min
 		content = read_heredoc_content(delimiter, &should_exit, s, expand);
 		if (should_exit)
 		{
+			free(delimiter);
 			ctx->syntax_error = 1;
 			return ;
 		}
 		if (!content)
 		{
+			free(delimiter);
 			ctx->syntax_error = 1;
 			return ;
 		}
 		node = create_heredoc_file(delimiter, content);
+		free(delimiter);
 		if (!node)
 		{
 			free(content);

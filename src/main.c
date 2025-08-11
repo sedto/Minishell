@@ -33,6 +33,7 @@ static int	run_interactive_mode(char **envp)
 
 	ctx.syntax_error = 0;
 	setup_signals();
+	exit_code = 0;
 	while (1)
 	{
 		disable_echoctl();
@@ -53,17 +54,22 @@ static int	run_interactive_mode(char **envp)
 		exit_code = handle_input_line(input, envp, &ctx);
 		free(input);
 	}
+	cleanup_shell();
 	return (exit_code);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
+	int exit_code;
+	
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
 		t_shell_ctx	ctx;
 
 		ctx.syntax_error = 0;
-		return (process_input(argv[2], envp, &ctx));
+		exit_code = process_input(argv[2], envp, &ctx);
+		cleanup_shell();
+		return (exit_code);
 	}
 	return (run_interactive_mode(envp));
 }

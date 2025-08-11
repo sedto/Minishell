@@ -180,7 +180,7 @@ static void	path_stat(char *path)
     if (S_ISDIR(buf->st_mode))
 	{
         write(STDERR_FILENO, path, ft_strlen(path));
-        write(STDERR_FILENO, ": is a directory\n", 17);
+        write(STDERR_FILENO, ": Is a directory\n", 17);
 		exit(126);
 	}
 	free(buf);
@@ -203,7 +203,12 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 		dup2(pipe_fd[1], STDOUT_FILENO);
 	}
 	if (handle_redirections(cmd))
-		exit(1);
+	{
+		if (cmd->next)
+			exit(0);
+		else
+			exit(1);
+	}
 	if (is_builtin(cmd))
 	{
 		execute_builtin(s);
@@ -214,7 +219,11 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 	if (full_path)
 	{
 		path_stat(full_path);
-		execve(full_path, cmd->args, env_to_tab((*s)->env));
+		{
+			char **envp = env_to_tab((*s)->env);
+			execve(full_path, cmd->args, envp);
+			free_env_tab(envp);
+		}
 		perror(cmd->args[0]);
 	}
 	else
