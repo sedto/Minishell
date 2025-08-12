@@ -13,12 +13,12 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#define _POSIX_C_SOURCE 200809L
-#define _GNU_SOURCE
+# define _POSIX_C_SOURCE 200809L
+# define _GNU_SOURCE
 
-#ifndef ECHOCTL
-# define ECHOCTL 0001000
-#endif
+# ifndef ECHOCTL
+#  define ECHOCTL 0001000
+# endif
 
 # include "../libft/libft.h"
 # include <errno.h>
@@ -36,20 +36,17 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
-// Déclaration du contexte AVANT tout prototype ou typedef qui l'utilise
-
 typedef struct s_shell_ctx
 {
 	int				syntax_error;
-	int				exit_code; // Ajouté pour la gestion fine des erreurs parsing/exécution
-	// Tu peux ajouter d'autres flags ici plus tard
+	int				exit_code;
 }					t_shell_ctx;
 
 /* ************************************************************************** */
 /*                                 GLOBALS                                    */
 /* ************************************************************************** */
 
-extern volatile sig_atomic_t g_signal; /* Signal reçu */
+extern volatile sig_atomic_t	g_signal;
 
 /* ************************************************************************** */
 /*                                CONSTANTS                                   */
@@ -77,22 +74,20 @@ typedef struct s_token
 	struct s_token	*next;
 }					t_token;
 
-typedef enum
+typedef enum e_redir
 {
 	APPEND,
 	OUTPUT,
 	INPUT,
 	HEREDOC
-} e_redir;
+}			t_redir;
 
-// contient un fichier et pointe vers le suivant pour tous les stocker + tester
-// le append, heredoc, et fd sont plus geres dans la commande mais pour chaque fichier
 typedef struct s_file
 {
 	char			*name;
 	char			*heredoc_content;
 	int				fd;
-	e_redir			type;
+	t_redir			type;
 	struct s_file	*next;
 }					t_file;
 
@@ -121,8 +116,6 @@ typedef struct s_minishell
 	int				saved_stdin;
 }					t_minishell;
 
-// Structure pour passer les données lors de l'expansion des variables
-// Utilisée pour éviter de passer trop de paramètres entre les fonctions
 typedef struct s_expand_data
 {
 	char			**envp;
@@ -134,7 +127,6 @@ typedef struct s_expand_data
 	int				*j;
 }					t_expand_data;
 
-// Structure pour le nettoyage des entrées (clean_input)
 typedef struct s_clean_data
 {
 	char			*str;
@@ -154,10 +146,12 @@ char				*clean_input(char *str);
 
 // main_utils.c
 int					is_exit_command(char *input);
-t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx, t_minishell *s);
+t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx,
+						t_minishell *s);
 t_minishell			*get_shell_instance(char **envp);
 int					process_input(char *input, char **envp, t_shell_ctx *ctx);
-int					handle_input_line(char *input, char **envp, t_shell_ctx *ctx);
+int					handle_input_line(char *input, char **envp,
+						t_shell_ctx *ctx);
 
 // clean_input_utils.c
 void				add_space_if_needed(char *cleaned, int *j, char next_char,
@@ -240,8 +234,8 @@ int					validate_token_syntax(t_token *tokens, t_cmd *commands,
 						t_cmd *current_cmd, t_shell_ctx *ctx);
 int					handle_token_type(t_token **tokens, t_cmd **commands,
 						t_cmd **current_cmd, t_shell_ctx *ctx);
-int					handle_redirection_type(t_token **tokens, t_cmd *current_cmd,
-						t_shell_ctx *ctx, t_minishell *s);
+int					handle_redirection_type(t_token **tokens,
+						t_cmd *current_cmd, t_shell_ctx *ctx, t_minishell *s);
 
 typedef struct s_parse_data
 {
@@ -289,8 +283,10 @@ char				*remove_quotes(char *str);
 
 // heredoc_utils.c
 char				*process_heredoc_expansion(char *line, t_minishell *s);
-int					check_heredoc_delimiter(char *line, char *delimiter, int delim_len);
-char				*process_heredoc_line(char *line, t_minishell *s, int expand);
+int					check_heredoc_delimiter(char *line, char *delimiter,
+						int delim_len);
+char				*process_heredoc_line(char *line, t_minishell *s,
+						int expand);
 char				*append_line_to_content(char *content, char *with_newline);
 int					handle_heredoc_readline(char **line, char *delimiter,
 						char **content, int *should_exit);

@@ -11,11 +11,10 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
 #include <signal.h>
 
-/* Gestionnaire pour SIGINT (Ctrl+C) */
 void	handle_sigint(int sig)
 {
 	(void)sig;
@@ -26,15 +25,11 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-/* Gestionnaire pour SIGQUIT (Ctrl+\) - ne fait rien (comportement bash) */
 void	handle_sigquit(int sig)
 {
 	(void)sig;
-	// Ne rien faire : pas de retour à la ligne, pas de prompt, pas d'effacement
-	// Cela laisse le prompt inchangé, comme bash
 }
 
-/* Configure les gestionnaires de signaux pour le mode interactif */
 void	setup_signals(void)
 {
 	struct sigaction	sa_int;
@@ -50,37 +45,31 @@ void	setup_signals(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
-/* Restaure les signaux par défaut (pour les processus enfants) */
 void	reset_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
 
-/* Nettoie les processus zombies et reset le signal */
 void	process_signals(void)
 {
-	int status;
-	
-	/* Nettoie tous les processus zombies sans attendre */
+	int	status;
+
 	while (waitpid(-1, &status, WNOHANG) > 0)
 		;
-	g_signal = 0;  /* Reset le signal */
+	g_signal = 0;
 }
 
-/* Gestionnaire spécial pour SIGINT pendant l'exécution */
 void	handle_sigint_exec(int sig)
 {
 	(void)sig;
 	g_signal = SIGINT;
-	/* Ne pas interrompre le parent, juste marquer le signal */
 }
 
-/* Configure les signaux pour l'exécution des commandes */
 void	ignore_signals(void)
 {
 	struct sigaction	sa_int;
-	
+
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
 	sa_int.sa_handler = handle_sigint_exec;
@@ -88,7 +77,6 @@ void	ignore_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-/* Restaure les signaux après l'exécution des commandes */
 void	restore_signals(void)
 {
 	setup_signals();

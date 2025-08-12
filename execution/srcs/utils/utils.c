@@ -26,7 +26,7 @@ void	print_tbl(char **tbl)
 
 void	print_ll(t_file *ll)
 {
-	t_file *tmp;
+	t_file	*tmp;
 
 	tmp = ll;
 	while (tmp)
@@ -35,50 +35,7 @@ void	print_ll(t_file *ll)
 		tmp = tmp->next;
 	}
 }
-/* Convertit t_env en tableau char** pour execve */
-char	**env_to_array(t_env *env)
-{
-	t_env	*current;
-	char	**envp;
-	char	*temp;
-	int		count;
-	int		i;
 
-	count = 0;
-	current = env;
-	while (current)
-	{
-		count++;
-		current = current->next;
-	}
-	envp = malloc(sizeof(char *) * (count + 1));
-	if (!envp)
-		return (NULL);
-	current = env;
-	i = 0;
-	while (current && i < count)
-	{
-		temp = ft_strjoin(current->key, "=");
-		if (temp)
-		{
-			envp[i] = ft_strjoin(temp, current->value);
-			free(temp);
-		}
-		if (!envp[i])
-		{
-			while (--i >= 0)
-				free(envp[i]);
-			free(envp);
-			return (NULL);
-		}
-		current = current->next;
-		i++;
-	}
-	envp[i] = NULL;
-	return (envp);
-}
-
-/* Libère un tableau char** */
 void	free_array(char **array)
 {
 	int	i;
@@ -94,49 +51,59 @@ void	free_array(char **array)
 	free(array);
 }
 
-/* Cherche un exécutable dans PATH */
+char	*find_basic_path(char *cmd)
+{
+	if (access(cmd, F_OK | X_OK) == 0)
+		return (ft_strdup(cmd));
+	return (NULL);
+}
+
+char	*combine_path(char **paths, int i, char *cmd)
+{
+	char	*temp;
+	char	*full_path;
+
+	temp = ft_strjoin(paths[i], "/");
+	if (temp)
+	{
+		full_path = ft_strjoin(temp, cmd);
+		free(temp);
+		if (full_path && access(full_path, F_OK | X_OK) == 0)
+		{
+			free_array(paths);
+			return (full_path);
+		}
+		free(full_path);
+	}
+	return (NULL);
+}
+
 char	*find_executable(char *cmd, t_env *env)
 {
 	char	*path_env;
 	char	**paths;
 	char	*full_path;
-	char	*temp;
 	int		i;
 
 	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK | X_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
+		return (find_basic_path(cmd));
 	path_env = get_env_value(env, "PATH");
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
 	if (!paths)
 		return (NULL);
-	i = 0;
-	while (paths[i])
+	i = -1;
+	while (paths[++i])
 	{
-		temp = ft_strjoin(paths[i], "/");
-		if (temp)
-		{
-			full_path = ft_strjoin(temp, cmd);
-			free(temp);
-			if (full_path && access(full_path, F_OK | X_OK) == 0)
-			{
-				free_array(paths);
-				return (full_path);
-			}
-			free(full_path);
-		}
-		i++;
+		full_path = combine_path(paths, i, cmd);
+		if (full_path)
+			return (full_path);
 	}
 	free_array(paths);
 	return (NULL);
 }
 
-/* Compte le nombre de commandes dans un pipeline */
 int	count_commands(t_cmd *commands)
 {
 	int	count;
@@ -150,7 +117,6 @@ int	count_commands(t_cmd *commands)
 	return (count);
 }
 
-/* Affiche une erreur de commande non trouvée */
 void	command_not_found(char *cmd)
 {
 	write(STDERR_FILENO, "minishell: ", 11);

@@ -42,7 +42,6 @@ int	builtin_cd(t_minishell *s)
 	return (0);
 }
 
-/* Builtin: pwd - affiche le répertoire courant */
 int	builtin_pwd(t_minishell *s)
 {
 	char	*cwd;
@@ -59,11 +58,10 @@ int	builtin_pwd(t_minishell *s)
 	return (0);
 }
 
-/* Builtin: echo - affiche les arguments */
 int	builtin_echo(t_minishell *s)
 {
-	int	i;
-	int	newline;
+	int		i;
+	int		newline;
 	char	**args;
 
 	args = s->commands->args;
@@ -86,7 +84,6 @@ int	builtin_echo(t_minishell *s)
 	return (0);
 }
 
-/* Builtin: env - affiche l'environnement */
 int	builtin_env(t_minishell *s)
 {
 	t_env	*env;
@@ -118,8 +115,8 @@ static void	set_env_from_command(t_minishell **s, int i, char *equal_pos)
 	char	*key;
 	char	*value;
 
-	key = ft_substr((*s)->commands->args[i], 0,
-		equal_pos - (*s)->commands->args[i]);
+	key = ft_substr((*s)->commands->args[i], 0, equal_pos
+			- (*s)->commands->args[i]);
 	value = ft_strdup(equal_pos + 1);
 	if (key && value)
 		set_env_value(s, key, value);
@@ -154,12 +151,9 @@ int	builtin_export(t_minishell **s)
 	return ((*s)->exit_status);
 }
 
-
-/* Builtin: unset - supprime des variables */
-//marche pas
 int	builtin_unset(t_minishell **s)
 {
-	int	i;
+	int		i;
 	char	**args;
 
 	args = (*s)->commands->args;
@@ -173,7 +167,8 @@ int	builtin_unset(t_minishell **s)
 	}
 	return (0);
 }
-static int is_str_num(char *str)
+
+static int	is_str_num(char *str)
 {
 	int	i;
 
@@ -192,10 +187,10 @@ static int is_str_num(char *str)
 	}
 	return (0);
 }
-/* Builtin: exit - quitte le shell */
+
 int	builtin_exit(t_minishell *s)
 {
-	int	exit_code;
+	int		exit_code;
 	char	**args;
 
 	args = s->commands->args;
@@ -244,4 +239,3 @@ int	execute_builtin(t_minishell **s)
 		(*s)->exit_status = 1;
 	return ((*s)->exit_status);
 }
-
