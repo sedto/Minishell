@@ -52,7 +52,10 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/parser/parse_validation.c \
 		  $(PARSING_SRCDIR)/parser/parse_utils.c \
 		  $(PARSING_SRCDIR)/parser/quote_remover.c \
-		  $(PARSING_SRCDIR)/parser/heredoc_utils.c
+		  $(PARSING_SRCDIR)/parser/heredoc_utils.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_helpers.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_read.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_support.c
 
 # Source files - Execution
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \

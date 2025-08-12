@@ -250,6 +250,31 @@ t_cmd				*handle_syntax_error(t_cmd *commands, t_cmd *current_cmd);
 int					process_single_token(t_token **tokens, t_process_data *data);
 int					process_token(t_token **tokens, t_process_data *data);
 
+// heredoc_helpers.c
+int					is_delimiter_match(char *line, char *delimiter, int delim_len);
+char				*process_line_expansion(char *line, t_minishell *s, int expand);
+char				*append_line_to_content(char *content, char *line);
+int					handle_heredoc_signal_exit(int *should_exit, char *line,
+						char *content);
+
+// heredoc_read.c
+void				print_heredoc_warning(char *delimiter);
+char				*process_heredoc_line(char *line, char *delimiter,
+						int delim_len, t_minishell *s);
+char				*read_single_heredoc_line(char *delimiter, int *should_exit,
+						char **content, t_minishell *s);
+int					process_heredoc_line_content(char **content, char *line,
+						t_minishell *s, int expand);
+
+// heredoc_support.c
+int					should_expand_delimiter(char *delimiter);
+void				add_file_to_command(t_cmd *current_cmd, t_file *node);
+int					handle_heredoc_error(char *delimiter, t_shell_ctx *ctx);
+t_file				*create_and_validate_heredoc_file(char *delimiter,
+						char *content);
+void				process_heredoc_token(t_cmd *current_cmd, char *token_value,
+						t_shell_ctx *ctx, t_minishell *s);
+
 // parse_handlers.c
 void				handle_word_token(t_cmd *current_cmd, t_token *token,
 						t_shell_ctx *ctx);

@@ -12,64 +12,40 @@
 
 #include "../../../includes/minishell.h"
 
-char	*read_heredoc_content(char *delimiter, int *should_exit, t_minishell *s, int expand)
+static char	*init_heredoc_content(char *delimiter, int *should_exit)
 {
-	char	*line;
 	char	*content;
-	char	*temp;
-	char	*with_newline;
-	int		delim_len;
 
 	if (!delimiter)
 		return (NULL);
 	*should_exit = 0;
-	delim_len = ft_strlen(delimiter);
 	content = ft_strdup("");
+	return (content);
+}
+
+char	*read_heredoc_content(char *delimiter, int *should_exit,
+		t_minishell *s, int expand)
+{
+	char	*line;
+	char	*content;
+	int		delim_len;
+
+	content = init_heredoc_content(delimiter, should_exit);
 	if (!content)
 		return (NULL);
+	delim_len = ft_strlen(delimiter);
 	while (1)
 	{
-		write(STDOUT_FILENO, "> ", 2);
-		line = readline("");
-		if (!line)
-		{
-			printf("minishell: warning: here-document delimited by end-of-file (wanted '%s')\n", delimiter);
+		line = read_single_heredoc_line(delimiter, should_exit, &content, s);
+		if (!line || *should_exit)
 			break ;
-		}
-		if (g_signal == SIGINT)
-		{
-			free(line);
-			free(content);
-			*should_exit = 1;
-			return (NULL);
-		}
-		if (ft_strncmp(line, delimiter, (size_t)delim_len) == 0 && ft_strlen(line) == (size_t)delim_len)
+		if (is_delimiter_match(line, delimiter, delim_len))
 		{
 			free(line);
 			break ;
 		}
-		if (expand)
-		{
-			char **envp = env_to_tab(s->env);
-			char *expanded_line = expand_string(line, envp, s->exit_status);
-			free_env_tab(envp);
-			free(line);
-			line = expanded_line;
-		}
-		with_newline = ft_strjoin(line, "\n");
-		if (!with_newline)
-		{
-			free(line);
-			free(content);
+		if (!process_heredoc_line_content(&content, line, s, expand))
 			return (NULL);
-		}
-		temp = ft_strjoin(content, with_newline);
-		free(content);
-		free(with_newline);
-		free(line);
-		if (!temp)
-			return (NULL);
-		content = temp;
 	}
 	return (content);
 }
@@ -95,13 +71,14 @@ t_file	*create_heredoc_file(char *delimiter, char *content)
 	return (file);
 }
 
-void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
+void	handle_redirect_in(t_cmd *current_cmd, t_token **token,
+		t_shell_ctx *ctx)
 {
-	(void)ctx;
 	char	*new_file;
 	t_file	*node;
 	t_file	*tmp;
 
+	(void)ctx;
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
 	{
@@ -123,49 +100,10 @@ void	handle_redirect_in(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx)
 	}
 }
 
-void	handle_heredoc(t_cmd *current_cmd, t_token **token, t_shell_ctx *ctx, t_minishell *s)
+void	handle_heredoc(t_cmd *current_cmd, t_token **token,
+		t_shell_ctx *ctx, t_minishell *s)
 {
-	char	*delimiter;
-	char	*content;
-	t_file	*node;
-	t_file	*tmp;
-	int		should_exit;
-	int		expand;
-
 	*token = (*token)->next;
 	if (*token && (*token)->type == TOKEN_WORD)
-	{
-		delimiter = (*token)->value;
-		expand = (ft_strchr(delimiter, '\'') == NULL && ft_strchr(delimiter, '"') == NULL);
-		delimiter = remove_quotes(delimiter);
-		content = read_heredoc_content(delimiter, &should_exit, s, expand);
-		if (should_exit)
-		{
-			free(delimiter);
-			ctx->syntax_error = 1;
-			return ;
-		}
-		if (!content)
-		{
-			free(delimiter);
-			ctx->syntax_error = 1;
-			return ;
-		}
-		node = create_heredoc_file(delimiter, content);
-		free(delimiter);
-		if (!node)
-		{
-			free(content);
-			return ;
-		}
-		if (current_cmd->files)
-		{
-			tmp = current_cmd->files;
-			while (tmp->next)
-				tmp = tmp->next;
-			tmp->next = node;
-		}
-		else
-			current_cmd->files = node;
-	}
+		process_heredoc_token(current_cmd, (*token)->value, ctx, s);
 }
