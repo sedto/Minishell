@@ -103,14 +103,6 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }					t_cmd;
 
-typedef struct s_process_data
-{
-	t_cmd			**commands;
-	t_cmd			**current_cmd;
-	t_shell_ctx		*ctx;
-	t_minishell		*s;
-}					t_process_data;
-
 typedef struct s_env
 {
 	char			*key;
@@ -128,6 +120,14 @@ typedef struct s_minishell
 	int				saved_stdout;
 	int				saved_stdin;
 }					t_minishell;
+
+typedef struct s_process_data
+{
+	t_cmd			**commands;
+	t_cmd			**current_cmd;
+	t_shell_ctx		*ctx;
+	t_minishell		*s;
+}					t_process_data;
 
 // Structure pour passer les données lors de l'expansion des variables
 // Utilisée pour éviter de passer trop de paramètres entre les fonctions
