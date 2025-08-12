@@ -13,20 +13,23 @@
 #include "../../../includes/minishell.h"
 
 /*
- * Affiche une erreur de syntaxe sans libérer les ressources, et marque l'erreur dans le contexte.
+ * Affiche une erreur de syntaxe sans libérer les ressources,
+ * et marque l'erreur dans le contexte.
  * Utilisé pour signaler une erreur lors du parsing.
  */
-static int	syntax_error_cleanup(t_cmd *commands, char *error_msg, t_shell_ctx *ctx)
+static int	syntax_error_cleanup(t_cmd *commands, char *error_msg,
+		t_shell_ctx *ctx)
 {
 	(void)commands;
 	printf("minishell: syntax error near unexpected token %s\n", error_msg);
-	ctx->syntax_error = 1;  /* Marquer erreur de syntaxe */
+	ctx->syntax_error = 1;
 	return (0);
 }
 
 /*
  * Valide la syntaxe d'un token de type pipe (|).
- * Vérifie qu'il n'est pas en début/fin de ligne, ni doublé, ni après une commande vide.
+ * Vérifie qu'il n'est pas en début/fin de ligne, ni doublé,
+ * ni après une commande vide.
  */
 int	validate_pipe_token(t_token *tokens, t_cmd *commands,
 			t_cmd *current_cmd, t_shell_ctx *ctx)
@@ -42,7 +45,8 @@ int	validate_pipe_token(t_token *tokens, t_cmd *commands,
 
 /*
  * Valide la syntaxe d'un token de redirection (<, >, <<, >>).
- * Vérifie la présence d'un mot après la redirection et l'absence d'erreur de syntaxe.
+ * Vérifie la présence d'un mot après la redirection
+ * et l'absence d'erreur de syntaxe.
  */
 int	validate_redirection_token(t_token *tokens, t_cmd *commands,
 			t_cmd *current_cmd, t_shell_ctx *ctx)
