@@ -240,7 +240,18 @@ t_cmd				*new_command(void);
 void				add_argument(t_cmd *cmd, char *arg);
 int					count_args(char **args);
 void				add_command_to_list(t_cmd **commands, t_cmd *new_cmd);
+
+// create_commande_utils.c
 void				free_commands(t_cmd *commands);
+void				handle_redirect_out(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+void				handle_redirect_append(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+
+// create_commande_helpers.c
+char				**create_new_args_array(int count, char *arg_copy);
+void				copy_existing_args(char **new_args, char **old_args, int count);
+void				free_files(t_file *files);
 
 // parse_commands.c
 int					is_empty_command(t_cmd *cmd);
