@@ -47,6 +47,7 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/expander/expand_utils_extra.c \
 		  $(PARSING_SRCDIR)/parser/create_commande.c \
 		  $(PARSING_SRCDIR)/parser/parse_commands.c \
+		  $(PARSING_SRCDIR)/parser/parse_commands_utils.c \
 		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
 		  $(PARSING_SRCDIR)/parser/parse_validation.c \
 		  $(PARSING_SRCDIR)/parser/parse_utils.c \

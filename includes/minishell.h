@@ -103,6 +103,14 @@ typedef struct s_cmd
 	struct s_cmd	*next;
 }					t_cmd;
 
+typedef struct s_process_data
+{
+	t_cmd			**commands;
+	t_cmd			**current_cmd;
+	t_shell_ctx		*ctx;
+	t_minishell		*s;
+}					t_process_data;
+
 typedef struct s_env
 {
 	char			*key;
@@ -236,6 +244,11 @@ void				free_commands(t_cmd *commands);
 
 // parse_commands.c
 int					is_empty_command(t_cmd *cmd);
+
+// parse_commands_utils.c
+t_cmd				*handle_syntax_error(t_cmd *commands, t_cmd *current_cmd);
+int					process_single_token(t_token **tokens, t_process_data *data);
+int					process_token(t_token **tokens, t_process_data *data);
 
 // parse_handlers.c
 void				handle_word_token(t_cmd *current_cmd, t_token *token,
