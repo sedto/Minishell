@@ -59,13 +59,11 @@ static void	process_args_quotes(char **args)
 	i = 0;
 	while (args[i])
 	{
-		printf("DEBUG PROCESS_ARGS[%d]: BEFORE [%s]\n", i, args[i]);
 		old_arg = args[i];
 		new_arg = remove_quotes(args[i]);
 		if (new_arg)
 		{
 			args[i] = new_arg;
-			printf("DEBUG PROCESS_ARGS[%d]: AFTER [%s]\n", i, args[i]);
 			free(old_arg);
 		}
 		i++;
@@ -94,12 +92,8 @@ void	remove_quotes_from_commands(t_cmd *commands)
 	current = commands;
 	while (current)
 	{
-		if (current->args && current->args[0])
-			printf("DEBUG CMD_BEFORE_QUOTE_REMOVAL: [%s]\n", current->args[0]);
 		if (current->args)
 			process_args_quotes(current->args);
-		if (current->args && current->args[0])
-			printf("DEBUG CMD_AFTER_QUOTE_REMOVAL: [%s]\n", current->args[0]);
 		tmp = current->files;
 		while (tmp)
 		{

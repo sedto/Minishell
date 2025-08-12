@@ -13,18 +13,6 @@
 #include "../../../libft/libft.h"
 #include "minishell.h"
 
-//marche pas
-/*int	builtin_cd(t_minishell *s)
-{
-	t_cmd	*cmd;
-
-	cmd = s->commands;
-	if (!cmd->args[1])
-		return (perror("cd"), 1);
-	if (chdir(cmd->args[1]) != 0)
-		return (perror("cd"), 1);
-	return (0);
-}*/
 int	builtin_cd(t_minishell *s)
 {
 	t_cmd	*cmd;
@@ -40,10 +28,9 @@ int	builtin_cd(t_minishell *s)
 	{
 		target = get_env_value(s->env, "HOME");
 		if (!target)
-		{
 			write(STDERR_FILENO, "cd: HOME not set\n", 17);
+		if (!target)
 			return (1);
-		}
 	}
 	else
 		target = cmd->args[1];
@@ -113,27 +100,40 @@ int	builtin_env(t_minishell *s)
 	return (0);
 }
 
-/* Builtin: export - exporte des variables */
-//TODO check avec s->env
-//marche pas
+static int	render_export(t_minishell **s)
+{
+	t_env	*current;
+
+	current = (*s)->env;
+	while (current)
+	{
+		printf("declare -x %s=\"%s\"\n", current->key, current->value);
+		current = current->next;
+	}
+	return (0);
+}
+
+static void	set_env_from_command(t_minishell **s, int i, char *equal_pos)
+{
+	char	*key;
+	char	*value;
+
+	key = ft_substr((*s)->commands->args[i], 0,
+		equal_pos - (*s)->commands->args[i]);
+	value = ft_strdup(equal_pos + 1);
+	if (key && value)
+		set_env_value(s, key, value);
+	free(key);
+	free(value);
+}
+
 int	builtin_export(t_minishell **s)
 {
 	char	*equal_pos;
-	char	*key;
-	char	*value;
 	int		i;
-	t_env	*current;
 
 	if (!(*s)->commands->args[1])
-	{
-		current = (*s)->env;
-		while (current)
-		{
-			printf("declare -x %s=\"%s\"\n", current->key, current->value);
-			current = current->next;
-		}
-		return (0);
-	}
+		return (render_export(s));
 	(*s)->exit_status = 0;
 	i = 1;
 	while ((*s)->commands->args[i])
@@ -146,15 +146,7 @@ int	builtin_export(t_minishell **s)
 		}
 		equal_pos = ft_strchr((*s)->commands->args[i], '=');
 		if (equal_pos)
-		{
-			key = ft_substr((*s)->commands->args[i], 0,
-				equal_pos - (*s)->commands->args[i]);
-			value = ft_strdup(equal_pos + 1);
-			if (key && value)
-				set_env_value(s, key, value);
-			free(key);
-			free(value);
-		}
+			set_env_from_command(s, i, equal_pos);
 		else
 			set_env_value(s, (*s)->commands->args[i], "");
 		i++;

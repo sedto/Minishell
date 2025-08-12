@@ -28,8 +28,6 @@ t_token	*create_token(t_token_type type, char *value)
 	}
 	token->type = type;
 	token->next = NULL;
-	if (type == TOKEN_WORD && value)
-		printf("DEBUG TOKEN: [%s]\n", value);
 	return (token);
 }
 

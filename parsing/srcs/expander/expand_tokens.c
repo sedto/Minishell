@@ -32,7 +32,6 @@ static void	expand_single_token(t_token *current, char **envp, int exit_code)
 		return ;
 	if (ft_strlen(current->value) == 0)
 		return ;
-	printf("DEBUG EXPAND_IN: [%s] - SKIPPED\n", current->value);
 }
 
 t_token	*expand_all_tokens(t_token *tokens, char **envp, int exit_code)

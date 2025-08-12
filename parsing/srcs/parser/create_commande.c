@@ -62,17 +62,14 @@ void	add_argument(t_cmd *cmd, char *arg)
 
 	if (!cmd || !arg)
 		return ;
-	printf("DEBUG ADD_ARG: [%s]\n", arg);
 	count = count_args(cmd->args);
 	arg_copy = ft_strdup(arg);
 	if (!arg_copy)
 		return ;
-	printf("DEBUG ARG_COPY: [%s]\n", arg_copy);
 	new_args = create_new_args_array(cmd->args, arg_copy, count);
 	if (!new_args)
 		return ;
 	if (cmd->args)
 		free(cmd->args);
 	cmd->args = new_args;
-	printf("DEBUG CMD_ARGS_AFTER: [%s]\n", cmd->args[0]);
 }
