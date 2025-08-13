@@ -65,6 +65,9 @@ EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/env/env_utils_extra.c \
 		  $(EXEC_SRCDIR)/env/env_conversion.c \
 		  $(EXEC_SRCDIR)/builtins/builtins.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_basic.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_export.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_exit.c \
 		  $(EXEC_SRCDIR)/utils/utils.c \
 		  $(EXEC_SRCDIR)/utils/utils_extra.c \
 		  $(EXEC_SRCDIR)/utils/utils_commands.c \
