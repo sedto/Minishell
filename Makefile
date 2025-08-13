@@ -62,6 +62,8 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 # Source files - Execution
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/env/env_utils.c \
+		  $(EXEC_SRCDIR)/env/env_utils_extra.c \
+		  $(EXEC_SRCDIR)/env/env_conversion.c \
 		  $(EXEC_SRCDIR)/builtins/builtins.c \
 		  $(EXEC_SRCDIR)/utils/utils.c \
 		  $(EXEC_SRCDIR)/utils/utils_extra.c \

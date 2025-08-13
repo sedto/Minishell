@@ -34,34 +34,39 @@ t_env	*create_env_node(char *key, char *value)
 	return (node);
 }
 
+static t_env	*process_env_entry(char *entry, t_env *env)
+{
+	char	*equal_pos;
+	char	*key;
+	t_env	*current;
+
+	equal_pos = ft_strchr(entry, '=');
+	if (!equal_pos)
+		return (env);
+	key = ft_substr(entry, 0, equal_pos - entry);
+	if (!key)
+		return (env);
+	current = create_env_node(key, equal_pos + 1);
+	free(key);
+	if (current)
+	{
+		current->next = env;
+		env = current;
+	}
+	return (env);
+}
+
 /* Initialise l'environnement depuis envp */
 t_env	*init_env(char **envp)
 {
 	t_env	*env;
-	t_env	*current;
-	char	*equal_pos;
-	char	*key;
 	int		i;
 
 	env = NULL;
 	i = 0;
 	while (envp[i])
 	{
-		equal_pos = ft_strchr(envp[i], '=');
-		if (equal_pos)
-		{
-			key = ft_substr(envp[i], 0, equal_pos - envp[i]);
-			if (key)
-			{
-				current = create_env_node(key, equal_pos + 1);
-				free(key);
-				if (current)
-				{
-					current->next = env;
-					env = current;
-				}
-			}
-		}
+		env = process_env_entry(envp[i], env);
 		i++;
 	}
 	return (env);
@@ -72,7 +77,7 @@ char	*get_env_value(t_env *env, char *key)
 {
 	while (env)
 	{
-		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0 
+		if (ft_strncmp(env->key, key, ft_strlen(key)) == 0
 			&& ft_strlen(env->key) == ft_strlen(key))
 			return (env->value);
 		env = env->next;
@@ -89,7 +94,7 @@ void	set_env_value(t_minishell **s, char *key, char *value)
 	current = (*s)->env;
 	while (current)
 	{
-		if (ft_strncmp(current->key, key, ft_strlen(key)) == 0 
+		if (ft_strncmp(current->key, key, ft_strlen(key)) == 0
 			&& ft_strlen(current->key) == ft_strlen(key))
 		{
 			free(current->value);
@@ -104,110 +109,4 @@ void	set_env_value(t_minishell **s, char *key, char *value)
 		new_node->next = (*s)->env;
 		(*s)->env = new_node;
 	}
-}
-
-/* Supprime une variable d'environnement */
-void	unset_env_value(t_minishell **s, char *key)
-{
-	t_env	*current;
-	t_env	*prev;
-
-	current = (*s)->env;
-	prev = NULL;
-	while (current)
-	{
-		if (ft_strncmp(current->key, key, ft_strlen(key)) == 0 
-			&& ft_strlen(current->key) == ft_strlen(key))
-		{
-			if (prev)
-				prev->next = current->next;
-			else
-				(*s)->env = current->next;
-			free(current->key);
-			free(current->value);
-			free(current);
-			return ;
-		}
-		prev = current;
-		current = current->next;
-	}
-}
-
-/* Libère toute la liste d'environnement */
-void	free_env(t_env *env)
-{
-	t_env	*next;
-
-	while (env)
-	{
-		next = env->next;
-		free(env->key);
-		free(env->value);
-		free(env);
-		env = next;
-	}
-}
-
-void	free_minishell(t_minishell *s)
-{
-	if (!s)
-		return ;
-	free_env(s->env);
-	if (s->commands)
-		free_commands(s->commands);
-	close(s->saved_stdout);
-	close(s->saved_stdin);
-	free(s);
-}
-
-char	**env_to_tab(t_env *env)
-{
-	char	**tab;
-	char	*entry;
-	int		count;
-	int		i;
-	t_env	*current;
-
-	// Compter le nombre d'éléments
-	count = 0;
-	current = env;
-	while (current)
-	{
-		count++;
-		current = current->next;
-	}
-	tab = malloc(sizeof(char *) * (count + 1));
-	if (!tab)
-		return (NULL);
-	current = env;
-	i = 0;
-	while (current)
-	{
-		entry = ft_strjoin(current->key, "=");
-		if (!entry)
-			return (free_env_tab(tab), NULL);
-		tab[i] = ft_strjoin(entry, current->value);
-		free(entry);
-		if (!tab[i])
-			return (free_env_tab(tab), NULL);
-		current = current->next;
-		i++;
-	}
-	tab[i] = NULL;
-	return (tab);
-}
-
-void	free_env_tab(char **tab)
-{
-	int	i;
-
-	if (!tab)
-		return ;
-	i = 0;
-	while (tab[i])
-	{
-		free(tab[i]);
-		i++;
-	}
-	free(tab);
 }
