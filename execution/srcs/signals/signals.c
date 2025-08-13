@@ -30,8 +30,6 @@ void	handle_sigint(int sig)
 void	handle_sigquit(int sig)
 {
 	(void)sig;
-	// Ne rien faire : pas de retour à la ligne, pas de prompt, pas d'effacement
-	// Cela laisse le prompt inchangé, comme bash
 }
 
 /* Configure les gestionnaires de signaux pour le mode interactif */
@@ -57,8 +55,7 @@ void	reset_signals(void)
 	signal(SIGQUIT, SIG_DFL);
 }
 
-/* Plus besoin de process_signals() */
 void	process_signals(void)
 {
-	g_signal = 0;  /* Reset le signal */
+	g_signal = 0;
 }

@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   errors_env.c                                       :+:      :+:    :+:   */
+/*   utils_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,32 +12,24 @@
 
 #include "minishell.h"
 
-int	is_valid_export_key(char *s)
+/* Compte le nombre de commandes dans un pipeline */
+int	count_commands(t_cmd *commands)
 {
-	int	i;
+	int	count;
 
-	if (!s || !s[0])
-		return (0);
-	if (!ft_isalpha(s[0]) && s[0] != '_')
-		return (0);
-	i = 1;
-	while (s[i] && s[i] != '=')
+	count = 0;
+	while (commands)
 	{
-		if (!ft_isalnum(s[i]) && s[i] != '_')
-			return (0);
-		i++;
+		count++;
+		commands = commands->next;
 	}
-	return (1);
+	return (count);
 }
 
-int	export_with_error(char *arg)
+/* Affiche une erreur de commande non trouvée */
+void	command_not_found(char *cmd)
 {
-	if (!is_valid_export_key(arg))
-	{
-		write(STDERR_FILENO, "minishell: export: `", 20);
-		write(STDERR_FILENO, arg, ft_strlen(arg));
-		write(STDERR_FILENO, "`: not a valid identifier\n", 26);
-		return (1);
-	}
-	return (0);
+	write(STDERR_FILENO, "minishell: ", 11);
+	write(STDERR_FILENO, cmd, ft_strlen(cmd));
+	write(STDERR_FILENO, ": command not found\n", 20);
 }
