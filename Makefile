@@ -28,7 +28,8 @@ LIBFT_DIR	= libft
 
 # Source files - Main
 MAIN_SRCS	= $(SRCDIR)/main.c \
-		  $(SRCDIR)/main_utils.c
+		  $(SRCDIR)/main_utils.c \
+		  $(SRCDIR)/main_utils_helpers.c
 
 # Source files - Parsing
 PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \

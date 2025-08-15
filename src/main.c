@@ -25,47 +25,70 @@ void	disable_echoctl(void)
 	}
 }
 
-static int	run_interactive_mode(char **envp)
+static int	process_interactive_input(char *input, char **envp,
+		t_shell_ctx *ctx)
 {
-	char		*input;
-	int			exit_code;
-	t_shell_ctx	ctx;
+	int	exit_code;
 
-	ctx.syntax_error = 0;
-	setup_signals();
+	if (!input)
+	{
+		printf("exit\n");
+		return (-1);
+	}
+	if (g_signal == SIGINT)
+		return (0);
+	if (*input)
+		add_history(input);
+	exit_code = handle_input_line(input, envp, ctx);
+	return (exit_code);
+}
+
+static int	run_shell_loop(char **envp, t_shell_ctx *ctx)
+{
+	char	*input;
+	int		exit_code;
+
 	exit_code = 0;
 	while (1)
 	{
 		disable_echoctl();
 		g_signal = 0;
 		input = readline("minishell$ ");
-		if (!input)
+		exit_code = process_interactive_input(input, envp, ctx);
+		if (exit_code == -1)
 		{
-			printf("exit\n");
+			free(input);
 			break ;
 		}
-		if (g_signal == SIGINT)
+		if (g_signal == SIGINT || exit_code == 0)
 		{
 			free(input);
 			continue ;
 		}
-		if (*input)
-			add_history(input);
-		exit_code = handle_input_line(input, envp, &ctx);
 		free(input);
 	}
+	return (exit_code);
+}
+
+static int	run_interactive_mode(char **envp)
+{
+	int			exit_code;
+	t_shell_ctx	ctx;
+
+	ctx.syntax_error = 0;
+	setup_signals();
+	exit_code = run_shell_loop(envp, &ctx);
 	cleanup_shell();
 	return (exit_code);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	int exit_code;
-	
+	int			exit_code;
+	t_shell_ctx	ctx;
+
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
-		t_shell_ctx	ctx;
-
 		ctx.syntax_error = 0;
 		exit_code = process_input(argv[2], envp, &ctx);
 		cleanup_shell();
