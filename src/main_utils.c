@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: dibsejra <dibsejra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 16:41:33 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 21:11:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:38:00 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 int	process_input(char *input, char **envp, t_shell_ctx *ctx,
 		t_minishell *shell)
 {
+	t_cmd	*original_commands;
+
 	(void)envp;
 	shell->commands = parse_tokens(input, shell, ctx);
 	if (!shell->commands)
@@ -48,9 +50,14 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx,
 			return (2);
 		return (1);
 	}
+	original_commands = shell->commands;
 	if (shell->commands->args && shell->commands->args[0])
 		execute_commands(&shell);
-	free_commands(shell->commands);
-	shell->commands = NULL;
+	shell->commands = original_commands;
+	if (shell->commands)
+	{
+		free_commands(shell->commands);
+		shell->commands = NULL;
+	}
 	return (shell->exit_status);
 }

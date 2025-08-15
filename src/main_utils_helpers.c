@@ -45,8 +45,13 @@ t_minishell	*setup_shell(char **envp)
 	t_minishell	*s;
 
 	s = malloc(sizeof(t_minishell));
+	if (!s)
+		return (NULL);
 	s->env = init_env(envp);
+	s->commands = NULL;
+	s->tokens = NULL;
 	s->exit_status = 0;
+	s->in_heredoc = 0;
 	s->saved_stdout = dup(STDOUT_FILENO);
 	s->saved_stdin = dup(STDIN_FILENO);
 	return (s);

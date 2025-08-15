@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: dibsejra <dibsejra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/08/15 15:36:22 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:38:02 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,19 +109,25 @@ void	execute_commands(t_minishell **s)
 	int		prev_fd;
 	int		pipe_fd[2];
 	pid_t	last_pid;
+	t_cmd	*current_cmd;
+	t_cmd	*next_cmd;
 
 	prev_fd = -1;
 	last_pid = -1;
-	while ((*s)->commands && g_signal != SIGINT)
+	current_cmd = (*s)->commands;
+	while (current_cmd && g_signal != SIGINT)
 	{
-		if (!prepare_pipe((*s)->commands, pipe_fd))
+		next_cmd = current_cmd->next;
+		(*s)->commands = current_cmd;
+		if (!prepare_pipe(current_cmd, pipe_fd))
 			return ;
-		if (!has_pipe_or_input((*s)->commands, prev_fd)
-			&& is_builtin((*s)->commands))
+		if (!has_pipe_or_input(current_cmd, prev_fd)
+			&& is_builtin(current_cmd))
 			run_builtin(s);
 		else
 			run_in_fork(s, pipe_fd, &prev_fd, &last_pid);
-		(*s)->commands = (*s)->commands->next;
+		current_cmd = next_cmd;
+		(*s)->commands = current_cmd;
 	}
 	wait_all_children(s, prev_fd, last_pid);
 }
