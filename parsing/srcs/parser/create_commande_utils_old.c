@@ -38,7 +38,7 @@ void	free_commands(t_cmd *commands)
 	}
 }
 
-void	handle_redirect_out(t_cmd *current_cmd, t_token **token,
+void	handlt_redirect_out(t_cmd *current_cmd, t_token **token,
 		t_shell_ctx *ctx)
 {
 	char	*new_file;
@@ -67,7 +67,7 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token,
 	}
 }
 
-void	handle_redirect_append(t_cmd *current_cmd, t_token **token,
+void	handlt_redirect_append(t_cmd *current_cmd, t_token **token,
 		t_shell_ctx *ctx)
 {
 	char	*new_file;
@@ -83,35 +83,6 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token,
 		{
 			node = create_t_file_node(new_file);
 			node->type = APPEND;
-			if (current_cmd->files)
-			{
-				tmp = current_cmd->files;
-				while (tmp->next)
-					tmp = tmp->next;
-				tmp->next = node;
-			}
-			else
-				current_cmd->files = node;
-		}
-	}
-}
-
-void	handle_redirect_in(t_cmd *current_cmd, t_token **token,
-		t_shell_ctx *ctx)
-{
-	char	*new_file;
-	t_file	*node;
-	t_file	*tmp;
-
-	(void)ctx;
-	*token = (*token)->next;
-	if (*token && (*token)->type == TOKEN_WORD)
-	{
-		new_file = ft_strdup((*token)->value);
-		if (new_file)
-		{
-			node = create_t_file_node(new_file);
-			node->type = INPUT;
 			if (current_cmd->files)
 			{
 				tmp = current_cmd->files;

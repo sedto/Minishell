@@ -48,7 +48,7 @@ int	validate_pipe_token(t_token *tokens, t_cmd *commands,
  * Vérifie la présence d'un mot après la redirection
  * et l'absence d'erreur de syntaxe.
  */
-int	validate_redirection_token(t_token *tokens, t_cmd *commands,
+int	validatt_redirection_token(t_token *tokens, t_cmd *commands,
 			t_cmd *current_cmd, t_shell_ctx *ctx)
 {
 	char	*error_token;
@@ -81,5 +81,15 @@ int	validate_double_pipe(t_token *tokens, t_cmd *commands,
 	if (tokens->type == TOKEN_PIPE && tokens->next
 		&& tokens->next->type == TOKEN_PIPE)
 		return (syntax_error_cleanup(commands, "'|'", ctx));
+	return (1);
+}
+
+int	validate_redirection_token(t_token *tokens, t_cmd *commands,
+		t_cmd *current_cmd, t_shell_ctx *ctx)
+{
+	(void)current_cmd;
+	if (!tokens->next || tokens->next->type == TOKEN_EOF
+		|| tokens->next->type == TOKEN_PIPE)
+		return (syntax_error_cleanup(commands, "newline", ctx));
 	return (1);
 }

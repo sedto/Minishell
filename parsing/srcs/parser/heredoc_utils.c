@@ -71,7 +71,7 @@ t_file	*create_heredoc_file(char *delimiter, char *content)
 	return (file);
 }
 
-void	handle_redirect_in(t_cmd *current_cmd, t_token **token,
+void	handlt_redirect_in(t_cmd *current_cmd, t_token **token,
 		t_shell_ctx *ctx)
 {
 	char	*new_file;

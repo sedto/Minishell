@@ -87,7 +87,7 @@ static int handle_heredoc_execution(t_file *file)
 }
 /*Modifie pour tester les heredocs.*/
 /* MODIFIÉE: Ajouter l'appel à validate_all_redirections */
-static int handle_redirections(t_cmd *cmd)
+static int handlt_redirections(t_cmd *cmd)
 {
     int     fd;
     t_file  *tmp;
@@ -202,7 +202,7 @@ static void	exec_in_child(t_minishell **s, t_cmd *cmd,
 		close(pipe_fd[0]);
 		dup2(pipe_fd[1], STDOUT_FILENO);
 	}
-	if (handle_redirections(cmd))
+	if (handlt_redirections(cmd))
 	{
 		if (cmd->next)
 			exit(0);
@@ -249,7 +249,7 @@ void	execute_commands(t_minishell **s)
 		{
 			int original_stdin = dup(STDIN_FILENO);
 			int original_stdout = dup(STDOUT_FILENO);
-			if (handle_redirections((*s)->commands))
+			if (handlt_redirections((*s)->commands))
 				(*s)->exit_status = 1;
 			else
 				execute_builtin(s);
