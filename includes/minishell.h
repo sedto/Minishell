@@ -383,9 +383,34 @@ void				print_ll(t_file *ll);
 /*                           EXECUTION FUNCTIONS                             */
 /* ************************************************************************** */
 
-// executor.c
-void				execute_commands(t_minishell **s);
+// get_path.c
 char				*get_path(char *cmd, t_env *env);
+
+/* ************************************************************************** */
+/*                            EXECUTORS FUNCTIONS                            */
+/* ************************************************************************** */
+
+// executors_redirections.c
+int					handle_heredoc_execution(t_file *file);
+int					handle_redir_in(t_file *f);
+int					handle_redir_out(t_file *f);
+int					handle_redirections(t_cmd *cmd);
+
+// executors_utils.c
+int					prepare_pipe(t_cmd *cmd, int *pipe_fd);
+int					has_pipe_or_input(t_cmd *cmd, int prev_fd);
+int					has_access(const char *path, int mode);
+void				path_stat(char *path);
+
+// executors.c
+void				execute_commands(t_minishell **s);
+void				exec_in_child(t_minishell **s, t_cmd *cmd, int *pipe_fd,
+						int prev_fd);
+void				wait_all_children(t_minishell **s, int prev_fd,
+						int last_pid);
+void				run_builtin(t_minishell **s);
+void				run_in_fork(t_minishell **s, int *pipe_fd, int *prev_fd,
+						int *last);
 
 /* ************************************************************************** */
 /*                             HELPERS FUNCTIONS                             */

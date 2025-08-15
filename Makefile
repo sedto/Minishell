@@ -71,7 +71,9 @@ EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/utils/utils.c \
 		  $(EXEC_SRCDIR)/utils/utils_extra.c \
 		  $(EXEC_SRCDIR)/utils/utils_commands.c \
-		  $(EXEC_SRCDIR)/executor/executor.c \
+		  $(EXEC_SRCDIR)/executor/executors.c \
+		  $(EXEC_SRCDIR)/executor/executors_redirections.c \
+		  $(EXEC_SRCDIR)/executor/executors_utils.c \
 		  $(EXEC_SRCDIR)/executor/get_path.c \
 		  $(EXEC_SRCDIR)/executor/errors_env.c \
 
