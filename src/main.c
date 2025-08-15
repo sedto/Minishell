@@ -26,7 +26,7 @@ void	disable_echoctl(void)
 }
 
 static int	process_interactive_input(char *input, char **envp,
-		t_shell_ctx *ctx)
+		t_shell_ctx *ctx, t_minishell *shell)
 {
 	int	exit_code;
 
@@ -39,11 +39,11 @@ static int	process_interactive_input(char *input, char **envp,
 		return (0);
 	if (*input)
 		add_history(input);
-	exit_code = handle_input_line(input, envp, ctx);
+	exit_code = handle_input_line(input, envp, ctx, shell);
 	return (exit_code);
 }
 
-static int	run_shell_loop(char **envp, t_shell_ctx *ctx)
+static int	run_shell_loop(char **envp, t_shell_ctx *ctx, t_minishell *shell)
 {
 	char	*input;
 	int		exit_code;
@@ -54,7 +54,7 @@ static int	run_shell_loop(char **envp, t_shell_ctx *ctx)
 		disable_echoctl();
 		g_signal = 0;
 		input = readline("minishell$ ");
-		exit_code = process_interactive_input(input, envp, ctx);
+		exit_code = process_interactive_input(input, envp, ctx, shell);
 		if (exit_code == -1)
 		{
 			free(input);
@@ -74,11 +74,15 @@ static int	run_interactive_mode(char **envp)
 {
 	int			exit_code;
 	t_shell_ctx	ctx;
+	t_minishell	*shell;
 
 	ctx.syntax_error = 0;
 	setup_signals();
-	exit_code = run_shell_loop(envp, &ctx);
-	cleanup_shell();
+	shell = setup_shell(envp);
+	if (!shell)
+		return (1);
+	exit_code = run_shell_loop(envp, &ctx, shell);
+	cleanup_shell(shell);
 	return (exit_code);
 }
 
@@ -86,12 +90,16 @@ int	main(int argc, char **argv, char **envp)
 {
 	int			exit_code;
 	t_shell_ctx	ctx;
+	t_minishell	*shell;
 
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
 		ctx.syntax_error = 0;
-		exit_code = process_input(argv[2], envp, &ctx);
-		cleanup_shell();
+		shell = setup_shell(envp);
+		if (!shell)
+			return (1);
+		exit_code = process_input(argv[2], envp, &ctx, shell);
+		cleanup_shell(shell);
 		return (exit_code);
 	}
 	return (run_interactive_mode(envp));

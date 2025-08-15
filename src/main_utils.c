@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-t_minishell	*g_shell = NULL;
-
 int	is_exit_command(char *input)
 {
 	return (ft_strncmp(input, "exit", 4) == 0 && (input[4] == '\0'
@@ -39,20 +37,20 @@ t_cmd	*parse_tokens(char *input, t_minishell *s, t_shell_ctx *ctx)
 	return (build_commands_from_tokens(tokens, cleaned_input, ctx, s));
 }
 
-int	process_input(char *input, char **envp, t_shell_ctx *ctx)
+int	process_input(char *input, char **envp, t_shell_ctx *ctx,
+		t_minishell *shell)
 {
-	if (!g_shell)
-		g_shell = setup_shell(envp);
-	g_shell->commands = parse_tokens(input, g_shell, ctx);
-	if (!g_shell->commands)
+	(void)envp;
+	shell->commands = parse_tokens(input, shell, ctx);
+	if (!shell->commands)
 	{
 		if (ctx->syntax_error)
 			return (2);
 		return (1);
 	}
-	if (g_shell->commands->args && g_shell->commands->args[0])
-		execute_commands(&g_shell);
-	free_commands(g_shell->commands);
-	g_shell->commands = NULL;
-	return (g_shell->exit_status);
+	if (shell->commands->args && shell->commands->args[0])
+		execute_commands(&shell);
+	free_commands(shell->commands);
+	shell->commands = NULL;
+	return (shell->exit_status);
 }

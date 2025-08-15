@@ -162,7 +162,8 @@ char				*clean_input(char *str);
 int					is_exit_command(char *input);
 t_cmd				*parse_tokens_to_commands(t_token *tokens,
 						t_shell_ctx *ctx, t_minishell *s);
-int					process_input(char *input, char **envp, t_shell_ctx *ctx);
+int					process_input(char *input, char **envp, t_shell_ctx *ctx,
+						t_minishell *shell);
 t_cmd				*parse_tokens(char *input, t_minishell *s,
 						t_shell_ctx *ctx);
 
@@ -172,9 +173,9 @@ t_cmd				*build_commands_from_tokens(t_token *tokens,
 						char *cleaned_input, t_shell_ctx *ctx,
 						t_minishell *s);
 t_minishell			*setup_shell(char **envp);
-void				cleanup_shell(void);
+void				cleanup_shell(t_minishell *shell);
 int					handle_input_line(char *input, char **envp,
-						t_shell_ctx *ctx);
+						t_shell_ctx *ctx, t_minishell *shell);
 
 // clean_input_utils.c
 void				add_space_if_needed(char *cleaned, int *j, char next_char,

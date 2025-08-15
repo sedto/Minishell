@@ -52,20 +52,16 @@ t_minishell	*setup_shell(char **envp)
 	return (s);
 }
 
-void	cleanup_shell(void)
+void	cleanup_shell(t_minishell *shell)
 {
-	extern t_minishell	*g_shell;
-
-	if (g_shell)
-	{
-		free_minishell(g_shell);
-		g_shell = NULL;
-	}
+	if (shell)
+		free_minishell(shell);
 }
 
-int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx)
+int	handle_input_line(char *input, char **envp, t_shell_ctx *ctx,
+		t_minishell *shell)
 {
 	if (*input)
-		return (process_input(input, envp, ctx));
+		return (process_input(input, envp, ctx, shell));
 	return (0);
 }
