@@ -159,28 +159,4 @@ fclean: clean
 
 re: fclean all
 
-# Test rule to run the program
-test: $(NAME)
-	@echo "$(GREEN)Running $(NAME)...$(RESET)"
-	@./$(NAME)
-
-# Unit tests
-test-units: $(LIBFT)
-	@echo "$(YELLOW)Building unit tests...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) test_units.c \
-		$(filter-out $(OBJDIR)/main.o, $(OBJS)) \
-		$(LIBS) -o test_units
-	@echo "$(GREEN)Running unit tests...$(RESET)"
-	@./test_units
-
-# Quick test (requires compiled minishell)
-test-quick:
-	@echo "$(GREEN)Running quick tests...$(RESET)"
-	@chmod +x test_express.sh && ./test_express.sh
-
-# Complete test suite (requires compiled minishell)
-test-complete:
-	@echo "$(GREEN)Running complete tests...$(RESET)"
-	@chmod +x test_simple_adapted.sh && ./test_simple_adapted.sh
-
-.PHONY: all clean fclean re test test-units test-quick test-complete
+.PHONY: all clean fclean re
