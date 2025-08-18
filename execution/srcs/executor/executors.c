@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executors.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dibsejra <dibsejra@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/20 20:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/08/15 17:38:02 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/08/18 14:22:59 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/18 14:23:50 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
