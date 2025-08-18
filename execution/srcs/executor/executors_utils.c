@@ -16,11 +16,13 @@ int	is_builtin(t_cmd *cmd)
 {
 	if (!cmd->args || !cmd->args[0])
 		return (0);
-	return (strcmp(cmd->args[0], "echo") == 0 || strcmp(cmd->args[0], "cd") == 0
-		|| strcmp(cmd->args[0], "pwd") == 0 || strcmp(cmd->args[0],
-			"export") == 0 || strcmp(cmd->args[0], "unset") == 0
-		|| strcmp(cmd->args[0], "env") == 0 || strcmp(cmd->args[0],
-			"exit") == 0);
+	return (ft_strncmp(cmd->args[0], "echo", 5) == 0
+		|| ft_strncmp(cmd->args[0], "cd", 3) == 0
+		|| ft_strncmp(cmd->args[0], "pwd", 4) == 0
+		|| ft_strncmp(cmd->args[0], "export", 7) == 0
+		|| ft_strncmp(cmd->args[0], "unset", 6) == 0
+		|| ft_strncmp(cmd->args[0], "env", 4) == 0
+		|| ft_strncmp(cmd->args[0], "exit", 5) == 0);
 }
 
 int	prepare_pipe(t_cmd *cmd, int *pipe_fd)
