@@ -71,14 +71,38 @@ char	*expand_single_var(char *var_name, char **envp, int exit_code)
 /* Expanse toutes les variables dans une liste de tokens */
 int	should_expand_token(char *value)
 {
-	int	len;
+	int	i;
+	int	in_single;
+	int	has_expandable;
 
 	if (!value)
 		return (1);
-	len = ft_strlen(value);
-	if (len >= 2 && value[0] == '\'' && value[len - 1] == '\'')
-		return (0);
-	return (1);
+	i = 0;
+	in_single = 0;
+	has_expandable = 0;
+	while (value[i])
+	{
+		if (value[i] == '\\' && value[i + 1] == '\'')
+			i += 2;
+		else if (value[i] == '\'' && !in_single)
+		{
+			in_single = 1;
+			i++;
+		}
+		else if (value[i] == '\'' && in_single)
+		{
+			in_single = 0;
+			i++;
+		}
+		else if (!in_single && value[i] == '$')
+		{
+			has_expandable = 1;
+			i++;
+		}
+		else
+			i++;
+	}
+	return (has_expandable);
 }
 
 /* Expanse toutes les variables dans une liste de tokens */

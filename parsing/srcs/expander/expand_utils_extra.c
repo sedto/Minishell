@@ -17,7 +17,13 @@
 */
 int	should_process_variable(char *input, int i)
 {
-	return (input[i] == '$' && input[i + 1] && input[i + 1] != ' ');
+	if (input[i] == '$' && input[i + 1] && input[i + 1] != ' ')
+	{
+		if (input[i + 1] == '\'')
+			return (0);
+		return (1);
+	}
+	return (0);
 }
 
 /*

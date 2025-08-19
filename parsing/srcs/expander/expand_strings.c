@@ -15,10 +15,27 @@
 /*
 ** Processes character by type (quote, variable, normal)
 */
+static void	handle_ansi_c_quote(char *input, t_expand_data *data)
+{
+	int	start;
+	int	end;
+
+	start = *data->i + 2;
+	end = start;
+	while (input[end] && input[end] != '\'')
+		end++;
+	while (start < end)
+		data->result[(*data->j)++] = input[start++];
+	*data->i = end + 1;
+}
+
 static void	process_character(char *input, t_expand_data *data,
 				int *in_single_quote, int *in_double_quote)
 {
-	if (input[*data->i] == '\'' && !(*in_double_quote))
+	if (input[*data->i] == '$' && input[*data->i + 1] == '\''
+		&& !(*in_single_quote) && !(*in_double_quote))
+		handle_ansi_c_quote(input, data);
+	else if (input[*data->i] == '\'' && !(*in_double_quote))
 		handle_single_quote_char(input, data, in_single_quote,
 			*in_double_quote);
 	else if (input[*data->i] == '"' && !(*in_single_quote))
