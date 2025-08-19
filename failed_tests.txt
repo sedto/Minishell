@@ -1,0 +1,18 @@
+[0;34m=== Test 12: PWD/OLDPWD ===[0m
+[0;34m=== Test 13: exit status ===[0m
+[0;34m=== Test 16: echo quote mixing ===[0m
+[0;34m=== Test 19: echo empty quotes ===[0m
+[0;34m=== Test 24: echo dollar quote ===[0m
+[0;34m=== Test 28: unset critical vars ===[0m
+[0;34m=== Test 29: unset PATH ===[0m
+[0;34m=== Test 31: cd nonexistent ===[0m
+[0;34m=== Test 48: pipe only ===[0m
+[0;34m=== Test 49: double pipe ===[0m
+[0;34m=== Test 50: pipe dollar ===[0m
+[0;34m=== Test 51: pipe with command ===[0m
+[0;34m=== Test 52: input redirect only ===[0m
+[0;34m=== Test 53: output redirect only ===[0m
+[0;34m=== Test 54: triple output ===[0m
+[0;34m=== Test 55: triple input ===[0m
+[0;34m=== Test 56: complex syntax error ===[0m
+[0;34m=== Test E4: redirect with undefined var ===[0m

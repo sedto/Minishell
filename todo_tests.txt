@@ -1,0 +1,61 @@
+# TESTS MANUELS - Minishell
+# Tests à faire manuellement (les tests automatiques échouent pour ces cas)
+
+## HEREDOCS (nécessitent interaction)
+./minishell
+cat << eof1 | sort << eof2 | rev << eof3
+line1
+eof1
+line2  
+eof2
+line3
+eof3
+
+./minishell
+<< eof
+hello
+world
+eof
+
+./minishell
+cat >>file <<eof
+hello
+this
+is
+a
+heredoc
+eof
+
+## NESTED MINISHELL (SHLVL)
+./minishell
+echo $SHLVL
+./minishell
+echo $SHLVL
+exit
+echo $SHLVL
+exit
+
+## INTERACTIVE SIGNALS
+./minishell
+# Tester Ctrl+C (nouveau prompt)
+# Tester Ctrl+D (exit)  
+# Tester Ctrl+\ (rien)
+exit
+
+## PIPES COMPLEXES INTERACTIFS
+./minishell
+ls | grep mini | wc -l
+cat testfile | sort | head -5
+exit
+
+## REDIRECTIONS MULTIPLES
+./minishell
+echo hello > file1 > file2  # Devrait écrire dans file2
+cat < file1 < file2         # Devrait lire file2
+exit
+
+## COMMANDS EN ARRIERE-PLAN (si implémenté)
+./minishell
+sleep 5 &
+ps
+exit

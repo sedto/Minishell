@@ -51,8 +51,7 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx,
 		return (1);
 	}
 	original_commands = shell->commands;
-	if (shell->commands->args && shell->commands->args[0])
-		execute_commands(&shell);
+	execute_commands(&shell);
 	shell->commands = original_commands;
 	if (shell->commands)
 	{
@@ -60,4 +59,25 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx,
 		shell->commands = NULL;
 	}
 	return (shell->exit_status);
+}
+
+int	process_multiline_input(char *input, char **envp,
+		t_shell_ctx *ctx, t_minishell *shell)
+{
+	char	**lines;
+	int		exit_code;
+	int		i;
+
+	lines = ft_split(input, '\n');
+	if (!lines)
+		return (1);
+	exit_code = 0;
+	i = 0;
+	while (lines[i])
+	{
+		exit_code = process_input(lines[i], envp, ctx, shell);
+		i++;
+	}
+	free_env_tab(lines);
+	return (exit_code);
 }

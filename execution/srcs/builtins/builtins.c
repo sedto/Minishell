@@ -30,10 +30,23 @@ static char	*get_cd_target(t_minishell *s)
 	return (s->commands->args[1]);
 }
 
+static void	update_pwd_vars(t_minishell *s, char *old_pwd)
+{
+	char	*new_pwd;
+
+	new_pwd = getcwd(NULL, 0);
+	if (old_pwd)
+		set_env_value(&s, "OLDPWD", old_pwd);
+	if (new_pwd)
+		set_env_value(&s, "PWD", new_pwd);
+	free(new_pwd);
+}
+
 int	builtin_cd(t_minishell *s)
 {
 	t_cmd	*cmd;
 	char	*target;
+	char	*old_pwd;
 
 	cmd = s->commands;
 	if (cmd->args[1] && cmd->args[2])
@@ -44,11 +57,15 @@ int	builtin_cd(t_minishell *s)
 	target = get_cd_target(s);
 	if (!target)
 		return (1);
+	old_pwd = getcwd(NULL, 0);
 	if (chdir(target) != 0)
 	{
 		perror("cd");
+		free(old_pwd);
 		return (1);
 	}
+	update_pwd_vars(s, old_pwd);
+	free(old_pwd);
 	return (0);
 }
 

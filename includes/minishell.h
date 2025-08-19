@@ -164,6 +164,8 @@ t_cmd				*parse_tokens_to_commands(t_token *tokens,
 						t_shell_ctx *ctx, t_minishell *s);
 int					process_input(char *input, char **envp, t_shell_ctx *ctx,
 						t_minishell *shell);
+int					process_multiline_input(char *input, char **envp,
+						t_shell_ctx *ctx, t_minishell *shell);
 t_cmd				*parse_tokens(char *input, t_minishell *s,
 						t_shell_ctx *ctx);
 

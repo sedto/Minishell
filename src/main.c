@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 01:56:46 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 21:11:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 09:48:41 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	main(int argc, char **argv, char **envp)
 		shell = setup_shell(envp);
 		if (!shell)
 			return (1);
-		exit_code = process_input(argv[2], envp, &ctx, shell);
+		exit_code = process_multiline_input(argv[2], envp, &ctx, shell);
 		cleanup_shell(shell);
 		return (exit_code);
 	}

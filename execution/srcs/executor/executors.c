@@ -6,40 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 14:22:59 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/08/18 14:23:50 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 10:52:28 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	exec_in_child(t_minishell **s, t_cmd *cmd, int *pipe_fd, int prev_fd)
-{
-	char	*full_path;
-
-	if (prev_fd != -1)
-		dup2(prev_fd, STDIN_FILENO);
-	if (cmd->next)
-	{
-		close(pipe_fd[0]);
-		dup2(pipe_fd[1], STDOUT_FILENO);
-	}
-	if (handle_redirections(cmd))
-		exit(1);
-	if (is_builtin(cmd))
-		execute_builtin(s);
-	if (is_builtin(cmd))
-		exit((*s)->exit_status);
-	full_path = get_path(cmd->args[0], (*s)->env);
-	if (full_path)
-	{
-		path_stat(full_path);
-		execve(full_path, cmd->args, env_to_tab((*s)->env));
-		perror(cmd->args[0]);
-	}
-	else
-		command_not_found(cmd->args[0]);
-	exit(127);
-}
 
 void	wait_all_children(t_minishell **s, int prev_fd, int last_pid)
 {

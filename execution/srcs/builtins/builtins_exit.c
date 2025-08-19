@@ -36,7 +36,6 @@ int	builtin_exit(t_minishell *s)
 	char	**args;
 
 	args = s->commands->args;
-	printf("exit\n");
 	if (!args[1])
 		exit(0);
 	if (is_str_num(args[1]))
