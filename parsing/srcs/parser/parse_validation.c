@@ -21,7 +21,9 @@ static int	syntax_error_cleanup(t_cmd *commands, char *error_msg,
 		t_shell_ctx *ctx)
 {
 	(void)commands;
-	printf("minishell: syntax error near unexpected token %s\n", error_msg);
+	write(2, "minishell: syntax error near unexpected token ", 44);
+	write(2, error_msg, ft_strlen(error_msg));
+	write(2, "\n", 1);
 	ctx->syntax_error = 1;
 	return (0);
 }
@@ -91,5 +93,8 @@ int	validate_redirection_token(t_token *tokens, t_cmd *commands,
 	if (!tokens->next || tokens->next->type == TOKEN_EOF
 		|| tokens->next->type == TOKEN_PIPE)
 		return (syntax_error_cleanup(commands, "newline", ctx));
+	if (tokens->next->type >= TOKEN_REDIR_IN
+		&& tokens->next->type <= TOKEN_HEREDOC)
+		return (syntax_error_cleanup(commands, "'>'", ctx));
 	return (1);
 }

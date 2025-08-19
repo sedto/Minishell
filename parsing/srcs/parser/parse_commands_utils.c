@@ -67,6 +67,8 @@ int	process_token(t_token **tokens, t_process_data *data)
 	{
 		process_redirection_token(*(data->current_cmd), tokens,
 			data->ctx, data->s);
+		if (data->ctx->syntax_error)
+			return (0);
 	}
 	*tokens = (*tokens)->next;
 	return (1);

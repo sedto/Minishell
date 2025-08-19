@@ -46,6 +46,8 @@ int	process_input(char *input, char **envp, t_shell_ctx *ctx,
 	shell->commands = parse_tokens(input, shell, ctx);
 	if (!shell->commands)
 	{
+		if (ctx->syntax_error == 2)
+			return (1);
 		if (ctx->syntax_error)
 			return (2);
 		return (1);

@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/25 11:11:36 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:40:35 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,12 @@ int	is_only_spaces(char *str)
 /*
 ** Helper function to check if token should be removed
 */
-static int	should_remove_token(t_token *token)
+static int	should_remove_token(t_token *token, t_token *prev)
 {
 	if (token->type == TOKEN_EOF)
+		return (0);
+	if (prev && (prev->type >= TOKEN_REDIR_IN
+			&& prev->type <= TOKEN_HEREDOC))
 		return (0);
 	if (!token->value || ft_strlen(token->value) == 0
 		|| is_only_spaces(token->value))
@@ -79,7 +82,7 @@ t_token	*remove_empty_tokens(t_token *tokens)
 			current = next;
 			continue ;
 		}
-		if (should_remove_token(current))
+		if (should_remove_token(current, prev))
 			tokens = remove_single_token(tokens, current, prev, next);
 		else
 			prev = current;

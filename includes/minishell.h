@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 23:42:57 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:40:03 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,6 +267,9 @@ char				**create_new_args_array(int count, char *arg_copy);
 void				copy_existing_args(char **new_args, char **old_args,
 						int count);
 void				free_files(t_file *files);
+// redirect_helpers.c
+void				process_redirect_token(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx, t_redir type);
 
 // parse_commands.c
 int					is_empty_command(t_cmd *cmd);

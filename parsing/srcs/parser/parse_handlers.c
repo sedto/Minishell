@@ -47,13 +47,13 @@ int	validate_initial_syntax(t_token *tokens, t_shell_ctx *ctx)
 {
 	if (!tokens)
 	{
-		printf("minishell: syntax error\n");
+		write(2, "minishell: syntax error\n", 23);
 		ctx->syntax_error = 1;
 		return (0);
 	}
 	if (tokens->type == TOKEN_PIPE)
 	{
-		printf("minishell: syntax error near unexpected token '|'\n");
+		write(2, "minishell: syntax error near unexpected token '|'\n", 51);
 		ctx->syntax_error = 1;
 		return (0);
 	}
