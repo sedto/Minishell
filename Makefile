@@ -28,7 +28,8 @@ LIBFT_DIR	= libft
 
 # Source files - Main
 MAIN_SRCS	= $(SRCDIR)/main.c \
-		  $(SRCDIR)/main_utils.c
+		  $(SRCDIR)/main_utils.c \
+		  $(SRCDIR)/main_utils_helpers.c
 
 # Source files - Parsing
 PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
@@ -44,30 +45,40 @@ PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
 		  $(PARSING_SRCDIR)/expander/expand_utils.c \
 		  $(PARSING_SRCDIR)/expander/expand_buffer.c \
 		  $(PARSING_SRCDIR)/expander/expand_helpers.c \
-		  $(PARSING_SRCDIR)/expander/expand_char_handlers.c \
-		  $(PARSING_SRCDIR)/expander/expand_tokens.c \
+		  $(PARSING_SRCDIR)/expander/expand_utils_extra.c \
 		  $(PARSING_SRCDIR)/parser/create_commande.c \
+		  $(PARSING_SRCDIR)/parser/create_commande_utils.c \
+		  $(PARSING_SRCDIR)/parser/create_commande_helpers.c \
+		  $(PARSING_SRCDIR)/parser/redirect_helpers.c \
 		  $(PARSING_SRCDIR)/parser/parse_commands.c \
+		  $(PARSING_SRCDIR)/parser/parse_commands_utils.c \
 		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
 		  $(PARSING_SRCDIR)/parser/parse_validation.c \
 		  $(PARSING_SRCDIR)/parser/parse_utils.c \
 		  $(PARSING_SRCDIR)/parser/quote_remover.c \
 		  $(PARSING_SRCDIR)/parser/heredoc_utils.c \
-		  $(PARSING_SRCDIR)/parser/heredoc_handlers.c \
-		  $(PARSING_SRCDIR)/parser/heredoc_loop.c \
-		  $(PARSING_SRCDIR)/parser/parse_main.c \
-		  $(PARSING_SRCDIR)/parser/cmd_cleanup.c \
-		  $(PARSING_SRCDIR)/parser/cmd_utils.c \
-		  $(PARSING_SRCDIR)/parser/redirect_handlers.c
+		  $(PARSING_SRCDIR)/parser/heredoc_helpers.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_read.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_support.c
 
 # Source files - Execution
 EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
 		  $(EXEC_SRCDIR)/env/env_utils.c \
+		  $(EXEC_SRCDIR)/env/env_utils_extra.c \
+		  $(EXEC_SRCDIR)/env/env_conversion.c \
 		  $(EXEC_SRCDIR)/builtins/builtins.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_basic.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_export.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_exit.c \
 		  $(EXEC_SRCDIR)/utils/utils.c \
-		  $(EXEC_SRCDIR)/executor/executor.c \
+		  $(EXEC_SRCDIR)/utils/utils_extra.c \
+		  $(EXEC_SRCDIR)/utils/utils_commands.c \
+		  $(EXEC_SRCDIR)/executor/executors.c \
+		  $(EXEC_SRCDIR)/executor/executors_helpers.c \
+		  $(EXEC_SRCDIR)/executor/executors_redirections.c \
+		  $(EXEC_SRCDIR)/executor/executors_utils.c \
 		  $(EXEC_SRCDIR)/executor/get_path.c \
-			$(EXEC_SRCDIR)/executor/errors_env.c \
+		  $(EXEC_SRCDIR)/executor/errors_env.c \
 
 # All source files
 SRCS		= $(MAIN_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)
@@ -86,8 +97,8 @@ CFLAGS		= -Wall -Wextra -Werror -g
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
     # macOS (Homebrew)
-    RL_INC		= -I/usr/local/opt/readline/include
-    RL_LIB		= -L/usr/local/opt/readline/lib
+    RL_INC		= -I/opt/homebrew/opt/readline/include
+    RL_LIB		= -L/opt/homebrew/opt/readline/lib
 else
     # Linux (Ubuntu) - standard paths
     RL_INC		= -I/usr/include/readline 
@@ -150,28 +161,4 @@ fclean: clean
 
 re: fclean all
 
-# Test rule to run the program
-test: $(NAME)
-	@echo "$(GREEN)Running $(NAME)...$(RESET)"
-	@./$(NAME)
-
-# Unit tests
-test-units: $(LIBFT)
-	@echo "$(YELLOW)Building unit tests...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) test_units.c \
-		$(filter-out $(OBJDIR)/main.o, $(OBJS)) \
-		$(LIBS) -o test_units
-	@echo "$(GREEN)Running unit tests...$(RESET)"
-	@./test_units
-
-# Quick test (requires compiled minishell)
-test-quick:
-	@echo "$(GREEN)Running quick tests...$(RESET)"
-	@chmod +x test_express.sh && ./test_express.sh
-
-# Complete test suite (requires compiled minishell)
-test-complete:
-	@echo "$(GREEN)Running complete tests...$(RESET)"
-	@chmod +x test_simple_adapted.sh && ./test_simple_adapted.sh
-
-.PHONY: all clean fclean re test test-units test-quick test-complete
+.PHONY: all clean fclean re

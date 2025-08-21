@@ -1,0 +1,11 @@
+# TESTS MANUELS - Minishell
+# Tests à faire manuellement (les tests automatiques échouent pour ces cas)
+
+echo "'$USER'"
+  expected: 'john'
+echo """'$USER'"""
+  expected:  'john'
+echo a > $NOT_A_VAR
+  expected: bash: $NOT_A_VAR: ambiguous redirect
+echo "00$'"
+  expected: 00$'

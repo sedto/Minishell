@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 01:56:46 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 21:11:16 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 09:48:41 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,39 +25,62 @@ void	disable_echoctl(void)
 	}
 }
 
-static void	clean_shell(void)
+static int	process_interactive_input(char *input, char **envp,
+		t_shell_ctx *ctx, t_minishell *shell)
 {
-	get_shell_instance(NULL);
-	rl_clear_history();
-	rl_cleanup_after_signal();
+	int	exit_code;
+
+	if (!input)
+	{
+		printf("exit\n");
+		return (-1);
+	}
+	if (*input)
+		add_history(input);
+	exit_code = handle_input_line(input, envp, ctx, shell);
+	return (exit_code);
 }
 
-static int	run_interactive_mode(char **envp)
+static int	run_shell_loop(char **envp, t_shell_ctx *ctx, t_minishell *shell)
 {
-	char		*input;
-	int			exit_code;
-	t_shell_ctx	ctx;
+	char	*input;
+	int		exit_code;
 
-	ctx.syntax_error = 0;
-	setup_signals();
+	exit_code = 0;
 	while (1)
 	{
 		disable_echoctl();
 		g_signal = 0;
 		input = readline("minishell$ ");
-		if (!input)
+		exit_code = process_interactive_input(input, envp, ctx, shell);
+		if (exit_code == -1)
 		{
-			printf("exit\n");
+			free(input);
 			break ;
 		}
-		if (g_signal == SIGINT && (!input || !*input))
-			process_signals();
-		else
-			exit_code = handle_input_line(input, envp, &ctx);
-		if (input)
+		if (exit_code == 0)
+		{
 			free(input);
+			continue ;
+		}
+		free(input);
 	}
-	clean_shell();
+	return (exit_code);
+}
+
+static int	run_interactive_mode(char **envp)
+{
+	int			exit_code;
+	t_shell_ctx	ctx;
+	t_minishell	*shell;
+
+	ctx.syntax_error = 0;
+	setup_signals();
+	shell = setup_shell(envp);
+	if (!shell)
+		return (1);
+	exit_code = run_shell_loop(envp, &ctx, shell);
+	cleanup_shell(shell);
 	return (exit_code);
 }
 
@@ -65,12 +88,16 @@ int	main(int argc, char **argv, char **envp)
 {
 	int			exit_code;
 	t_shell_ctx	ctx;
+	t_minishell	*shell;
 
 	if (argc == 3 && ft_strncmp(argv[1], "-c", 2) == 0)
 	{
 		ctx.syntax_error = 0;
-		exit_code = process_input(argv[2], envp, &ctx);
-		get_shell_instance(NULL);
+		shell = setup_shell(envp);
+		if (!shell)
+			return (1);
+		exit_code = process_multiline_input(argv[2], envp, &ctx, shell);
+		cleanup_shell(shell);
 		return (exit_code);
 	}
 	return (run_interactive_mode(envp));

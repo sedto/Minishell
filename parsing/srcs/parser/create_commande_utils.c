@@ -1,62 +1,57 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_cleanup.c                                      :+:      :+:    :+:   */
+/*   create_commande_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/14 00:00:00 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/08/12 00:00:00 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/12 00:00:00 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-static void	free_cmd_args(t_cmd *cmd)
-{
-	int	i;
-
-	if (cmd->args)
-	{
-		i = 0;
-		while (cmd->args[i])
-			free(cmd->args[i++]);
-		free(cmd->args);
-	}
-}
-
-static void	free_cmd_files(t_cmd *cmd)
-{
-	t_file	*fcurrent;
-	t_file	*fnext;
-
-	if (cmd->files)
-	{
-		fcurrent = cmd->files;
-		while (fcurrent)
-		{
-			fnext = fcurrent->next;
-			free(fcurrent->name);
-			if (fcurrent->heredoc_content)
-				free(fcurrent->heredoc_content);
-			free(fcurrent);
-			fcurrent = fnext;
-		}
-	}
-}
-
 void	free_commands(t_cmd *commands)
 {
 	t_cmd	*current;
 	t_cmd	*next;
+	int		i;
 
 	current = commands;
 	while (current)
 	{
 		next = current->next;
-		free_cmd_args(current);
-		free_cmd_files(current);
+		if (current->args)
+		{
+			i = 0;
+			while (current->args[i])
+			{
+				free(current->args[i]);
+				i++;
+			}
+			free(current->args);
+		}
+		free_files(current->files);
 		free(current);
 		current = next;
 	}
+}
+
+void	handle_redirect_out(t_cmd *current_cmd, t_token **token,
+			t_shell_ctx *ctx)
+{
+	process_redirect_token(current_cmd, token, ctx, OUTPUT);
+}
+
+void	handle_redirect_append(t_cmd *current_cmd, t_token **token,
+			t_shell_ctx *ctx)
+{
+	process_redirect_token(current_cmd, token, ctx, APPEND);
+}
+
+void	handle_redirect_in(t_cmd *current_cmd, t_token **token,
+			t_shell_ctx *ctx)
+{
+	process_redirect_token(current_cmd, token, ctx, INPUT);
 }

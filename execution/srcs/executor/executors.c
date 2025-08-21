@@ -1,0 +1,106 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executors.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/18 14:22:59 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/19 10:52:28 by dibsejra         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	wait_all_children(t_minishell **s, int prev_fd, int last_pid)
+{
+	int		stat;
+
+	signal(SIGINT, SIG_IGN);
+	if (prev_fd != -1)
+		close(prev_fd);
+	if (last_pid != -1)
+	{
+		waitpid(last_pid, &stat, 0);
+		(*s)->exit_status = WEXITSTATUS(stat);
+		while (wait(NULL) > 0 && g_signal != SIGINT)
+			;
+	}
+	else
+	{
+		while (wait(&stat) > 0 && g_signal != SIGINT)
+			(*s)->exit_status = WEXITSTATUS(stat);
+	}
+	if (g_signal == SIGINT)
+	{
+		(*s)->exit_status = 130;
+		while (wait(NULL) > 0)
+			;
+	}
+	setup_signals();
+}
+
+void	run_builtin(t_minishell **s)
+{
+	int		original_stdin;
+	int		original_stdout;
+
+	original_stdin = dup(STDIN_FILENO);
+	original_stdout = dup(STDOUT_FILENO);
+	if (handle_redirections((*s)->commands, s))
+		(*s)->exit_status = 1;
+	else
+		execute_builtin(s);
+	dup2(original_stdin, STDIN_FILENO);
+	dup2(original_stdout, STDOUT_FILENO);
+	close(original_stdin);
+	close(original_stdout);
+}
+
+void	run_in_fork(t_minishell **s, int *pipe_fd, int *prev_fd, int *last)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return (perror("fork"));
+	if (pid == 0)
+		exec_in_child(s, (*s)->commands, pipe_fd, *prev_fd);
+	if (!(*s)->commands->next)
+		*last = pid;
+	if (*prev_fd != -1)
+		close(*prev_fd);
+	if ((*s)->commands->next)
+	{
+		close(pipe_fd[1]);
+		*prev_fd = pipe_fd[0];
+	}
+}
+
+void	execute_commands(t_minishell **s)
+{
+	int		prev_fd;
+	int		pipe_fd[2];
+	pid_t	last_pid;
+	t_cmd	*current_cmd;
+	t_cmd	*next_cmd;
+
+	prev_fd = -1;
+	last_pid = -1;
+	current_cmd = (*s)->commands;
+	while (current_cmd)
+	{
+		next_cmd = current_cmd->next;
+		(*s)->commands = current_cmd;
+		if (!prepare_pipe(current_cmd, pipe_fd))
+			return ;
+		if (!has_pipe_or_input(current_cmd, prev_fd)
+			&& is_builtin(current_cmd))
+			run_builtin(s);
+		else
+			run_in_fork(s, pipe_fd, &prev_fd, &last_pid);
+		current_cmd = next_cmd;
+		(*s)->commands = current_cmd;
+	}
+	wait_all_children(s, prev_fd, last_pid);
+}

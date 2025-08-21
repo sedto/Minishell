@@ -1,37 +1,49 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirect_handlers.c                                :+:      :+:    :+:   */
+/*   create_commande_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/14 00:00:00 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/08/12 00:00:00 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/12 00:00:00 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-static void	add_file_to_cmd(t_cmd *cmd, t_file *node)
+void	free_commands(t_cmd *commands)
 {
-	t_file	*tmp;
+	t_cmd	*current;
+	t_cmd	*next;
+	int		i;
 
-	if (cmd->files)
+	current = commands;
+	while (current)
 	{
-		tmp = cmd->files;
-		while (tmp->next)
-			tmp = tmp->next;
-		tmp->next = node;
+		next = current->next;
+		if (current->args)
+		{
+			i = 0;
+			while (current->args[i])
+			{
+				free(current->args[i]);
+				i++;
+			}
+			free(current->args);
+		}
+		free_files(current->files);
+		free(current);
+		current = next;
 	}
-	else
-		cmd->files = node;
 }
 
-void	handle_redirect_out(t_cmd *current_cmd, t_token **token,
+void	handlt_redirect_out(t_cmd *current_cmd, t_token **token,
 		t_shell_ctx *ctx)
 {
 	char	*new_file;
 	t_file	*node;
+	t_file	*tmp;
 
 	(void)ctx;
 	*token = (*token)->next;
@@ -42,16 +54,25 @@ void	handle_redirect_out(t_cmd *current_cmd, t_token **token,
 		{
 			node = create_t_file_node(new_file);
 			node->type = OUTPUT;
-			add_file_to_cmd(current_cmd, node);
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }
 
-void	handle_redirect_append(t_cmd *current_cmd, t_token **token,
+void	handlt_redirect_append(t_cmd *current_cmd, t_token **token,
 		t_shell_ctx *ctx)
 {
 	char	*new_file;
 	t_file	*node;
+	t_file	*tmp;
 
 	(void)ctx;
 	*token = (*token)->next;
@@ -62,7 +83,15 @@ void	handle_redirect_append(t_cmd *current_cmd, t_token **token,
 		{
 			node = create_t_file_node(new_file);
 			node->type = APPEND;
-			add_file_to_cmd(current_cmd, node);
+			if (current_cmd->files)
+			{
+				tmp = current_cmd->files;
+				while (tmp->next)
+					tmp = tmp->next;
+				tmp->next = node;
+			}
+			else
+				current_cmd->files = node;
 		}
 	}
 }

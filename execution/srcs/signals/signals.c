@@ -11,10 +11,11 @@
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-#include <readline/history.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include <signal.h>
 
+/* Gestionnaire pour SIGINT (Ctrl+C) */
 void	handle_sigint(int sig)
 {
 	(void)sig;
@@ -25,11 +26,13 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
+/* Gestionnaire pour SIGQUIT (Ctrl+\) - ne fait rien (comportement bash) */
 void	handle_sigquit(int sig)
 {
 	(void)sig;
 }
 
+/* Configure les gestionnaires de signaux pour le mode interactif */
 void	setup_signals(void)
 {
 	struct sigaction	sa_int;
@@ -45,6 +48,7 @@ void	setup_signals(void)
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
+/* Restaure les signaux par défaut (pour les processus enfants) */
 void	reset_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
@@ -53,31 +57,5 @@ void	reset_signals(void)
 
 void	process_signals(void)
 {
-	int	status;
-
-	while (waitpid(-1, &status, WNOHANG) > 0)
-		;
 	g_signal = 0;
-}
-
-void	handle_sigint_exec(int sig)
-{
-	(void)sig;
-	g_signal = SIGINT;
-}
-
-void	ignore_signals(void)
-{
-	struct sigaction	sa_int;
-
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = 0;
-	sa_int.sa_handler = handle_sigint_exec;
-	sigaction(SIGINT, &sa_int, NULL);
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void	restore_signals(void)
-{
-	setup_signals();
 }

@@ -51,7 +51,6 @@ char	*remove_quotes(char *str)
 static void	process_args_quotes(char **args)
 {
 	char	*new_arg;
-	char	*old_arg;
 	int		i;
 
 	if (!args)
@@ -59,12 +58,11 @@ static void	process_args_quotes(char **args)
 	i = 0;
 	while (args[i])
 	{
-		old_arg = args[i];
 		new_arg = remove_quotes(args[i]);
 		if (new_arg)
 		{
+			free(args[i]);
 			args[i] = new_arg;
-			free(old_arg);
 		}
 		i++;
 	}

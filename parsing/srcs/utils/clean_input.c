@@ -12,6 +12,7 @@
 
 #include "../../../includes/minishell.h"
 
+/* Gère les quotes simples et doubles */
 static int	handle_quotes(t_clean_data *data)
 {
 	if (data->str[*data->i] == '\'' && !(*data->in_double_quote))
@@ -29,6 +30,7 @@ static int	handle_quotes(t_clean_data *data)
 	return (0);
 }
 
+/* Gère les espaces en préservant ceux avant les quotes */
 static int	handle_spaces(t_clean_data *data)
 {
 	int	next_i;
@@ -53,6 +55,7 @@ static int	handle_spaces(t_clean_data *data)
 	return (0);
 }
 
+/* Traite un caractère dans la chaîne d'entrée en préservant les espaces */
 static void	process_char(t_clean_data *data)
 {
 	if (handle_quotes(data))
@@ -62,6 +65,7 @@ static void	process_char(t_clean_data *data)
 	data->cleaned[(*data->j)++] = data->str[(*data->i)++];
 }
 
+/* Initialise les données pour le nettoyage */
 static void	init_clean_data(t_clean_data *data, char *str, char *cleaned,
 		int *vars)
 {
@@ -77,6 +81,7 @@ static void	init_clean_data(t_clean_data *data, char *str, char *cleaned,
 	vars[3] = 0;
 }
 
+/* Nettoie l'entrée en normalisant les espaces et préservant quotes */
 char	*clean_input(char *str)
 {
 	char			*cleaned;

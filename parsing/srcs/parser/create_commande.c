@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 t_cmd	*new_command(void)
 {
@@ -25,35 +25,6 @@ t_cmd	*new_command(void)
 	return (cmd);
 }
 
-static char	**create_new_args_array(char **args, char *arg_copy, int count)
-{
-	char	**new_args;
-	int		i;
-
-	new_args = malloc((count + 2) * sizeof(char *));
-	if (!new_args)
-	{
-		free(arg_copy);
-		return (NULL);
-	}
-	i = -1;
-	while (++i < count)
-	{
-		new_args[i] = ft_strdup(args[i]);
-		if (!new_args[i])
-		{
-			while (--i >= 0)
-				free(new_args[i]);
-			free(new_args);
-			free(arg_copy);
-			return (NULL);
-		}
-	}
-	new_args[count] = arg_copy;
-	new_args[count + 1] = NULL;
-	return (new_args);
-}
-
 void	add_argument(t_cmd *cmd, char *arg)
 {
 	char	**new_args;
@@ -66,10 +37,41 @@ void	add_argument(t_cmd *cmd, char *arg)
 	arg_copy = ft_strdup(arg);
 	if (!arg_copy)
 		return ;
-	new_args = create_new_args_array(cmd->args, arg_copy, count);
+	new_args = create_new_args_array(count, arg_copy);
 	if (!new_args)
 		return ;
-	if (cmd->args)
-		free(cmd->args);
+	copy_existing_args(new_args, cmd->args, count);
+	new_args[count] = arg_copy;
+	new_args[count + 1] = NULL;
+	free(cmd->args);
 	cmd->args = new_args;
+}
+
+int	count_args(char **args)
+{
+	int	count;
+
+	count = 0;
+	if (!args)
+		return (0);
+	while (args[count])
+		count++;
+	return (count);
+}
+
+void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
+{
+	t_cmd	*current;
+
+	if (!commands || !new_cmd)
+		return ;
+	if (!*commands)
+	{
+		*commands = new_cmd;
+		return ;
+	}
+	current = *commands;
+	while (current->next)
+		current = current->next;
+	current->next = new_cmd;
 }

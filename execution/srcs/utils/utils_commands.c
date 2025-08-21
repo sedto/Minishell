@@ -1,42 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_utils.c                                        :+:      :+:    :+:   */
+/*   utils_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/14 00:00:00 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/08/18 14:23:17 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/18 14:24:07 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	count_args(char **args)
+/* Compte le nombre de commandes dans un pipeline */
+int	count_commands(t_cmd *commands)
 {
 	int	count;
 
 	count = 0;
-	if (!args)
-		return (0);
-	while (args[count])
+	while (commands)
+	{
 		count++;
+		commands = commands->next;
+	}
 	return (count);
 }
 
-void	add_command_to_list(t_cmd **commands, t_cmd *new_cmd)
+/* Affiche une erreur de commande non trouvée */
+void	command_not_found(char *cmd)
 {
-	t_cmd	*current;
-
-	if (!commands || !new_cmd)
-		return ;
-	if (!*commands)
-	{
-		*commands = new_cmd;
-		return ;
-	}
-	current = *commands;
-	while (current->next)
-		current = current->next;
-	current->next = new_cmd;
+	write(STDERR_FILENO, "minishell: ", 11);
+	write(STDERR_FILENO, cmd, ft_strlen(cmd));
+	write(STDERR_FILENO, ": command not found\n", 20);
 }

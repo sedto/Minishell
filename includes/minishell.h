@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 23:42:57 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:40:03 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,13 @@
 # include <readline/history.h>
 # include <readline/readline.h>
 
+// Déclaration du contexte AVANT tout prototype ou typedef qui l'utilise
+
 typedef struct s_shell_ctx
 {
 	int				syntax_error;
 	int				exit_code;
+	// Tu peux ajouter d'autres flags ici plus tard
 }					t_shell_ctx;
 
 /* ************************************************************************** */
@@ -80,7 +83,7 @@ typedef enum e_redir
 	OUTPUT,
 	INPUT,
 	HEREDOC
-}			t_redir;
+}					t_redir;
 
 typedef struct s_file
 {
@@ -110,12 +113,23 @@ typedef struct s_minishell
 	t_env			*env;
 	t_token			*tokens;
 	t_cmd			*commands;
+	char			**parsed;
 	int				exit_status;
 	int				in_heredoc;
 	int				saved_stdout;
 	int				saved_stdin;
 }					t_minishell;
 
+typedef struct s_process_data
+{
+	t_cmd			**commands;
+	t_cmd			**current_cmd;
+	t_shell_ctx		*ctx;
+	t_minishell		*s;
+}					t_process_data;
+
+// Structure pour passer les données lors de l'expansion des variables
+// Utilisée pour éviter de passer trop de paramètres entre les fonctions
 typedef struct s_expand_data
 {
 	char			**envp;
@@ -127,6 +141,7 @@ typedef struct s_expand_data
 	int				*j;
 }					t_expand_data;
 
+// Structure pour le nettoyage des entrées (clean_input)
 typedef struct s_clean_data
 {
 	char			*str;
@@ -146,12 +161,25 @@ char				*clean_input(char *str);
 
 // main_utils.c
 int					is_exit_command(char *input);
-t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx,
-						t_minishell *s);
-t_minishell			*get_shell_instance(char **envp);
-int					process_input(char *input, char **envp, t_shell_ctx *ctx);
-int					handle_input_line(char *input, char **envp,
+t_cmd				*parse_tokens_to_commands(t_token *tokens,
+						t_shell_ctx *ctx, t_minishell *s);
+int					process_input(char *input, char **envp, t_shell_ctx *ctx,
+						t_minishell *shell);
+int					process_multiline_input(char *input, char **envp,
+						t_shell_ctx *ctx, t_minishell *shell);
+t_cmd				*parse_tokens(char *input, t_minishell *s,
 						t_shell_ctx *ctx);
+
+// main_utils_helpers.c
+t_token				*process_tokens_expansion(t_token *tokens, t_minishell *s);
+t_cmd				*build_commands_from_tokens(t_token *tokens,
+						char *cleaned_input, t_shell_ctx *ctx,
+						t_minishell *s);
+t_minishell			*setup_shell(char **envp);
+void				shell_exit(int value, t_minishell *s);
+void				cleanup_shell(t_minishell *shell);
+int					handle_input_line(char *input, char **envp,
+						t_shell_ctx *ctx, t_minishell *shell);
 
 // clean_input_utils.c
 void				add_space_if_needed(char *cleaned, int *j, char next_char,
@@ -213,6 +241,7 @@ void				handle_double_quote_char(char *input, t_expand_data *data,
 						int *in_double_quote, int in_single_quote);
 int					should_process_variable(char *input, int i);
 void				process_normal_char(char *input, t_expand_data *data);
+int					calc_buffer_size(char *input);
 
 // expand_utils.c
 int					extract_var_name(char *input, int start, char **var_name);
@@ -225,29 +254,60 @@ t_cmd				*new_command(void);
 void				add_argument(t_cmd *cmd, char *arg);
 int					count_args(char **args);
 void				add_command_to_list(t_cmd **commands, t_cmd *new_cmd);
+
+// create_commande_utils.c
 void				free_commands(t_cmd *commands);
+void				handle_redirect_out(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+void				handle_redirect_append(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+void				handle_redirect_in(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx);
+
+// create_commande_helpers.c
+char				**create_new_args_array(int count, char *arg_copy);
+void				copy_existing_args(char **new_args, char **old_args,
+						int count);
+void				free_files(t_file *files);
+// redirect_helpers.c
+void				process_redirect_token(t_cmd *current_cmd, t_token **token,
+						t_shell_ctx *ctx, t_redir type);
 
 // parse_commands.c
 int					is_empty_command(t_cmd *cmd);
-int					is_command_in_list(t_cmd *commands, t_cmd *target);
-int					validate_token_syntax(t_token *tokens, t_cmd *commands,
-						t_cmd *current_cmd, t_shell_ctx *ctx);
-int					handle_token_type(t_token **tokens, t_cmd **commands,
-						t_cmd **current_cmd, t_shell_ctx *ctx);
-int					handle_redirection_type(t_token **tokens,
-						t_cmd *current_cmd, t_shell_ctx *ctx, t_minishell *s);
 
-typedef struct s_parse_data
-{
-	t_cmd			**commands;
-	t_cmd			**current_cmd;
-	t_shell_ctx		*ctx;
-	t_minishell		*s;
-}	t_parse_data;
+// parse_commands_utils.c
+t_cmd				*handle_syntax_error(t_cmd *commands, t_cmd *current_cmd);
+int					process_single_token(t_token **tokens,
+						t_process_data *data);
+int					process_token(t_token **tokens, t_process_data *data);
 
-// parse_main.c
-t_cmd				*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx,
-						t_minishell *s);
+// heredoc_helpers.c
+int					is_delimiter_match(char *line, char *delimiter,
+						int delim_len);
+char				*process_line_expansion(char *line, t_minishell *s,
+						int expand);
+char				*append_line_to_content(char *content, char *line);
+int					handle_heredoc_signal_exit(int *should_exit, char *line,
+						char *content);
+
+// heredoc_read.c
+void				print_heredoc_warning(char *delimiter);
+char				*process_heredoc_line(char *line, char *delimiter,
+						int delim_len, t_minishell *s);
+char				*read_single_heredoc_line(char *delimiter, int *should_exit,
+						char **content, t_minishell *s);
+int					process_heredoc_line_content(char **content, char *line,
+						t_minishell *s, int expand);
+
+// heredoc_support.c
+int					should_expand_delimiter(char *delimiter);
+void				add_file_to_command(t_cmd *current_cmd, t_file *node);
+int					handle_heredoc_error(char *delimiter, t_shell_ctx *ctx);
+t_file				*create_and_validate_heredoc_file(char *delimiter,
+						char *content);
+void				process_heredoc_token(t_cmd *current_cmd, char *token_value,
+						t_shell_ctx *ctx, t_minishell *s);
 
 // parse_handlers.c
 void				handle_word_token(t_cmd *current_cmd, t_token *token,
@@ -265,12 +325,6 @@ int					validate_double_pipe(t_token *tokens, t_cmd *commands,
 						t_cmd *current_cmd, t_shell_ctx *ctx);
 
 // parse_utils.c
-void				handle_redirect_out(t_cmd *current_cmd, t_token **token,
-						t_shell_ctx *ctx);
-void				handle_redirect_append(t_cmd *current_cmd, t_token **token,
-						t_shell_ctx *ctx);
-void				handle_redirect_in(t_cmd *current_cmd, t_token **token,
-						t_shell_ctx *ctx);
 void				handle_heredoc(t_cmd *current_cmd, t_token **token,
 						t_shell_ctx *ctx, t_minishell *s);
 void				process_redirection_token(t_cmd *current_cmd,
@@ -282,30 +336,9 @@ void				remove_quotes_from_commands(t_cmd *commands);
 char				*remove_quotes(char *str);
 
 // heredoc_utils.c
-char				*process_heredoc_expansion(char *line, t_minishell *s);
-int					check_heredoc_delimiter(char *line, char *delimiter,
-						int delim_len);
-char				*process_heredoc_line(char *line, t_minishell *s,
-						int expand);
-char				*append_line_to_content(char *content, char *with_newline);
-int					handle_heredoc_readline(char **line, char *delimiter,
-						char **content, int *should_exit);
-
-// heredoc_loop.c
-char				*read_heredoc_loop(char *delimiter, int *should_exit,
-						t_minishell *s, int expand);
 char				*read_heredoc_content(char *delimiter, int *should_exit,
 						t_minishell *s, int expand);
-
-// heredoc_handlers.c
 t_file				*create_heredoc_file(char *delimiter, char *content);
-void				handle_redirect_in(t_cmd *current_cmd, t_token **token,
-						t_shell_ctx *ctx);
-void				add_heredoc_to_files(t_cmd *current_cmd, t_file *node);
-int					process_heredoc_token(char *delimiter, char **content,
-						int *should_exit, t_minishell *s);
-void				handle_heredoc(t_cmd *current_cmd, t_token **token,
-						t_shell_ctx *ctx, t_minishell *s);
 
 /* ************************************************************************** */
 /*                             BUILTIN FUNCTIONS                              */
@@ -335,6 +368,7 @@ char				*get_env_value(t_env *env, char *key);
 void				set_env_value(t_minishell **s, char *key, char *value);
 void				unset_env_value(t_minishell **s, char *key);
 void				free_env(t_env *env);
+void				free_minishell(t_minishell *s);
 char				**env_to_tab(t_env *env);
 void				free_env_tab(char **tab);
 
@@ -345,8 +379,6 @@ void				free_env_tab(char **tab);
 // signals.c
 void				setup_signals(void);
 void				reset_signals(void);
-void				ignore_signals(void);
-void				restore_signals(void);
 void				handle_sigint(int sig);
 void				handle_sigquit(int sig);
 void				process_signals(void);
@@ -358,7 +390,6 @@ void				process_signals(void);
 // utils.c
 char				**env_to_array(t_env *env);
 void				free_array(char **array);
-void				cleanup_shell(t_minishell *s);
 char				*find_executable(char *cmd, t_env *env);
 int					count_commands(t_cmd *commands);
 void				command_not_found(char *cmd);
@@ -369,9 +400,34 @@ void				print_ll(t_file *ll);
 /*                           EXECUTION FUNCTIONS                             */
 /* ************************************************************************** */
 
-// executor.c
-void				execute_commands(t_minishell **s);
+// get_path.c
 char				*get_path(char *cmd, t_env *env);
+
+/* ************************************************************************** */
+/*                            EXECUTORS FUNCTIONS                            */
+/* ************************************************************************** */
+
+// executors_redirections.c
+int					handle_heredoc_execution(t_file *file, t_minishell **s);
+int					handle_redir_in(t_file *f);
+int					handle_redir_out(t_file *f);
+int					handle_redirections(t_cmd *cmd, t_minishell **s);
+
+// executors_utils.c
+int					prepare_pipe(t_cmd *cmd, int *pipe_fd);
+int					has_pipe_or_input(t_cmd *cmd, int prev_fd);
+int					has_access(const char *path, int mode, t_minishell **s);
+void				path_stat(char *path, t_minishell **s);
+
+// executors.c
+void				execute_commands(t_minishell **s);
+void				exec_in_child(t_minishell **s, t_cmd *cmd, int *pipe_fd,
+						int prev_fd);
+void				wait_all_children(t_minishell **s, int prev_fd,
+						int last_pid);
+void				run_builtin(t_minishell **s);
+void				run_in_fork(t_minishell **s, int *pipe_fd, int *prev_fd,
+						int *last);
 
 /* ************************************************************************** */
 /*                             HELPERS FUNCTIONS                             */

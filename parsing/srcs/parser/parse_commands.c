@@ -23,49 +23,29 @@ int	is_empty_command(t_cmd *cmd)
 	return (1);
 }
 
-int	is_command_in_list(t_cmd *commands, t_cmd *target)
+t_cmd	*parse_tokens_to_commands(t_token *tokens, t_shell_ctx *ctx,
+		t_minishell *s)
 {
-	t_cmd	*current;
+	t_cmd			*commands;
+	t_cmd			*current_cmd;
+	t_process_data	data;
 
-	if (!commands || !target)
-		return (0);
-	current = commands;
-	while (current)
+	if (!validate_initial_syntax(tokens, ctx))
+		return (NULL);
+	commands = NULL;
+	current_cmd = new_command();
+	if (!current_cmd)
+		return (NULL);
+	data.commands = &commands;
+	data.current_cmd = &current_cmd;
+	data.ctx = ctx;
+	data.s = s;
+	while (tokens && tokens->type != TOKEN_EOF)
 	{
-		if (current == target)
-			return (1);
-		current = current->next;
+		if (!process_single_token(&tokens, &data))
+			return (handle_syntax_error(commands, current_cmd));
 	}
-	return (0);
-}
-
-int	validate_token_syntax(t_token *tokens, t_cmd *commands,
-		t_cmd *current_cmd, t_shell_ctx *ctx)
-{
-	if (tokens->type == TOKEN_PIPE)
-		return (validate_pipe_token(tokens, commands, current_cmd, ctx));
-	if (tokens->type >= TOKEN_REDIR_IN && tokens->type <= TOKEN_HEREDOC)
-		return (validate_redirection_token(tokens, commands, current_cmd, ctx));
-	return (validate_double_pipe(tokens, commands, current_cmd, ctx));
-}
-
-int	handle_token_type(t_token **tokens, t_cmd **commands,
-		t_cmd **current_cmd, t_shell_ctx *ctx)
-{
-	if ((*tokens)->type == TOKEN_WORD)
-		handle_word_token(*current_cmd, (*tokens), ctx);
-	else if ((*tokens)->type == TOKEN_PIPE)
-		handle_pipe_token(commands, current_cmd, ctx);
-	*tokens = (*tokens)->next;
-	return (1);
-}
-
-int	handle_redirection_type(t_token **tokens, t_cmd *current_cmd,
-		t_shell_ctx *ctx, t_minishell *s)
-{
-	if ((*tokens)->type >= TOKEN_REDIR_IN
-		&& (*tokens)->type <= TOKEN_HEREDOC)
-		process_redirection_token(current_cmd, tokens, ctx, s);
-	*tokens = (*tokens)->next;
-	return (1);
+	if (current_cmd)
+		add_command_to_list(&commands, current_cmd);
+	return (commands);
 }

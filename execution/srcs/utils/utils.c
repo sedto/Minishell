@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/21 10:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/12 21:06:45 by dibsejra         ###   ########.fr       */
+/*   Created: 2025/08/18 14:23:24 by dibsejra          #+#    #+#             */
+/*   Updated: 2025/08/18 14:24:12 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,90 +36,59 @@ void	print_ll(t_file *ll)
 	}
 }
 
-void	free_array(char **array)
-{
-	int	i;
-
-	if (!array)
-		return ;
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-}
-
-char	*find_basic_path(char *cmd)
-{
-	if (access(cmd, F_OK | X_OK) == 0)
-		return (ft_strdup(cmd));
-	return (NULL);
-}
-
-char	*combine_path(char **paths, int i, char *cmd)
-{
-	char	*temp;
-	char	*full_path;
-
-	temp = ft_strjoin(paths[i], "/");
-	if (temp)
-	{
-		full_path = ft_strjoin(temp, cmd);
-		free(temp);
-		if (full_path && access(full_path, F_OK | X_OK) == 0)
-		{
-			free_array(paths);
-			return (full_path);
-		}
-		free(full_path);
-	}
-	return (NULL);
-}
-
-char	*find_executable(char *cmd, t_env *env)
-{
-	char	*path_env;
-	char	**paths;
-	char	*full_path;
-	int		i;
-
-	if (ft_strchr(cmd, '/'))
-		return (find_basic_path(cmd));
-	path_env = get_env_value(env, "PATH");
-	if (!path_env)
-		return (NULL);
-	paths = ft_split(path_env, ':');
-	if (!paths)
-		return (NULL);
-	i = -1;
-	while (paths[++i])
-	{
-		full_path = combine_path(paths, i, cmd);
-		if (full_path)
-			return (full_path);
-	}
-	free_array(paths);
-	return (NULL);
-}
-
-int	count_commands(t_cmd *commands)
+static int	count_env_vars(t_env *env)
 {
 	int	count;
 
 	count = 0;
-	while (commands)
+	while (env)
 	{
 		count++;
-		commands = commands->next;
+		env = env->next;
 	}
 	return (count);
 }
 
-void	command_not_found(char *cmd)
+static int	fill_env_array(char **envp, t_env *env, int count)
 {
-	write(STDERR_FILENO, "minishell: ", 11);
-	write(STDERR_FILENO, cmd, ft_strlen(cmd));
-	write(STDERR_FILENO, ": command not found\n", 20);
+	char	*temp;
+	int		i;
+
+	i = 0;
+	while (env && i < count)
+	{
+		temp = ft_strjoin(env->key, "=");
+		if (temp)
+		{
+			envp[i] = ft_strjoin(temp, env->value);
+			free(temp);
+		}
+		if (!envp[i])
+			return (i);
+		env = env->next;
+		i++;
+	}
+	return (-1);
+}
+
+char	**env_to_array(t_env *env)
+{
+	char	**envp;
+	int		count;
+	int		failed_at;
+
+	count = count_env_vars(env);
+	envp = malloc(sizeof(char *) * (count + 1));
+	if (!envp)
+		return (NULL);
+	failed_at = fill_env_array(envp, env, count);
+	if (failed_at >= 0)
+	{
+		while (--failed_at >= 0)
+			free(envp[failed_at]);
+		free(envp);
+		return (NULL);
+	}
+	envp[count] = NULL;
+	return (envp);
 }

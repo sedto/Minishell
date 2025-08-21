@@ -6,13 +6,16 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:20:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/07 17:23:38 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/19 18:40:35 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-int	spaces(char *str)
+/*
+** Checks if string contains only spaces or tabs
+*/
+int	is_only_spaces(char *str)
 {
 	int	i;
 
@@ -28,17 +31,40 @@ int	spaces(char *str)
 	return (1);
 }
 
-static void	remove_current_token(t_token **tokens, t_token **prev,
-		t_token *current, t_token *next)
+/*
+** Helper function to check if token should be removed
+*/
+static int	should_remove_token(t_token *token, t_token *prev)
 {
-	if (*prev)
-		(*prev)->next = next;
-	else
-		*tokens = next;
-	free(current->value);
-	free(current);
+	if (token->type == TOKEN_EOF)
+		return (0);
+	if (prev && (prev->type >= TOKEN_REDIR_IN
+			&& prev->type <= TOKEN_HEREDOC))
+		return (0);
+	if (!token->value || ft_strlen(token->value) == 0
+		|| is_only_spaces(token->value))
+		return (1);
+	return (0);
 }
 
+/*
+** Removes a single token from the list
+*/
+static t_token	*remove_single_token(t_token *tokens, t_token *current,
+						t_token *prev, t_token *next)
+{
+	if (prev)
+		prev->next = next;
+	else
+		tokens = next;
+	free(current->value);
+	free(current);
+	return (tokens);
+}
+
+/*
+** Removes empty tokens from linked list
+*/
 t_token	*remove_empty_tokens(t_token *tokens)
 {
 	t_token	*current;
@@ -56,13 +82,10 @@ t_token	*remove_empty_tokens(t_token *tokens)
 			current = next;
 			continue ;
 		}
-		if (!current->value || !*current->value || spaces(current->value))
-		{
-			remove_current_token(&tokens, &prev, current, next);
-			current = next;
-			continue ;
-		}
-		prev = current;
+		if (should_remove_token(current, prev))
+			tokens = remove_single_token(tokens, current, prev, next);
+		else
+			prev = current;
 		current = next;
 	}
 	return (tokens);
