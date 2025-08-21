@@ -64,6 +64,7 @@ void	process_heredoc_token(t_cmd *current_cmd, char *token_value,
 	if (should_exit || !content)
 	{
 		handle_heredoc_error(delimiter, ctx);
+		free(delimiter);
 		return ;
 	}
 	node = create_and_validate_heredoc_file(delimiter, content);

@@ -60,7 +60,8 @@ void	free_minishell(t_minishell *s)
 	if (!s)
 		return ;
 	free_env(s->env);
-	free_env_tab(s->parsed);
+	if (s->parsed)
+		free_env_tab(s->parsed);
 	if (s->commands)
 	{
 		free_commands(s->commands);

@@ -83,24 +83,17 @@ int	should_expand_token(char *value)
 	while (value[i])
 	{
 		if (value[i] == '\\' && value[i + 1] == '\'')
+		{
 			i += 2;
+			continue ;
+		}
 		else if (value[i] == '\'' && !in_single)
-		{
 			in_single = 1;
-			i++;
-		}
 		else if (value[i] == '\'' && in_single)
-		{
 			in_single = 0;
-			i++;
-		}
 		else if (!in_single && value[i] == '$')
-		{
 			has_expandable = 1;
-			i++;
-		}
-		else
-			i++;
+		i++;
 	}
 	return (has_expandable);
 }

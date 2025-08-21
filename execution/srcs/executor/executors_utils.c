@@ -75,6 +75,5 @@ void	path_stat(char *path, t_minishell **s)
 		shell_exit(126, *s);
 	}
 	free(buf);
-
 	has_access(path, X_OK, s);
 }

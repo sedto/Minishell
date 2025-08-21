@@ -48,6 +48,7 @@ t_minishell	*setup_shell(char **envp)
 	if (!s)
 		return (NULL);
 	s->env = init_env(envp);
+	s->parsed = NULL;
 	s->commands = NULL;
 	s->tokens = NULL;
 	s->exit_status = 0;
