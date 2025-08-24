@@ -248,6 +248,7 @@ int					extract_var_name(char *input, int start, char **var_name);
 void				copy_var_value_to_result(char *result, int *j,
 						char *var_value, int max_size);
 char				*allocate_result_buffer(char *input);
+int					process_quote_char(char *value, int *i, int *in_single);
 
 // create_commande.c
 t_cmd				*new_command(void);
@@ -290,6 +291,10 @@ char				*process_line_expansion(char *line, t_minishell *s,
 char				*append_line_to_content(char *content, char *line);
 int					handle_heredoc_signal_exit(int *should_exit, char *line,
 						char *content);
+
+// heredoc_expansion.c
+char				*prepare_heredoc_line(char *line);
+void				restore_heredoc_quotes(char *original, char *expanded);
 
 // heredoc_read.c
 void				print_heredoc_warning(char *delimiter);

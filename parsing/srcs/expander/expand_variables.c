@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:56:09 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/07/28 22:48:37 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/24 15:59:11 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ char	*expand_single_var(char *var_name, char **envp, int exit_code)
 	return (result);
 }
 
-/* Expanse toutes les variables dans une liste de tokens */
 int	should_expand_token(char *value)
 {
 	int	i;
@@ -82,16 +81,9 @@ int	should_expand_token(char *value)
 	has_expandable = 0;
 	while (value[i])
 	{
-		if (value[i] == '\\' && value[i + 1] == '\'')
-		{
-			i += 2;
+		if (!process_quote_char(value, &i, &in_single))
 			continue ;
-		}
-		else if (value[i] == '\'' && !in_single)
-			in_single = 1;
-		else if (value[i] == '\'' && in_single)
-			in_single = 0;
-		else if (!in_single && value[i] == '$')
+		if (!in_single && value[i] == '$')
 			has_expandable = 1;
 		i++;
 	}

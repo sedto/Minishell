@@ -63,3 +63,25 @@ int	extract_var_name(char *str, int start, char **var_name)
 	*var_name = NULL;
 	return (0);
 }
+
+int	process_quote_char(char *value, int *i, int *in_single)
+{
+	if (value[*i] == '\\' && value[*i + 1] == '\'')
+	{
+		*i += 2;
+		return (0);
+	}
+	if (value[*i] == '\'' && !(*in_single))
+	{
+		*in_single = 1;
+		(*i)++;
+		return (0);
+	}
+	if (value[*i] == '\'' && (*in_single))
+	{
+		*in_single = 0;
+		(*i)++;
+		return (0);
+	}
+	return (1);
+}

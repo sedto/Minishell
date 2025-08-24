@@ -6,7 +6,7 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 00:00:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/08/12 00:00:00 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/24 15:56:40 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,19 @@ char	*process_line_expansion(char *line, t_minishell *s, int expand)
 {
 	char	**envp;
 	char	*expanded_line;
+	char	*temp_line;
 
 	if (!expand)
 		return (line);
+	temp_line = prepare_heredoc_line(line);
+	if (!temp_line)
+		return (line);
 	envp = env_to_tab(s->env);
-	expanded_line = expand_string(line, envp, s->exit_status);
+	expanded_line = expand_string(temp_line, envp, s->exit_status);
+	if (expanded_line)
+		restore_heredoc_quotes(line, expanded_line);
 	free_env_tab(envp);
+	free(temp_line);
 	free(line);
 	return (expanded_line);
 }
