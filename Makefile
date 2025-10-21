@@ -6,7 +6,7 @@
 #    By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/26 00:00:00 by dibsejra          #+#    #+#              #
-#    Updated: 2025/06/20 03:04:08 by dibsejra         ###   ########.fr        #
+#    Updated: 2025/07/10 10:56:26 by dibsejra         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,35 +17,97 @@
 NAME		= minishell
 
 # Directories
-SRCDIR		= parsing/srcs
-OBJDIR		= parsing/objs
-INCDIR		= parsing/includes
+SRCDIR		= src
+PARSING_SRCDIR	= parsing/srcs
+EXEC_SRCDIR	= execution/srcs
+OBJDIR		= objs
+PARSING_OBJDIR	= parsing/objs
+EXEC_OBJDIR	= execution/objs
+INCDIR		= includes
 LIBFT_DIR	= libft
 
-# Source files
-SRCS		= $(SRCDIR)/utils/clean_input.c \
-		  $(SRCDIR)/utils/clean_input_utils.c \
-		  $(SRCDIR)/utils/main.c \
-		  $(SRCDIR)/lexer/create_tokens.c \
-		  $(SRCDIR)/lexer/tokenize.c \
-		  $(SRCDIR)/lexer/tokenize_utils.c \
-		  $(SRCDIR)/lexer/tokenize_operators.c \
-		  $(SRCDIR)/expander/expand_variables.c \
-		  $(SRCDIR)/expander/expand_strings.c \
-		  $(SRCDIR)/expander/expand_utils.c \
-		  $(SRCDIR)/parser/create_commande.c \
-		  $(SRCDIR)/parser/parse_commands.c \
-		  $(SRCDIR)/parser/parse_utils.c \
-		  $(SRCDIR)/parser/quote_remover.c
+# Source files - Main
+MAIN_SRCS	= $(SRCDIR)/main.c \
+		  $(SRCDIR)/main_utils.c \
+		  $(SRCDIR)/main_utils_helpers.c
+
+# Source files - Parsing
+PARSING_SRCS	= $(PARSING_SRCDIR)/utils/clean_input.c \
+		  $(PARSING_SRCDIR)/utils/clean_input_utils.c \
+		  $(PARSING_SRCDIR)/lexer/create_tokens.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize_utils.c \
+		  $(PARSING_SRCDIR)/lexer/tokenize_operators.c \
+		  $(PARSING_SRCDIR)/expander/expand_variables.c \
+		  $(PARSING_SRCDIR)/expander/expand_strings.c \
+		  $(PARSING_SRCDIR)/expander/expand_process.c \
+		  $(PARSING_SRCDIR)/expander/expand_quotes.c \
+		  $(PARSING_SRCDIR)/expander/expand_utils.c \
+		  $(PARSING_SRCDIR)/expander/expand_buffer.c \
+		  $(PARSING_SRCDIR)/expander/expand_helpers.c \
+		  $(PARSING_SRCDIR)/expander/expand_utils_extra.c \
+		  $(PARSING_SRCDIR)/parser/create_commande.c \
+		  $(PARSING_SRCDIR)/parser/create_commande_utils.c \
+		  $(PARSING_SRCDIR)/parser/create_commande_helpers.c \
+		  $(PARSING_SRCDIR)/parser/redirect_helpers.c \
+		  $(PARSING_SRCDIR)/parser/parse_commands.c \
+		  $(PARSING_SRCDIR)/parser/parse_commands_utils.c \
+		  $(PARSING_SRCDIR)/parser/parse_handlers.c \
+		  $(PARSING_SRCDIR)/parser/parse_validation.c \
+		  $(PARSING_SRCDIR)/parser/parse_utils.c \
+		  $(PARSING_SRCDIR)/parser/quote_remover.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_utils.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_helpers.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_read.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_support.c \
+		  $(PARSING_SRCDIR)/parser/heredoc_expansion.c
+
+# Source files - Execution
+EXEC_SRCS	= $(EXEC_SRCDIR)/signals/signals.c \
+		  $(EXEC_SRCDIR)/env/env_utils.c \
+		  $(EXEC_SRCDIR)/env/env_utils_extra.c \
+		  $(EXEC_SRCDIR)/env/env_conversion.c \
+		  $(EXEC_SRCDIR)/builtins/builtins.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_basic.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_export.c \
+		  $(EXEC_SRCDIR)/builtins/builtins_exit.c \
+		  $(EXEC_SRCDIR)/utils/utils.c \
+		  $(EXEC_SRCDIR)/utils/utils_extra.c \
+		  $(EXEC_SRCDIR)/utils/utils_commands.c \
+		  $(EXEC_SRCDIR)/executor/executors.c \
+		  $(EXEC_SRCDIR)/executor/executors_helpers.c \
+		  $(EXEC_SRCDIR)/executor/executors_redirections.c \
+		  $(EXEC_SRCDIR)/executor/executors_utils.c \
+		  $(EXEC_SRCDIR)/executor/get_path.c \
+		  $(EXEC_SRCDIR)/executor/errors_env.c \
+
+# All source files
+SRCS		= $(MAIN_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)
 
 # Object files
-OBJS		= $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+MAIN_OBJS	= $(MAIN_SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+PARSING_OBJS	= $(PARSING_SRCS:$(PARSING_SRCDIR)/%.c=$(PARSING_OBJDIR)/%.o)
+EXEC_OBJS	= $(EXEC_SRCS:$(EXEC_SRCDIR)/%.c=$(EXEC_OBJDIR)/%.o)
+OBJS		= $(MAIN_OBJS) $(PARSING_OBJS) $(EXEC_OBJS)
 
 # Compiler and flags
 CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror -g
-INCLUDES	= -I$(INCDIR) -I$(LIBFT_DIR)
-LIBS		= -L$(LIBFT_DIR) -lft -lreadline
+
+# OS-specific Readline flags
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    # macOS (Homebrew)
+    RL_INC		= -I/opt/homebrew/opt/readline/include
+    RL_LIB		= -L/opt/homebrew/opt/readline/lib
+else
+    # Linux (Ubuntu) - standard paths
+    RL_INC		= -I/usr/include/readline 
+    RL_LIB		= 
+endif
+
+INCLUDES	= -I$(INCDIR) -I$(LIBFT_DIR) $(RL_INC)
+LIBS		= -L$(LIBFT_DIR) -lft -lreadline $(RL_LIB)
 
 # Libft
 LIBFT		= $(LIBFT_DIR)/libft.a
@@ -72,6 +134,16 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo "$(YELLOW)Compiling $<...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(PARSING_OBJDIR)/%.o: $(PARSING_SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(EXEC_OBJDIR)/%.o: $(EXEC_SRCDIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 $(LIBFT):
 	@echo "$(YELLOW)Building libft...$(RESET)"
 	@$(MAKE) -C $(LIBFT_DIR)
@@ -79,33 +151,15 @@ $(LIBFT):
 
 clean:
 	@echo "$(RED)Cleaning object files...$(RESET)"
-	@rm -rf $(OBJDIR)
+	@rm -rf $(OBJDIR) $(PARSING_OBJDIR) $(EXEC_OBJDIR)
 	@$(MAKE) -C $(LIBFT_DIR) clean
 
 fclean: clean
 	@echo "$(RED)Cleaning $(NAME)...$(RESET)"
 	@rm -f $(NAME)
+	@find . -name '*.o' -delete
 	@$(MAKE) -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
-# Test rule to run the program
-test: $(NAME)
-	@echo "$(GREEN)Running $(NAME)...$(RESET)"
-	@./$(NAME)
-
-# Unit tests
-test-units: $(LIBFT)
-	@echo "$(YELLOW)Building unit tests...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) test_units.c \
-		$(filter-out $(OBJDIR)/utils/main.o, $(OBJS)) \
-		$(LIBS) -o test_units
-	@echo "$(GREEN)Running unit tests...$(RESET)"
-	@./test_units
-
-# All tests
-test-all: $(NAME)
-	@echo "$(GREEN)Running all tests...$(RESET)"
-	@chmod +x test_all.sh && ./test_all.sh
-
-.PHONY: all clean fclean re test test-units test-all
+.PHONY: all clean fclean re

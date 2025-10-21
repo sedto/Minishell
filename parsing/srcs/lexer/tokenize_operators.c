@@ -10,9 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-/* Gère les opérateurs doubles (<<, >>) */
+/*
+** Handles double operators (<<, >>)
+*/
 static t_token	*handle_double_operator(char *input, int *i)
 {
 	t_token	*new_token;
@@ -31,7 +33,9 @@ static t_token	*handle_double_operator(char *input, int *i)
 	return (new_token);
 }
 
-/* Gère les opérateurs de redirection d'entrée (<, <<) */
+/*
+** Handles input redirection operators (<, <<)
+*/
 t_token	*handle_input_redir(char *input, int *i)
 {
 	t_token	*new_token;
@@ -46,7 +50,9 @@ t_token	*handle_input_redir(char *input, int *i)
 	return (new_token);
 }
 
-/* Gère les opérateurs de redirection de sortie (>, >>) */
+/*
+** Handles output redirection operators (>, >>)
+*/
 t_token	*handle_output_redir(char *input, int *i)
 {
 	t_token	*new_token;
@@ -61,7 +67,9 @@ t_token	*handle_output_redir(char *input, int *i)
 	return (new_token);
 }
 
-/* Détermine et traite le bon type d'opérateur */
+/*
+** Determines and processes the correct operator type
+*/
 int	handle_operator(char *input, int *i, t_token **tokens)
 {
 	t_token	*new_token;

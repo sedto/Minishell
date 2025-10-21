@@ -6,43 +6,48 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 01:56:55 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:30:14 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/07/12 21:11:16 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-/* Vérifie si une chaîne a des quotes externes (début et fin identiques) */
-static int	has_outer_quotes(char *str, char quote_char)
+static void	init_quote_removal(int *i, int *j, int *in_single, int *in_double)
 {
-	int	len;
-
-	if (!str)
-		return (0);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (0);
-	return (str[0] == quote_char && str[len - 1] == quote_char);
+	*i = 0;
+	*j = 0;
+	*in_single = 0;
+	*in_double = 0;
 }
 
-/* Supprime les quotes externes d'une chaîne si elles existent */
-static char	*remove_outer_quotes(char *str)
+char	*remove_quotes(char *str)
 {
 	char	*result;
-	int		len;
+	int		i;
+	int		j;
+	int		in_single_quote;
+	int		in_double_quote;
 
 	if (!str)
 		return (NULL);
-	if (has_outer_quotes(str, '"') || has_outer_quotes(str, '\''))
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	init_quote_removal(&i, &j, &in_single_quote, &in_double_quote);
+	while (str[i])
 	{
-		len = ft_strlen(str);
-		result = ft_substr(str, 1, len - 2);
-		return (result);
+		if (str[i] == '\'' && !in_double_quote)
+			in_single_quote = !in_single_quote;
+		else if (str[i] == '"' && !in_single_quote)
+			in_double_quote = !in_double_quote;
+		else
+			result[j++] = str[i];
+		i++;
 	}
-	return (ft_strdup(str));
+	result[j] = '\0';
+	return (result);
 }
 
-/* Traite tous les arguments d'une commande pour supprimer les quotes */
 static void	process_args_quotes(char **args)
 {
 	char	*new_arg;
@@ -53,7 +58,7 @@ static void	process_args_quotes(char **args)
 	i = 0;
 	while (args[i])
 	{
-		new_arg = remove_outer_quotes(args[i]);
+		new_arg = remove_quotes(args[i]);
 		if (new_arg)
 		{
 			free(args[i]);
@@ -63,14 +68,13 @@ static void	process_args_quotes(char **args)
 	}
 }
 
-/* Traite un nom de fichier pour supprimer les quotes externes */
 static void	process_file_quotes(char **filename)
 {
 	char	*new_filename;
 
 	if (!filename || !*filename)
 		return ;
-	new_filename = remove_outer_quotes(*filename);
+	new_filename = remove_quotes(*filename);
 	if (new_filename)
 	{
 		free(*filename);
@@ -78,20 +82,22 @@ static void	process_file_quotes(char **filename)
 	}
 }
 
-/* Supprime les quotes de toutes les commandes dans la liste chaînée */
 void	remove_quotes_from_commands(t_cmd *commands)
 {
 	t_cmd	*current;
+	t_file	*tmp;
 
 	current = commands;
 	while (current)
 	{
 		if (current->args)
 			process_args_quotes(current->args);
-		if (current->input_file)
-			process_file_quotes(&current->input_file);
-		if (current->output_file)
-			process_file_quotes(&current->output_file);
+		tmp = current->files;
+		while (tmp)
+		{
+			process_file_quotes(&tmp->name);
+			tmp = tmp->next;
+		}
 		current = current->next;
 	}
 }

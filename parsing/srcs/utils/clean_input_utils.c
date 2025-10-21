@@ -6,11 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 16:50:00 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 05:06:02 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Vérifie si un espace doit être ajouté avant le caractère actuel */
 static int	should_add_space_before(char *cleaned, int j)
@@ -38,14 +38,14 @@ void	add_space_if_needed(char *cleaned, int *j, char next_char, int closing)
 /* Gère les guillemets simples et leur espacement */
 int	handle_single_quote(t_clean_data *data)
 {
-	if (!(*data->in_dquote))
+	if (!(*data->in_double_quote))
 	{
-		if (!(*data->in_squote))
+		if (!(*data->in_single_quote))
 			add_space_if_needed(data->cleaned, data->j,
 				data->str[*data->i + 1], 0);
-		*data->in_squote = !(*data->in_squote);
+		*data->in_single_quote = !(*data->in_single_quote);
 		data->cleaned[(*data->j)++] = data->str[(*data->i)++];
-		if (!(*data->in_squote))
+		if (!(*data->in_single_quote))
 			add_space_if_needed(data->cleaned, data->j,
 				data->str[*data->i], 1);
 		return (1);
@@ -56,14 +56,14 @@ int	handle_single_quote(t_clean_data *data)
 /* Gère les guillemets doubles et leur espacement */
 int	handle_double_quote(t_clean_data *data)
 {
-	if (!(*data->in_squote))
+	if (!(*data->in_single_quote))
 	{
-		if (!(*data->in_dquote))
+		if (!(*data->in_double_quote))
 			add_space_if_needed(data->cleaned, data->j,
 				data->str[*data->i + 1], 0);
-		*data->in_dquote = !(*data->in_dquote);
+		*data->in_double_quote = !(*data->in_double_quote);
 		data->cleaned[(*data->j)++] = data->str[(*data->i)++];
-		if (!(*data->in_dquote))
+		if (!(*data->in_double_quote))
 			add_space_if_needed(data->cleaned, data->j,
 				data->str[*data->i], 1);
 		return (1);

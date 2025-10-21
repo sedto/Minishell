@@ -1,0 +1,38 @@
+# Fichiers de compilation
+*.o
+*.a
+minishell
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*~
+.DS_Store
+
+# Dossiers de compilation
+parsing/objs/
+execution/objs/
+libft/*.o
+libft/libft.a
+
+# Fichiers de test temporaires
+/tmp/minishell_test*
+output.txt
+log.txt
+greeting.txt
+tmp*.txt
+user.txt
+file1
+file2
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Fichiers de debug
+core
+vgcore.*
+
+minishell_tester/

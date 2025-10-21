@@ -6,11 +6,11 @@
 /*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 15:59:13 by dibsejra          #+#    #+#             */
-/*   Updated: 2025/06/20 03:38:04 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/06/20 21:29:21 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
 /* Extrait les variables spéciales ($?, $$) */
 static int	extract_special_var(char *str, int start, char **var_name)
@@ -18,12 +18,16 @@ static int	extract_special_var(char *str, int start, char **var_name)
 	if (str[start] == '?')
 	{
 		*var_name = ft_strdup("?");
-		return (1);
+		if (*var_name)
+			return (1);
+		return (0);
 	}
 	if (str[start] == '$')
 	{
 		*var_name = ft_strdup("$");
-		return (1);
+		if (*var_name)
+			return (1);
+		return (0);
 	}
 	return (0);
 }
@@ -32,16 +36,16 @@ static int	extract_special_var(char *str, int start, char **var_name)
 static int	extract_normal_var(char *str, int start, char **var_name)
 {
 	int	i;
-	int	var_len;
 
 	i = start;
+	if (!ft_isalpha(str[i]) && str[i] != '_')
+		return (0);
 	while (str[i] && (ft_isalnum(str[i]) || str[i] == '_'))
 		i++;
-	var_len = i - start;
-	if (var_len == 0)
-		return (0);
-	*var_name = ft_substr(str, start, var_len);
-	return (var_len);
+	*var_name = ft_substr(str, start, i - start);
+	if (*var_name)
+		return (i - start);
+	return (0);
 }
 
 /* Extrait le nom d'une variable en gérant spéciales et normales */
@@ -56,41 +60,28 @@ int	extract_var_name(char *str, int start, char **var_name)
 	normal_len = extract_normal_var(str, start, var_name);
 	if (normal_len > 0)
 		return (normal_len);
-	*var_name = ft_strdup("$");
+	*var_name = NULL;
 	return (0);
 }
 
-/* Alloue un buffer pour le résultat avec une taille estimée */
-char	*allocate_result_buffer(char *input)
+int	process_quote_char(char *value, int *i, int *in_single)
 {
-	char	*result;
-	int		max_expansion;
-	int		input_len;
-
-	if (!input)
-		return (NULL);
-	input_len = ft_strlen(input);
-	max_expansion = input_len + (count_variables_in_string(input) * 1024);
-	if (max_expansion < input_len * 2)
-		max_expansion = input_len * 2;
-	result = malloc(max_expansion + 1);
-	if (!result)
-		return (NULL);
-	return (result);
-}
-
-/* Copie la valeur d'une variable dans le buffer résultat */
-void	copy_var_value_to_result(char *result, int *j, char *var_value)
-{
-	int	i;
-
-	if (!var_value || !result)
-		return ;
-	i = 0;
-	while (var_value[i])
+	if (value[*i] == '\\' && value[*i + 1] == '\'')
 	{
-		result[*j + i] = var_value[i];
-		i++;
+		*i += 2;
+		return (0);
 	}
-	*j += i;
+	if (value[*i] == '\'' && !(*in_single))
+	{
+		*in_single = 1;
+		(*i)++;
+		return (0);
+	}
+	if (value[*i] == '\'' && (*in_single))
+	{
+		*in_single = 0;
+		(*i)++;
+		return (0);
+	}
+	return (1);
 }

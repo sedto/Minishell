@@ -10,9 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../includes/minishell.h"
 
-/* Crée un nouveau token avec son type et sa valeur */
+/*
+** Creates a new token with its type and value
+*/
 t_token	*create_token(t_token_type type, char *value)
 {
 	t_token	*token;
@@ -31,7 +33,9 @@ t_token	*create_token(t_token_type type, char *value)
 	return (token);
 }
 
-/* Ajoute un token à la fin de la liste chaînée */
+/*
+** Adds a token to the end of the linked list
+*/
 void	add_token_to_list(t_token **tokens, t_token *new_token)
 {
 	t_token	*current;
@@ -49,7 +53,9 @@ void	add_token_to_list(t_token **tokens, t_token *new_token)
 	current->next = new_token;
 }
 
-/* Libère tous les tokens d'une liste */
+/*
+** Frees all tokens in a list
+*/
 void	free_tokens(t_token *tokens)
 {
 	t_token	*current;

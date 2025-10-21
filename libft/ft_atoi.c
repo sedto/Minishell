@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dibsejra <dibsejra@student.42lausanne.c    +#+  +:+       +#+        */
+/*   By: dibsejra <dibsejra@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 16:59:15 by dibsejra          #+#    #+#             */
-/*   Updated: 2024/10/13 17:44:47 by dibsejra         ###   ########.fr       */
+/*   Updated: 2025/08/15 17:17:19 by dibsejra         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,3 @@ int	ft_atoi(const char *str)
 	}
 	return (result * sign);
 }
-
-/*int	main(void)
-{
-	char str[] = "-1234abcd5";
-	printf("Valeur apres atoi: %d\n", ft_atoi(str));
-}*/
