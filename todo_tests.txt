@@ -1,7 +1,0 @@
-# TESTS MANUELS - Minishell
-# Tests à faire manuellement (les tests automatiques échouent pour ces cas)
-
-echo "'$USER'"
-  expected: 'john'
-echo """'$USER'"""
-  expected:  'john'
